@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formgenerator</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="ds/styles.css">
+  <script src="ds/_ds_bundle.js"></script>
+  <script src="config.js"></script>
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); }
+    a { color: var(--color-accent-700); }
+    a:hover { color: var(--color-accent); }
+  </style>
+</helmet>
+<div style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)">
+  <sc-if value="{{ isSimple }}" hint-placeholder-val="{{ true }}">
+    <header style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);border-bottom:2px solid var(--color-divider)">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-6)">
+        <div style="font-family:var(--font-heading);font-weight:800;font-size:22px;letter-spacing:-0.01em">Formgenerator</div>
+        <nav style="display:flex;gap:var(--space-2)">
+          <button class="{{ tabCreateCls }}" onClick="{{ goCreate }}" style="padding:6px 14px">Erstellen</button>
+          <button class="{{ tabGalleryCls }}" onClick="{{ goGallery }}" style="padding:6px 14px">Galerie</button>
+        </nav>
+      </div>
+      <button class="btn btn-ghost" onClick="{{ goDev }}" style="font-size:13px">Entwicklermodus</button>
+    </header>
+
+    <sc-if value="{{ isCreate }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:var(--space-8);padding:var(--space-6)">
+        <div style="flex:0 1 180px;min-width:150px;display:flex;flex-direction:column;gap:var(--space-2)">
+          <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:var(--space-1)">Kategorie</div>
+          <sc-for list="{{ models }}" as="m" hint-placeholder-count="7">
+            <button class="{{ m.cls }}" onClick="{{ m.pickRoll }}" style="justify-content:flex-start;padding:8px 12px;font-size:14px">{{ m.name }}</button>
+          </sc-for>
+        </div>
+        <div style="flex:1 1 360px;max-width:calc((100vh - 130px) * 0.75);min-width:260px;display:flex;flex-direction:column;gap:var(--space-3)">
+          <div ref="{{ svgRef2 }}" style="width:100%;aspect-ratio:3/4;background:var(--color-surface)"></div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3)">
+            <div style="font-family:var(--font-heading);font-weight:800;font-size:22px;line-height:1.2">{{ nameShown }}</div>
+            <div style="font-size:13px;color:var(--color-neutral-700)">{{ modelName }}</div>
+          </div>
+        </div>
+        <div style="flex:0 1 260px;min-width:220px;display:flex;flex-direction:column;gap:var(--space-3)">
+          <button class="btn btn-primary" onClick="{{ roll }}" style="justify-content:flex-start;padding:14px 16px;font-size:16px;font-weight:700">Neu würfeln</button>
+          <div style="border-top:2px solid var(--color-divider);margin-top:var(--space-2);padding-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)">
+            <label style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Name</label>
+            <input class="input" value="{{ name }}" onChange="{{ onName }}" maxlength="40" placeholder="Wie heißt das Wesen?" style="font-size:15px">
+            <button class="btn btn-secondary" onClick="{{ rollName }}" style="justify-content:flex-start;font-size:14px">Zufallsname</button>
+          </div>
+          <div style="border-top:2px solid var(--color-divider);margin-top:var(--space-2);padding-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)">
+            <button class="btn btn-secondary" onClick="{{ share }}" style="justify-content:flex-start;font-size:14px;border-color:var(--color-text)">{{ shareLabel }}</button>
+            <button class="btn btn-ghost" onClick="{{ downloadSvg }}" style="justify-content:flex-start;font-size:14px">Als Bild speichern (SVG)</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isGallery }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-4);max-width:1400px;margin:0 auto">
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--space-3)">
+          <div style="display:flex;align-items:baseline;gap:var(--space-3)">
+            <div style="font-family:var(--font-heading);font-weight:800;font-size:32px">Galerie</div>
+            <div style="font-size:13px;color:var(--color-neutral-700)">{{ gStatus }}</div>
+          </div>
+          <div style="display:flex;gap:var(--space-2)">
+            <button class="{{ gNewCls }}" onClick="{{ showNew }}" style="padding:6px 12px;font-size:13px">Neu</button>
+            <button class="{{ gTopCls }}" onClick="{{ showTop }}" style="padding:6px 12px;font-size:13px">Beliebt</button>
+          </div>
+        </div>
+        <sc-if value="{{ apiOff }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:14px;color:var(--color-neutral-700)">Die Galerie ist noch nicht verbunden.</div>
+        </sc-if>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-4)">
+          <sc-for list="{{ gItems }}" as="it" hint-placeholder-count="0">
+            <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+              <div onClick="{{ it.open }}" style="width:100%;aspect-ratio:3/4;background-image:{{ it.bg }};background-size:cover;background-position:center;background-color:var(--color-surface);cursor:pointer"></div>
+              <div style="font-weight:700;font-size:15px;line-height:1.25">{{ it.title }}</div>
+              <div style="font-size:12px;color:var(--color-neutral-700)">{{ it.sub }}</div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+                <button class="{{ it.likeCls }}" onClick="{{ it.like }}" style="padding:4px 10px;font-size:12px">{{ it.likeLabel }}</button>
+                <button class="btn btn-secondary" onClick="{{ it.open }}" style="padding:4px 10px;font-size:12px">Öffnen</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <div style="display:{{ devDisplay }};flex-direction:column;min-height:100vh">
+  <header style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);border-bottom:2px solid var(--color-divider)">
+    <div style="display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap">
+      <div style="font-family:var(--font-heading);font-weight:800;font-size:22px;letter-spacing:-0.01em">Formgenerator</div>
+      <div style="font-size:13px;color:var(--color-neutral-700)">3D-Körper → 2D-Linie · Testaufbau</div>
+    </div>
+    <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
+      <button class="btn btn-ghost" onClick="{{ goCreate }}">← Einfache Ansicht</button>
+      <button class="btn btn-primary" onClick="{{ randomize }}">Zufall</button>
+      <button class="btn btn-secondary" onClick="{{ reset }}">Modell zurücksetzen</button>
+      <button class="btn btn-secondary" onClick="{{ copyValues }}">{{ copyLabel }}</button>
+      <button class="btn btn-secondary" onClick="{{ downloadSvg }}">SVG speichern</button>
+    </div>
+  </header>
+
+  <div style="flex:1;display:flex;flex-wrap:wrap;align-items:flex-start;min-height:0">
+    <aside style="flex:1 1 340px;max-width:420px;border-right:2px solid var(--color-divider);height:calc(100vh - 62px);overflow-y:auto;position:sticky;top:0">
+      <div style="padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-3)">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Modell</div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-2)">
+          <sc-for list="{{ models }}" as="m" hint-placeholder-count="7">
+            <button class="{{ m.cls }}" onClick="{{ m.pick }}" style="justify-content:flex-start;padding:6px 10px;font-size:13px">{{ m.name }}</button>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:28px 108px minmax(0,1fr);align-items:center;gap:var(--space-2);margin-top:var(--space-2)">
+          <span style="font-size:11px;font-weight:700;color:var(--color-accent-700)">M</span>
+          <span style="font-size:13px">Morph zu</span>
+          <select class="input" value="{{ target }}" onChange="{{ onTarget }}" style="min-height:30px;padding:4px 8px;font-size:13px">
+            <sc-for list="{{ models }}" as="m" hint-placeholder-count="7">
+              <option value="{{ m.id }}">{{ m.name }}</option>
+            </sc-for>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:28px 108px minmax(0,1fr) 54px;align-items:center;gap:var(--space-2)">
+          <span></span>
+          <span style="font-size:13px">{{ morphLabel }}</span>
+          <input type="range" min="0" max="1" step="0.01" value="{{ morph }}" onChange="{{ onMorph }}" style="width:100%;accent-color:var(--color-accent)">
+          <span style="font-size:13px;text-align:right;font-variant-numeric:tabular-nums">{{ morphText }}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:136px minmax(0,1fr) minmax(0,1fr);align-items:center;gap:var(--space-2);margin-top:var(--space-2)">
+          <span style="font-size:13px">Regler zeigen</span>
+          <button class="{{ basicCls }}" onClick="{{ showBasic }}" style="justify-content:flex-start;padding:6px 10px;font-size:13px">Wichtige</button>
+          <button class="{{ allCls }}" onClick="{{ showAll }}" style="justify-content:flex-start;padding:6px 10px;font-size:13px">Alle</button>
+        </div>
+        <div style="font-size:12px;color:var(--color-neutral-700)">Klick auf einen Code (z. B. A7) setzt den Regler auf den Modellwert zurück.</div>
+      </div>
+
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="7">
+        <div style="border-top:2px solid var(--color-divider)">
+          <button onClick="{{ g.toggle }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:transparent;border:none;cursor:pointer;font:inherit;color:inherit;text-align:left" style-hover="background:var(--color-surface)">
+            <span style="display:flex;gap:var(--space-2);align-items:baseline">
+              <span style="font-weight:800;color:var(--color-accent)">{{ g.key }}</span>
+              <span style="font-weight:700;font-size:14px">{{ g.title }}</span>
+            </span>
+            <span style="font-size:16px;font-weight:700;width:16px;text-align:left">{{ g.sign }}</span>
+          </button>
+          <sc-if value="{{ g.open }}" hint-placeholder-val="{{ true }}">
+            <div style="padding-bottom:var(--space-3)">
+              <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="6">
+                <div style="display:grid;grid-template-columns:28px 108px minmax(0,1fr) 54px;align-items:center;gap:var(--space-2);padding:2px var(--space-4);min-height:28px" title="{{ r.hint }}">
+                  <span onClick="{{ r.onReset }}" style="font-size:11px;font-weight:700;color:var(--color-accent-700);cursor:pointer" style-hover="color:var(--color-accent)">{{ r.code }}</span>
+                  <span style="font-size:13px;line-height:1.2">{{ r.label }}</span>
+                  <sc-if value="{{ r.isRange }}">
+                    <input type="range" min="{{ r.min }}" max="{{ r.max }}" step="{{ r.step }}" value="{{ r.value }}" onChange="{{ r.onChange }}" style="width:100%;accent-color:var(--color-accent)">
+                  </sc-if>
+                  <sc-if value="{{ r.isBool }}">
+                    <input type="checkbox" checked="{{ r.checked }}" onChange="{{ r.onChange }}" style="justify-self:start;width:16px;height:16px;margin:0;accent-color:var(--color-accent)">
+                  </sc-if>
+                  <sc-if value="{{ r.isColor }}">
+                    <input type="color" value="{{ r.value }}" onChange="{{ r.onChange }}" style="width:100%;height:24px;padding:0;border:1px solid var(--color-divider);background:none;cursor:pointer">
+                  </sc-if>
+                  <span style="font-size:13px;text-align:right;font-variant-numeric:tabular-nums;color:{{ r.valueColor }}">{{ r.display }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </aside>
+
+    <main style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column">
+      <div style="display:flex;flex-wrap:wrap;border-bottom:2px solid var(--color-divider)">
+        <section style="flex:1 1 300px;min-width:0;border-right:2px solid var(--color-divider)">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-2);padding:var(--space-3) var(--space-4);border-bottom:2px solid var(--color-divider)">
+            <div style="display:flex;gap:var(--space-2);align-items:baseline">
+              <span style="font-weight:800;color:var(--color-accent)">01</span>
+              <span style="font-weight:700;white-space:nowrap">3D-Körper</span>
+              <span style="font-size:12px;color:var(--color-neutral-700)">Hilfsansicht</span>
+            </div>
+            <div style="display:flex;gap:var(--space-3);font-size:13px">
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" checked="{{ wire }}" onChange="{{ onWire }}" style="margin:0;accent-color:var(--color-accent)">Drahtgitter</label>
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" checked="{{ lines3d }}" onChange="{{ onLines3d }}" style="margin:0;accent-color:var(--color-accent)">Linien &amp; Auge</label>
+            </div>
+          </div>
+          <div style="padding:var(--space-4);display:flex;flex-direction:column;align-items:center;gap:var(--space-2)">
+            <div style="width:100%;max-width:calc((100vh - 250px) * 0.75);aspect-ratio:3/4;background:#2d2b2b;position:relative">
+              <canvas ref="{{ canvasRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:none"></canvas>
+              <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
+                <div style="position:absolute;left:var(--space-4);top:var(--space-4);color:var(--color-bg);font-size:13px">{{ loadingText }}</div>
+              </sc-if>
+            </div>
+            <div style="width:100%;max-width:calc((100vh - 250px) * 0.75);font-size:12px;color:var(--color-neutral-700)">Ziehen dreht die Kamera (D1, D2). Rot: Innenlinien auf der Oberfläche.</div>
+          </div>
+        </section>
+        <section style="flex:1 1 300px;min-width:0">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:var(--space-3) var(--space-4);border-bottom:2px solid var(--color-divider);min-height:21px">
+            <div style="display:flex;gap:var(--space-2);align-items:baseline">
+              <span style="font-weight:800;color:var(--color-accent)">02</span>
+              <span style="font-weight:700">2D-Linie</span>
+            </div>
+            <div style="display:flex;gap:var(--space-3);font-size:13px">
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" checked="{{ contour }}" onChange="{{ onContour }}" style="margin:0;accent-color:var(--color-accent)">Innenkontur</label>
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" checked="{{ pattern }}" onChange="{{ onPattern }}" style="margin:0;accent-color:var(--color-accent)">Muster</label>
+            </div>
+          </div>
+          <div style="padding:var(--space-4);display:flex;flex-direction:column;align-items:center;gap:var(--space-2)">
+            <div ref="{{ svgRef }}" style="width:100%;max-width:calc((100vh - 250px) * 0.75);aspect-ratio:3/4;background:var(--color-surface)"></div>
+            <div style="width:100%;max-width:calc((100vh - 250px) * 0.75);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-2)">
+              <button class="btn btn-secondary" onClick="{{ markGood }}" style="justify-content:flex-start;padding:6px 10px;font-size:13px">Gut merken</button>
+              <button class="btn btn-secondary" onClick="{{ markBug }}" style="justify-content:flex-start;padding:6px 10px;font-size:13px">Bug merken</button>
+              <button class="btn btn-primary" onClick="{{ share }}" style="grid-column:1 / -1;justify-content:flex-start;padding:6px 10px;font-size:13px">{{ shareLabel }}</button>
+            </div>
+          </div>
+        </section>
+      </div>
+      <sc-if value="{{ hasSnaps }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:var(--space-4) var(--space-6);border-bottom:2px solid var(--color-divider);display:flex;flex-direction:column;gap:var(--space-3)">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-2)">
+            <div style="display:flex;align-items:baseline;gap:var(--space-3)">
+              <span style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Sammlung</span>
+              <span style="font-size:12px;color:var(--color-neutral-700)">{{ snapCount }}</span>
+            </div>
+            <div style="display:flex;gap:var(--space-2)">
+              <button class="btn btn-primary" onClick="{{ copySnaps }}">{{ copySnapsLabel }}</button>
+              <button class="btn btn-secondary" onClick="{{ clearSnaps }}">Leeren</button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--space-3)">
+            <sc-for list="{{ snaps }}" as="it" hint-placeholder-count="0">
+              <div style="display:flex;flex-direction:column;gap:var(--space-2);background:var(--color-surface);padding:var(--space-2)">
+                <div style="position:relative">
+                  <div style="width:100%;aspect-ratio:3/4;background-image:{{ it.bg }};background-size:cover;background-position:center"></div>
+                  <span class="{{ it.tagCls }}" style="position:absolute;left:6px;top:6px">{{ it.tag }}</span>
+                </div>
+                <div style="font-size:12px;font-weight:700">{{ it.title }}</div>
+                <input class="input" value="{{ it.note }}" onChange="{{ it.onNote }}" placeholder="Was fällt auf?" style="min-height:30px;padding:4px 8px;font-size:13px">
+                <div style="display:flex;gap:var(--space-2)">
+                  <button class="btn btn-secondary" onClick="{{ it.load }}" style="padding:4px 10px;font-size:12px">Laden</button>
+                  <button class="btn btn-ghost" onClick="{{ it.remove }}" style="font-size:12px">Entfernen</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <div style="padding:var(--space-4) var(--space-6);border-bottom:2px solid var(--color-divider);display:flex;flex-direction:column;gap:var(--space-3)">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-2)">
+          <div style="display:flex;align-items:baseline;gap:var(--space-3)">
+            <span style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Galerie</span>
+            <span style="font-size:12px;color:var(--color-neutral-700)">{{ gStatus }}</span>
+          </div>
+          <div style="display:flex;gap:var(--space-2)">
+            <button class="{{ gNewCls }}" onClick="{{ showNew }}" style="padding:6px 10px;font-size:13px">Neu</button>
+            <button class="{{ gTopCls }}" onClick="{{ showTop }}" style="padding:6px 10px;font-size:13px">Beliebt</button>
+            <button class="btn btn-secondary" onClick="{{ reloadGallery }}" style="padding:6px 10px;font-size:13px">Neu laden</button>
+          </div>
+        </div>
+        <sc-if value="{{ apiOff }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:13px;color:var(--color-neutral-700)">Noch nicht verbunden. Trag in config.js die Adresse deines Servers ein (siehe Anleitung).</div>
+        </sc-if>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--space-3)">
+          <sc-for list="{{ gItems }}" as="it" hint-placeholder-count="0">
+            <div style="display:flex;flex-direction:column;gap:var(--space-2);background:var(--color-surface);padding:var(--space-2)">
+              <div style="width:100%;aspect-ratio:3/4;background-image:{{ it.bg }};background-size:cover;background-position:center;background-color:var(--color-bg)"></div>
+              <div style="font-size:12px;font-weight:700">{{ it.title }}</div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+                <button class="{{ it.likeCls }}" onClick="{{ it.like }}" style="padding:4px 10px;font-size:12px">{{ it.likeLabel }}</button>
+                <button class="btn btn-secondary" onClick="{{ it.load }}" style="padding:4px 10px;font-size:12px">Laden</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="padding:var(--space-4) var(--space-6) var(--space-8);display:flex;flex-direction:column;gap:var(--space-2)">
+        <div style="display:flex;align-items:baseline;gap:var(--space-3)">
+          <span style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Aktuelle Werte</span>
+          <span style="font-size:12px;color:var(--color-neutral-700)">{{ modelLine }}</span>
+        </div>
+        <sc-for list="{{ valueLines }}" as="l" hint-placeholder-count="7">
+          <div style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:var(--space-3);font-size:13px;line-height:1.5;font-variant-numeric:tabular-nums;border-top:1px solid var(--color-divider);padding-top:var(--space-1)">
+            <span style="font-weight:700">{{ l.title }}</span>
+            <span style="text-wrap:pretty">{{ l.text }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </main>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static GROUPS = [
+    { key: 'A', title: 'Form', params: [
+      { k: 'A1', id: 'length', label: 'Länge', min: 1, max: 3.6, step: 0.01, def: 2.3, rnd: [1.9, 3.3] },
+      { k: 'A2', id: 'rTop', label: 'Dicke oben', min: 0.05, max: 1.2, step: 0.01, def: 0.62, rnd: [0.2, 0.75] },
+      { k: 'A3', id: 'rBot', label: 'Dicke unten', min: 0.05, max: 1.2, step: 0.01, def: 0.6, rnd: [0.35, 0.8] },
+      { k: 'A4', id: 'waist', label: 'Taille / Bauch', min: -0.6, max: 0.6, step: 0.01, def: 0.1, rnd: [-0.1, 0.38], hint: '+ eingeschnürt, − Bauch' },
+      { k: 'A5', id: 'waistPos', label: 'Taillen-Höhe', min: 0.1, max: 0.9, step: 0.01, def: 0.5, rnd: [0.25, 0.75] },
+      { k: 'A6', id: 'depth', label: 'Tiefe', min: 0.3, max: 1.6, step: 0.01, def: 0.85, rnd: [0.5, 1.2], hint: 'Tiefe im Verhältnis zur Breite' },
+      { k: 'A7', id: 'sqExp', label: 'Querschnitt', min: 1, max: 6, step: 0.01, def: 2, rnd: [1.1, 3.5], hint: '1 Raute · 2 rund · 5 kastig' },
+      { k: 'A8', id: 'asym', label: 'Asymmetrie', min: -0.8, max: 0.8, step: 0.01, def: 0, rnd: [-0.3, 0.3] },
+      { k: 'A9', id: 'capTop', label: 'Spitze oben', min: 0.1, max: 1.5, step: 0.01, def: 0.5, rnd: [0.25, 1.2], hint: '0.5 rund · höher spitz · tiefer stumpf' },
+      { k: 'A10', id: 'capBot', label: 'Spitze unten', min: 0.1, max: 1.5, step: 0.01, def: 0.5, rnd: [0.25, 1.0], hint: '0.5 rund · höher spitz · tiefer stumpf' },
+      { k: 'A11', id: 'capLen', label: 'Kappenlänge', min: 0.3, max: 2.5, step: 0.01, def: 1, rnd: [0.9, 1.8] },
+    ] },
+    { key: 'B', title: 'Biegung', params: [
+      { k: 'B1', id: 'bend', label: 'Biegung', min: -1, max: 1, step: 0.01, def: -0.32, rnd: [-0.55, 0.55] },
+      { k: 'B2', id: 'bendPos', label: 'Biege-Stelle', min: 0, max: 1, step: 0.01, def: 0.5, rnd: [0.3, 0.7] },
+      { k: 'B3', id: 'bendWidth', label: 'Biege-Weite', min: 0.05, max: 1, step: 0.01, def: 0.35, rnd: [0.3, 0.75], hint: 'klein Knick · groß Bogen' },
+      { k: 'B4', id: 'sCurve', label: 'S-Kurve', min: -1, max: 1, step: 0.01, def: 0, rnd: [-0.2, 0.2] },
+      { k: 'B5', id: 'bendZ', label: 'Biegung Tiefe', min: -1, max: 1, step: 0.01, def: 0, rnd: [-0.4, 0.4] },
+      { k: 'B6', id: 'twist', label: 'Verdrehung', min: -180, max: 180, step: 1, def: 0, unit: '°', rnd: [-25, 25] },
+    ] },
+    { key: 'C', title: 'Oberfläche', params: [
+      { k: 'C1', id: 'segL', label: 'Segmente längs', t: 'int', min: 3, max: 96, step: 1, def: 64 },
+      { k: 'C2', id: 'segR', label: 'Segmente rund', t: 'int', min: 3, max: 64, step: 1, def: 48 },
+      { k: 'C3', id: 'flat', label: 'Facetten flach', t: 'bool', def: false },
+      { k: 'C4', id: 'facetRot', label: 'Facetten drehen', min: -90, max: 90, step: 1, def: 0, unit: '°' },
+      { k: 'C5', id: 'ribs', label: 'Rippen', min: 0, max: 0.4, step: 0.01, def: 0 },
+      { k: 'C6', id: 'ribN', label: 'Rippen-Anzahl', t: 'int', min: 1, max: 14, step: 1, def: 5 },
+      { k: 'C7', id: 'noise', label: 'Beulen', min: 0, max: 0.4, step: 0.01, def: 0, rnd: [0, 0.07] },
+      { k: 'C8', id: 'noiseScale', label: 'Beulen-Frequenz', min: 0.5, max: 8, step: 0.1, def: 3, rnd: [1, 4] },
+      { k: 'C9', id: 'seed', label: 'Seed', t: 'int', min: 0, max: 999, step: 1, def: 7, rnd: [0, 999] },
+    ] },
+    { key: 'D', title: 'Kamera', params: [
+      { k: 'D1', id: 'yaw', label: 'Drehung', min: -180, max: 180, step: 1, def: 0, unit: '°' },
+      { k: 'D2', id: 'pitch', label: 'Neigung', min: -80, max: 80, step: 1, def: 8, unit: '°' },
+      { k: 'D3', id: 'roll', label: 'Rolle', min: -180, max: 180, step: 1, def: -10, unit: '°' },
+      { k: 'D4', id: 'zoom', label: 'Zoom', min: 0.4, max: 4, step: 0.01, def: 1 },
+      { k: 'D5', id: 'panX', label: 'Versatz X', min: -1.5, max: 1.5, step: 0.01, def: 0 },
+      { k: 'D6', id: 'panY', label: 'Versatz Y', min: -1.5, max: 1.5, step: 0.01, def: 0 },
+      { k: 'D7', id: 'fov', label: 'Perspektive', min: 5, max: 90, step: 1, def: 30, unit: '°', hint: 'klein flach · groß starke Perspektive' },
+    ] },
+    { key: 'E', title: 'Linie (2D)', params: [
+      { k: 'E1', id: 'lineW', label: 'Umriss-Stärke', min: 0, max: 40, step: 0.5, def: 12 },
+      { k: 'E2', id: 'innerW', label: 'Innenlinie-Stärke', min: 0, max: 40, step: 0.5, def: 9 },
+      { k: 'E3', id: 'simplify', label: 'Vereinfachung', min: 0, max: 40, step: 0.1, def: 0.6, hint: 'weniger Punkte → eckiger' },
+      { k: 'E4', id: 'round', label: 'Rundung', t: 'int', min: 0, max: 5, step: 1, def: 2 },
+      { k: 'E5', id: 'joinRound', label: 'Ecken rund', t: 'bool', def: true },
+      { k: 'E6', id: 'ring', label: 'Querlinie', t: 'bool', def: false },
+      { k: 'E7', id: 'ringPos', label: 'Querlinie Höhe', min: 0.02, max: 0.98, step: 0.01, def: 0.45 },
+      { k: 'E8', id: 'ringTilt', label: 'Querlinie schräg', min: -0.3, max: 0.3, step: 0.005, def: 0 },
+      { k: 'E9', id: 'meridian', label: 'Längslinie', t: 'bool', def: true },
+      { k: 'E10', id: 'meridianA', label: 'Längslinie Lage', min: -180, max: 180, step: 1, def: -35, unit: '°' },
+      { k: 'E11', id: 'meridianFrom', label: 'Längslinie von', min: 0, max: 1, step: 0.01, def: 0.08 },
+      { k: 'E12', id: 'meridianTo', label: 'Längslinie bis', min: 0, max: 1, step: 0.01, def: 0.7 },
+      { k: 'E13', id: 'contour', label: 'Innenkontur', t: 'bool', def: true, hint: 'Linie, wo der Körper sich selbst überdeckt oder wegknickt' },
+    ] },
+    { key: 'F', title: 'Auge', params: [
+      { k: 'F1', id: 'eye', label: 'Auge', t: 'bool', def: true },
+      { k: 'F2', id: 'eyeS', label: 'Höhe am Körper', min: 0, max: 1, step: 0.01, def: 0.8, rnd: [0.55, 0.92] },
+      { k: 'F3', id: 'eyeA', label: 'Lage rundum', min: -180, max: 180, step: 1, def: 15, unit: '°', rnd: [-50, 50] },
+      { k: 'F4', id: 'eyeSize', label: 'Größe', min: 0.03, max: 0.6, step: 0.005, def: 0.2, rnd: [0.1, 0.3] },
+      { k: 'F5', id: 'lid', label: 'Oberlid', min: 0, max: 1, step: 0.01, def: 0.32, rnd: [0, 0.55] },
+      { k: 'F6', id: 'lidTilt', label: 'Lid-Neigung', min: -45, max: 45, step: 1, def: 12, unit: '°', rnd: [-20, 25] },
+      { k: 'F7', id: 'pupil', label: 'Pupille', min: 0.05, max: 0.9, step: 0.01, def: 0.38, rnd: [0.2, 0.5] },
+      { k: 'F8', id: 'pupilX', label: 'Pupille X', min: -1, max: 1, step: 0.01, def: 0.15, rnd: [-0.5, 0.5] },
+      { k: 'F9', id: 'pupilY', label: 'Pupille Y', min: -1, max: 1, step: 0.01, def: 0.1 },
+      { k: 'F10', id: 'eyePersp', label: 'Perspektive', min: 0, max: 1, step: 0.01, def: 0.5, hint: '0 flacher Kreis · 1 folgt der Oberfläche' },
+      { k: 'F11', id: 'eyeLineW', label: 'Linien-Stärke', min: 0, max: 30, step: 0.5, def: 9 },
+      { k: 'F12', id: 'eyeClip', label: 'Am Umriss schneiden', t: 'bool', def: true },
+    ] },
+    { key: 'G', title: 'Muster', params: [
+      { k: 'G1', id: 'pattern', label: 'Muster', t: 'bool', def: false },
+      { k: 'G2', id: 'patRings', label: 'Querteilung', t: 'int', min: 0, max: 12, step: 1, def: 2, rnd: [1, 3] },
+      { k: 'G3', id: 'patMer', label: 'Längsteilung', t: 'int', min: 0, max: 16, step: 1, def: 4, rnd: [3, 5] },
+      { k: 'G4', id: 'patDiag', label: 'Diagonalen', min: 0, max: 1, step: 0.01, def: 0.15, rnd: [0, 0.3], hint: 'Anteil der Felder mit Diagonale (Rauten)' },
+      { k: 'G5', id: 'patKeep', label: 'Abdeckung', min: 0, max: 1, step: 0.01, def: 0.6, rnd: [0.4, 0.75], hint: 'weniger = größere, zusammengelegte Felder' },
+      { k: 'G6', id: 'patJitter', label: 'Unregelmäßig', min: 0, max: 1, step: 0.01, def: 0.2, rnd: [0, 0.3] },
+      { k: 'G12', id: 'patMax', label: 'Max. Linien', t: 'int', min: 1, max: 40, step: 1, def: 8, hint: 'die längsten Linien gewinnen' },
+      { k: 'G13', id: 'patGap', label: 'Mindestabstand', min: 8, max: 120, step: 1, def: 34, hint: 'parallele Linien, die näher liegen, fallen weg' },
+      { k: 'G7', id: 'patFrom', label: 'Bereich von', min: 0, max: 1, step: 0.01, def: 0.1 },
+      { k: 'G8', id: 'patTo', label: 'Bereich bis', min: 0, max: 1, step: 0.01, def: 0.9 },
+      { k: 'G9', id: 'patRot', label: 'Versatz rundum', min: -180, max: 180, step: 1, def: 0, unit: '°' },
+      { k: 'G10', id: 'patW', label: 'Linienstärke', min: 0, max: 40, step: 0.5, def: 9 },
+      { k: 'G11', id: 'patSeed', label: 'Muster-Seed', t: 'int', min: 0, max: 999, step: 1, def: 1 },
+    ] },
+    { key: 'H', title: 'Farbe', params: [
+      { k: 'H1', id: 'cBody', label: 'Körper', t: 'color', def: '#62b04a' },
+      { k: 'H2', id: 'cBg', label: 'Hintergrund', t: 'color', def: '#b5c7dd' },
+      { k: 'H3', id: 'cLine', label: 'Linie', t: 'color', def: '#161616' },
+      { k: 'H4', id: 'cEye', label: 'Augenweiß', t: 'color', def: '#ffffff' },
+    ] },
+  ];
+  static BASIC = new Set(['A1', 'A2', 'A3', 'A4', 'A7', 'A9', 'A10', 'B1', 'B2', 'B4', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'E1', 'E2', 'E3', 'E4', 'E6', 'E9', 'E13', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'G1', 'G2', 'G3', 'G4', 'G5', 'G12', 'G13', 'G10', 'G11', 'H1', 'H2']);
+
+  static MODELS = [
+    { id: 'bohne', name: 'Bohne', p: {} },
+    { id: 'kokon', name: 'Kokon', p: { length: 2.7, rTop: 0.42, rBot: 0.72, waist: -0.12, waistPos: 0.4, depth: 0.75, sqExp: 1.35, asym: 0.25, capTop: 0.95, capBot: 0.3, capLen: 1.2, bend: 0.55, bendPos: 0.62, bendWidth: 0.3, bendZ: 0.2, twist: 20, segL: 7, segR: 6, flat: true, yaw: 30, pitch: 10, roll: 20, zoom: 1.75, panX: 0.05, panY: -0.3, fov: 35, lineW: 14, innerW: 11, simplify: 2, round: 1, ring: true, ringPos: 0.35, ringTilt: 0.08, meridian: true, meridianA: 25, meridianFrom: 0.1, meridianTo: 0.95, eyeS: 0.8, eyeA: -20, eyeSize: 0.19, lid: 0.38, lidTilt: -10, pupil: 0.4, pupilX: 0.2, pupilY: -0.1, ring: false, meridian: false, pattern: true, patRings: 2, patMer: 4, patDiag: 0.35, patKeep: 0.75, patJitter: 0.3, patFrom: 0.12, patTo: 0.92, patW: 11, patSeed: 4, patMax: 10 } },
+    { id: 'tropfen', name: 'Tropfen', p: { length: 2.0, rTop: 0.22, rBot: 0.82, waist: 0, depth: 1, capTop: 1.25, capBot: 0.45, capLen: 1.5, bend: 0.18, bendPos: 0.7, meridian: false, ring: true, ringPos: 0.3, ringTilt: 0.04, eyeS: 0.55, eyeA: 0, eyeSize: 0.22, lid: 0.15, roll: 0, cBody: '#4d97d1', cBg: '#efe3c4' } },
+    { id: 'raupe', name: 'Raupe', p: { length: 3.3, rTop: 0.4, rBot: 0.38, waist: 0, depth: 0.9, sqExp: 2.2, capTop: 0.45, capBot: 0.55, capLen: 0.9, bend: 0.1, sCurve: 0.55, ribs: 0.18, ribN: 6, segL: 96, segR: 40, meridian: false, eyeS: 0.9, eyeA: 20, eyeSize: 0.14, zoom: 0.9, roll: 0, cBody: '#e2b53a', cBg: '#c9d7c0' } },
+    { id: 'kiesel', name: 'Kiesel', p: { length: 1.5, rTop: 0.78, rBot: 0.82, waist: 0, depth: 0.6, sqExp: 2.6, capTop: 0.35, capBot: 0.35, capLen: 0.9, bend: 0.12, noise: 0.1, noiseScale: 2.5, seed: 3, segL: 48, segR: 40, pitch: 20, roll: -6, zoom: 1.15, meridianA: -20, meridianFrom: 0.05, meridianTo: 0.95, eyeS: 0.68, eyeA: -15, eyeSize: 0.2, lid: 0.5, lidTilt: 0, cBody: '#9a8fc9', cBg: '#f0d9cf' } },
+    { id: 'horn', name: 'Horn', p: { length: 3.0, rTop: 0.08, rBot: 0.66, waist: 0, capTop: 1.2, capBot: 0.4, bend: 0.72, bendPos: 0.6, bendWidth: 0.55, bendZ: 0.3, meridianA: -50, meridianFrom: 0.05, meridianTo: 0.85, eyeS: 0.3, eyeA: 20, eyeSize: 0.2, roll: 0, yaw: 15, cBody: '#d8664a', cBg: '#e9e4da' } },
+    { id: 'kristall', name: 'Kristall', p: { length: 2.1, rTop: 0.5, rBot: 0.6, waist: 0.05, depth: 0.9, capTop: 0.6, capBot: 0.6, capLen: 1.1, bend: -0.25, segL: 4, segR: 5, flat: true, simplify: 1, round: 0, joinRound: false, meridianA: 0, meridianFrom: 0, meridianTo: 1, eyeS: 0.66, eyeA: 10, eyeSize: 0.17, yaw: 12, roll: -8, cBody: '#3fb3a6', cBg: '#f2f0e8' } },
+  ];
+
+  static defs() { return Component.GROUPS.flatMap(g => g.params); }
+  static defaults() { const d = {}; for (const p of Component.defs()) d[p.id] = p.def; return d; }
+  static preset(id) { const m = Component.MODELS.find(x => x.id === id) || Component.MODELS[0]; return { ...Component.defaults(), ...m.p }; }
+
+  state = (() => {
+    let snaps = [];
+    try { snaps = JSON.parse(localStorage.getItem('formgen.snaps.v1') || '[]') || []; } catch (e) {}
+    let liked = [];
+    try { liked = JSON.parse(localStorage.getItem('formgen.liked.v1') || '[]') || []; } catch (e) {}
+    let ui = {};
+    try { ui = JSON.parse(localStorage.getItem('formgen.ui.v1') || '{}') || {}; } catch (e) {}
+    const base = { view: ui.view || 'create', name: ui.name || '', gSort: 'new', gItems: [], gLoading: false, gError: '', shareMsg: '', liked, model: 'bohne', target: 'kokon', morph: 0, params: Component.preset('bohne'), wire: false, lines3d: true, collapsed: {}, copied: false, ready: false, error: '', basicOnly: true, snaps, snapsCopied: false };
+    try {
+      const s = JSON.parse(localStorage.getItem('formgen.v1') || 'null');
+      if (s && s.params) return { ...base, model: s.model || 'bohne', target: s.target || 'kokon', morph: s.morph || 0, params: { ...Component.defaults(), ...s.params }, wire: !!s.wire, lines3d: s.lines3d !== false, collapsed: s.collapsed || {}, basicOnly: s.basicOnly !== false };
+    } catch (e) {}
+    return base;
+  })();
+  canvasRef = React.createRef();
+  svgRef = React.createRef();
+  svgRef2 = React.createRef();
+  componentDidUpdate(_, prev) {
+    if (prev && prev.view !== this.state.view && this.lastSvg) {
+      if (this.svgRef2.current) this.svgRef2.current.innerHTML = this.lastSvg;
+      if (this.svgRef.current) this.svgRef.current.innerHTML = this.lastSvg;
+    }
+  }
+
+  static GEN_VERSION = 1;
+  api() { return String(window.FORMGEN_API || '').trim().replace(/\/+$/, ''); }
+  async apiCall(path, opt) {
+    const r = await fetch(this.api() + path, opt);
+    let j = {}; try { j = await r.json(); } catch (e) {}
+    if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+    return j;
+  }
+  share = async () => {
+    if (!this.api()) { this.flashShare('Nicht verbunden (config.js)'); return; }
+    this.setState({ shareMsg: 'Wird geteilt …' });
+    try {
+      const j = await this.apiCall('/api/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: this.state.model, name: (this.state.name || '').trim().slice(0, 40), version: Component.GEN_VERSION, params: this.state.params }) });
+      this.flashShare('Geteilt als #' + j.id);
+      this.loadGallery('new');
+    } catch (e) { this.flashShare('Fehler: ' + e.message); }
+  };
+  flashShare(msg) { this.setState({ shareMsg: msg }); clearTimeout(this.shareT); this.shareT = setTimeout(() => this.setState({ shareMsg: '' }), 4000); }
+  loadGallery = async (sort) => {
+    if (!this.api()) return;
+    sort = typeof sort === 'string' ? sort : this.state.gSort;
+    this.setState({ gSort: sort, gLoading: true, gError: '' });
+    try {
+      const j = await this.apiCall(`/api/list?sort=${sort}&limit=36`);
+      const items = j.items.map(it => ({ ...it, svg: '' }));
+      this.setState({ gItems: items, gLoading: false });
+      this.renderThumbs(items);
+    } catch (e) { this.setState({ gLoading: false, gError: e.message }); }
+  };
+  async renderThumbs(items) {
+    const token = (this.thumbToken = (this.thumbToken || 0) + 1);
+    while (!this.engine) { await new Promise(r => setTimeout(r, 200)); if (this.dead) return; }
+    for (const it of items) {
+      if (token !== this.thumbToken || this.dead) return;
+      try { it.svg = this.engine.update({ ...Component.defaults(), ...it.params }, {}).svg; } catch (e) {}
+      await new Promise(r => setTimeout(r, 0));
+    }
+    this.setState({ gItems: [...items] });
+    this.schedule();
+  }
+  like = async (id) => {
+    if (this.state.liked.includes(id)) return;
+    const liked = [...this.state.liked, id];
+    this.setState({ liked });
+    try { localStorage.setItem('formgen.liked.v1', JSON.stringify(liked)); } catch (e) {}
+    try {
+      const j = await this.apiCall('/api/like/' + id, { method: 'POST' });
+      this.setState(s => ({ gItems: s.gItems.map(it => it.id === id ? { ...it, likes: j.likes } : it) }));
+    } catch (e) {}
+  };
+
+  componentDidMount() {
+    window.__formgen = this;
+    this.loadGallery('new');
+    const url = new URL('./linegen.js', document.baseURI).href;
+    import(url).then(mod => {
+      if (this.dead) return;
+      this.engine = mod.createEngine(this.canvasRef.current);
+      const box = this.canvasRef.current.parentElement;
+      this.ro = new ResizeObserver(() => { this.engine.resize(box.clientWidth, box.clientHeight); this.schedule(); });
+      this.ro.observe(box);
+      this.engine.resize(box.clientWidth, box.clientHeight);
+      this.setState({ ready: true });
+      this.schedule();
+    }).catch(err => this.setState({ error: String(err && err.message || err) }));
+    const c = this.canvasRef.current;
+    c.addEventListener('pointerdown', e => { this.drag = { x: e.clientX, y: e.clientY, yaw: this.state.params.yaw, pitch: this.state.params.pitch }; c.setPointerCapture(e.pointerId); c.style.cursor = 'grabbing'; });
+    c.addEventListener('pointermove', e => {
+      if (!this.drag) return;
+      const d = this.drag, yaw = ((d.yaw + (e.clientX - d.x) * 0.5 + 180) % 360 + 360) % 360 - 180;
+      const pitch = Math.max(-80, Math.min(80, d.pitch + (e.clientY - d.y) * 0.4));
+      this.setState(s => ({ params: { ...s.params, yaw: Math.round(yaw), pitch: Math.round(pitch) } }));
+    });
+    const end = () => { this.drag = null; c.style.cursor = 'grab'; };
+    c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+  }
+  componentWillUnmount() { this.dead = true; cancelAnimationFrame(this.raf); this.ro && this.ro.disconnect(); this.engine && this.engine.dispose(); }
+  afterRender() {
+    const s = this.state, key = [s.params, s.wire, s.lines3d];
+    const prev = this.lastKey;
+    if (!prev || prev[0] !== key[0] || prev[1] !== key[1] || prev[2] !== key[2]) { this.lastKey = key; this.schedule(); }
+    clearTimeout(this.saveT);
+    this.saveT = setTimeout(() => {
+      try { localStorage.setItem('formgen.ui.v1', JSON.stringify({ view: s.view, name: s.name })); } catch (e) {}
+      try { localStorage.setItem('formgen.v1', JSON.stringify({ model: s.model, target: s.target, morph: s.morph, params: s.params, wire: s.wire, lines3d: s.lines3d, collapsed: s.collapsed, basicOnly: s.basicOnly })); } catch (e) {}
+    }, 300);
+  }
+  schedule() {
+    if (!this.engine) { this.lastKey = null; return; }
+    if (this.raf) return;
+    const run = () => {
+      if (!this.raf) return;
+      cancelAnimationFrame(this.raf); clearTimeout(this.rafT);
+      this.raf = 0;
+      try {
+        const out = this.engine.update(this.state.params, { wire: this.state.wire, lines3d: this.state.lines3d });
+        this.lastSvg = out.svg;
+        if (this.svgRef.current) this.svgRef.current.innerHTML = out.svg;
+        if (this.svgRef2.current) this.svgRef2.current.innerHTML = out.svg;
+      } catch (e) { console.error(e); }
+    };
+    this.raf = requestAnimationFrame(run);
+    this.rafT = setTimeout(run, 80);
+  }
+
+  mixHex(a, b, t) {
+    const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+    const ch = sh => Math.round(((pa >> sh) & 255) + (((pb >> sh) & 255) - ((pa >> sh) & 255)) * t);
+    return '#' + ((1 << 24) | (ch(16) << 16) | (ch(8) << 8) | ch(0)).toString(16).slice(1);
+  }
+  blend(a, b, t) {
+    const out = {};
+    for (const d of Component.defs()) {
+      const x = a[d.id], y = b[d.id];
+      if (d.t === 'bool') out[d.id] = t < 0.5 ? x : y;
+      else if (d.t === 'color') out[d.id] = this.mixHex(x, y, t);
+      else { let v = x + (y - x) * t; if (d.t === 'int') v = Math.round(v); out[d.id] = v; }
+    }
+    return out;
+  }
+  fmt(d, v) {
+    if (d.t === 'bool') return v ? 'an' : 'aus';
+    if (d.t === 'color') return String(v).toUpperCase();
+    const dec = Math.max(0, -Math.floor(Math.log10(d.step) + 1e-9));
+    return Number(v).toFixed(dec) + (d.unit || '');
+  }
+  setParam(id, v) { this.setState(s => ({ params: { ...s.params, [id]: v } })); }
+
+  static NAME_A = ['Knautsch', 'Schnodder', 'Wackel', 'Grummel', 'Knubbel', 'Schlabber', 'Muffel', 'Brummel', 'Schnarch', 'Quabbel', 'Wabbel', 'Krümel', 'Schlonz', 'Pupsi', 'Mampf', 'Glibber', 'Schnuffel', 'Plüsch', 'Zappel', 'Moppel', 'Schwabbel', 'Knurps', 'Flausch', 'Bröckel', 'Schmatz'];
+  static NAME_B = ['bert', 'horst', 'gurke', 'wurm', 'olf', 'inator', 'mops', 'fritz', 'bohne', 'zwerg', 'knödel', 'wutz', 'heinz', 'socke', 'brezel', 'lord', 'nudel', 'kloß', 'hase', 'dieter'];
+  static NAME_C = ['der Dritte', 'von Matsch', 'der Unbeugsame', 'aus dem Keller', 'der Verwirrte', 'Junior', 'der Große', 'von Hinten', 'der Schüchterne', 'mit Hut', 'der Weise', 'aus Versehen', 'der Letzte', 'der Ungekämmte', 'von Gurkenstein', 'der Erstaunte'];
+  randomName() {
+    const pick = a => a[Math.floor(Math.random() * a.length)];
+    const first = pick(Component.NAME_A) + pick(Component.NAME_B);
+    return Math.random() < 0.65 ? `${first} ${pick(Component.NAME_C)}` : first;
+  }
+  roll = () => this.setState(s => ({ params: this.randomParams(Component.preset(s.model)), morph: 0, name: this.randomName(), shareMsg: '' }));
+  randomize = () => this.setState(s => ({ params: this.randomParams(s.params), morph: 0 }));
+  randomParams(src) {
+    const p = { ...src };
+    for (const d of Component.defs()) {
+      if (!d.rnd) continue;
+      let v = d.rnd[0] + Math.random() * (d.rnd[1] - d.rnd[0]);
+      v = Math.round(v / d.step) * d.step;
+      p[d.id] = d.t === 'int' ? Math.round(v) : +v.toFixed(4);
+    }
+    p.patSeed = Math.floor(Math.random() * 1000);
+    if (Math.random() < 0.2) { p.segL = 5 + Math.floor(Math.random() * 6); p.segR = 5 + Math.floor(Math.random() * 4); p.flat = true; }
+    else { p.segL = 64; p.segR = 48; p.flat = false; }
+    return p;
+  }
+  reset = () => this.setState(s => ({ params: Component.preset(s.model), morph: 0 }));
+  copyValues = () => {
+    const s = this.state, p = s.params, M = Component.MODELS;
+    const name = id => (M.find(m => m.id === id) || M[0]).name;
+    const lines = [`Formgenerator · Modell: ${name(s.model)} · Morph → ${name(s.target)} ${s.morph.toFixed(2)}`];
+    for (const g of Component.GROUPS) lines.push(`${g.key} ${g.title}: ` + g.params.map(d => `${d.k} ${d.label} ${this.fmt(d, p[d.id])}`).join(' · '));
+    lines.push('JSON: ' + JSON.stringify(p));
+    const text = lines.join('\n');
+    const done = () => { this.setState({ copied: true }); clearTimeout(this.copyT); this.copyT = setTimeout(() => this.setState({ copied: false }), 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => this.fallbackCopy(text, done));
+    else this.fallbackCopy(text, done);
+  };
+  fallbackCopy(text, done) {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    ta.remove();
+  }
+  diffText(p, model) {
+    const ref = Component.preset(model), out = [];
+    for (const d of Component.defs()) {
+      const a = p[d.id], b = ref[d.id];
+      const ch = d.t === 'bool' || d.t === 'color' ? a !== b : Math.abs(a - b) > d.step / 2;
+      if (ch) out.push(`${d.k} ${this.fmt(d, a)}`);
+    }
+    return out.length ? out.join(' · ') : 'keine';
+  }
+  saveSnaps(snaps) {
+    this.setState({ snaps });
+    try { localStorage.setItem('formgen.snaps.v1', JSON.stringify(snaps)); } catch (e) { console.warn('Sammlung zu groß für Speicher', e); }
+  }
+  snapshot(kind) {
+    if (!this.lastSvg) return;
+    const s = this.state, id = Date.now();
+    const n = (s.snaps.reduce((m, x) => Math.max(m, x.n || 0), 0)) + 1;
+    const list = [{ id, n, kind, note: '', model: s.model, params: { ...s.params }, svg: this.lastSvg }, ...s.snaps].slice(0, 600);
+    this.saveSnaps(list.map((x, i) => i < 40 ? x : { ...x, svg: '' }));
+  }
+  copySnaps = () => {
+    const s = this.state, M = Component.MODELS;
+    const name = id => (M.find(m => m.id === id) || M[0]).name;
+    const lines = [`Formgenerator · Sammlung (${s.snaps.length})`];
+    for (const x of [...s.snaps].reverse()) {
+      lines.push('', `#${x.n} ${x.kind === 'bug' ? 'BUG' : 'GUT'} · Modell ${name(x.model)} · Notiz: ${x.note || '–'}`);
+      lines.push('Abweichungen vom Modell: ' + this.diffText(x.params, x.model));
+      lines.push('JSON: ' + JSON.stringify(x.params));
+    }
+    const text = lines.join('\n');
+    const done = () => { this.setState({ snapsCopied: true }); clearTimeout(this.copyT2); this.copyT2 = setTimeout(() => this.setState({ snapsCopied: false }), 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => this.fallbackCopy(text, done));
+    else this.fallbackCopy(text, done);
+  };
+  downloadSvg = () => {
+    if (!this.lastSvg) return;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([this.lastSvg], { type: 'image/svg+xml' }));
+    a.download = `form-${this.state.model}.svg`; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+
+  renderVals() {
+    this.afterRender();
+    const s = this.state, p = s.params, M = Component.MODELS;
+    const ref = s.morph > 0 ? this.blend(Component.preset(s.model), Component.preset(s.target), s.morph) : Component.preset(s.model);
+    const changed = (d, v) => d.t === 'bool' || d.t === 'color' ? v !== ref[d.id] : Math.abs(v - ref[d.id]) > d.step / 2;
+    const groups = Component.GROUPS.map(g => {
+      const open = !s.collapsed[g.key];
+      return {
+        key: g.key, title: g.title, open, sign: open ? '–' : '+',
+        toggle: () => this.setState(st => ({ collapsed: { ...st.collapsed, [g.key]: !st.collapsed[g.key] } })),
+        rows: g.params.filter(d => !s.basicOnly || Component.BASIC.has(d.k)).map(d => {
+          const v = p[d.id];
+          return {
+            code: d.k, label: d.label, hint: d.hint || '',
+            onReset: () => this.setParam(d.id, ref[d.id]),
+            isRange: !d.t || d.t === 'int', isBool: d.t === 'bool', isColor: d.t === 'color',
+            min: d.min, max: d.max, step: d.step, value: v, checked: !!v,
+            display: this.fmt(d, v),
+            valueColor: changed(d, v) ? 'var(--color-accent-700)' : 'var(--color-text)',
+            onChange: e => this.setParam(d.id, d.t === 'bool' ? e.target.checked : d.t === 'color' ? e.target.value : parseFloat(e.target.value)),
+          };
+        }),
+      };
+    });
+    const nameOf = id => (M.find(m => m.id === id) || M[0]).name;
+    return {
+      models: M.map(m => ({ id: m.id, name: m.name, cls: m.id === s.model ? 'btn btn-primary' : 'btn btn-secondary', pick: () => this.setState({ model: m.id, morph: 0, params: Component.preset(m.id) }),
+        pickRoll: () => this.setState({ model: m.id, morph: 0, params: this.randomParams(Component.preset(m.id)), name: this.randomName(), shareMsg: '' }) })),
+      isSimple: s.view !== 'dev', isCreate: s.view === 'create', isGallery: s.view === 'gallery',
+      devDisplay: s.view === 'dev' ? 'flex' : 'none',
+      tabCreateCls: s.view === 'create' ? 'btn btn-primary' : 'btn btn-secondary',
+      tabGalleryCls: s.view === 'gallery' ? 'btn btn-primary' : 'btn btn-secondary',
+      goCreate: () => this.setState({ view: 'create' }),
+      goGallery: () => { this.setState({ view: 'gallery' }); this.loadGallery(); },
+      goDev: () => this.setState({ view: 'dev' }),
+      name: s.name, nameShown: s.name.trim() || 'Namenlos',
+      onName: e => this.setState({ name: e.target.value.slice(0, 40) }),
+      rollName: () => this.setState({ name: this.randomName() }),
+      roll: this.roll, svgRef2: this.svgRef2,
+      modelName: nameOf(s.model),
+      target: s.target,
+      onTarget: e => { const id = e.target.value; this.setState(st => ({ target: id, params: st.morph > 0 ? this.blend(Component.preset(st.model), Component.preset(id), st.morph) : st.params })); },
+      morph: s.morph,
+      morphText: s.morph.toFixed(2),
+      morphLabel: `${nameOf(s.model)} → ${nameOf(s.target)}`,
+      onMorph: e => { const t = parseFloat(e.target.value); this.setState(st => ({ morph: t, params: this.blend(Component.preset(st.model), Component.preset(st.target), t) })); },
+      groups,
+      valueLines: Component.GROUPS.map(g => ({ title: `${g.key} ${g.title}`, text: g.params.map(d => `${d.k} ${this.fmt(d, p[d.id])}`).join('  ·  ') })),
+      modelLine: `Modell ${nameOf(s.model)} · Morph → ${nameOf(s.target)} ${s.morph.toFixed(2)}`,
+      randomize: this.randomize, reset: this.reset, copyValues: this.copyValues, downloadSvg: this.downloadSvg,
+      copyLabel: s.copied ? 'Kopiert' : 'Werte kopieren',
+      wire: s.wire, lines3d: s.lines3d,
+      onWire: e => this.setState({ wire: e.target.checked }),
+      onLines3d: e => this.setState({ lines3d: e.target.checked }),
+      canvasRef: this.canvasRef, svgRef: this.svgRef,
+      loading: !s.ready, loadingText: s.error ? 'Fehler: ' + s.error : '3D-Engine lädt …',
+      apiOff: !this.api(),
+      share: this.share, shareLabel: s.shareMsg || 'In Galerie teilen',
+      gNewCls: s.gSort === 'new' ? 'btn btn-primary' : 'btn btn-secondary',
+      gTopCls: s.gSort === 'top' ? 'btn btn-primary' : 'btn btn-secondary',
+      showNew: () => this.loadGallery('new'), showTop: () => this.loadGallery('top'), reloadGallery: () => this.loadGallery(),
+      gStatus: !this.api() ? 'nicht verbunden' : s.gLoading ? 'lädt …' : s.gError ? 'Fehler: ' + s.gError : `${s.gItems.length} Einträge`,
+      gItems: s.gItems.map(it => {
+        const isLiked = s.liked.includes(it.id);
+        return {
+          bg: it.svg ? `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(it.svg)}")` : 'none',
+          title: it.name || `Namenlos #${it.id}`,
+          sub: `${nameOf(it.model)} · #${it.id}`,
+          open: () => this.setState({ view: s.view === 'dev' ? 'dev' : 'create', name: it.name || '', model: M.some(m => m.id === it.model) ? it.model : 'bohne', morph: 0, params: { ...Component.defaults(), ...it.params } }),
+          likeCls: isLiked ? 'btn btn-primary' : 'btn btn-secondary',
+          likeLabel: `${isLiked ? 'Gefällt dir' : 'Gefällt mir'} · ${it.likes}`,
+          like: () => this.like(it.id),
+          load: () => this.setState({ model: M.some(m => m.id === it.model) ? it.model : 'bohne', morph: 0, params: { ...Component.defaults(), ...it.params } }),
+        };
+      }),
+      basicCls: s.basicOnly ? 'btn btn-primary' : 'btn btn-secondary',
+      allCls: s.basicOnly ? 'btn btn-secondary' : 'btn btn-primary',
+      showBasic: () => this.setState({ basicOnly: true }),
+      showAll: () => this.setState({ basicOnly: false }),
+      pattern: !!p.pattern, onPattern: e => this.setParam('pattern', e.target.checked),
+      contour: !!p.contour, onContour: e => this.setParam('contour', e.target.checked),
+      markGood: () => this.snapshot('gut'), markBug: () => this.snapshot('bug'),
+      hasSnaps: s.snaps.length > 0,
+      snapCount: `${s.snaps.length} Bilder · ${s.snaps.filter(x => x.kind === 'bug').length} Bugs`,
+      copySnaps: this.copySnaps, copySnapsLabel: s.snapsCopied ? 'Kopiert' : 'Sammlung kopieren',
+      clearSnaps: () => { if (confirm('Sammlung wirklich leeren?')) this.saveSnaps([]); },
+      snaps: s.snaps.map(x => ({
+        bg: `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(x.svg || '')}")`,
+        tag: x.kind === 'bug' ? 'Bug' : 'Gut',
+        tagCls: x.kind === 'bug' ? 'tag tag-accent' : 'tag tag-neutral',
+        title: `#${x.n} · ${nameOf(x.model)}`,
+        note: x.note || '',
+        onNote: e => { const v = e.target.value; this.saveSnaps(this.state.snaps.map(y => y.id === x.id ? { ...y, note: v } : y)); },
+        load: () => this.setState({ model: x.model, morph: 0, params: { ...Component.defaults(), ...x.params } }),
+        remove: () => this.saveSnaps(this.state.snaps.filter(y => y.id !== x.id)),
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>
