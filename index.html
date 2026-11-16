@@ -704,7 +704,7 @@ class Component extends DCLogic {
       gItems: s.gItems.map(it => {
         const isLiked = s.liked.includes(it.id);
         return {
-          bg: it.svg ? `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(it.svg)}")` : 'none',
+          bg: it.svg ? `url("data:image/svg+xml,${encodeURIComponent(it.svg)}")` : 'none',
           title: it.name || `Namenlos #${it.id}`,
           sub: `${nameOf(it.model)} · #${it.id}`,
           open: () => this.setState({ view: s.view === 'dev' ? 'dev' : 'create', name: it.name || '', model: M.some(m => m.id === it.model) ? it.model : 'bohne', morph: 0, params: { ...Component.defaults(), ...it.params } }),
@@ -726,7 +726,7 @@ class Component extends DCLogic {
       copySnaps: this.copySnaps, copySnapsLabel: s.snapsCopied ? 'Kopiert' : 'Sammlung kopieren',
       clearSnaps: () => { if (confirm('Sammlung wirklich leeren?')) this.saveSnaps([]); },
       snaps: s.snaps.map(x => ({
-        bg: `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(x.svg || '')}")`,
+        bg: `url("data:image/svg+xml,${encodeURIComponent(x.svg || '')}")`,
         tag: x.kind === 'bug' ? 'Bug' : 'Gut',
         tagCls: x.kind === 'bug' ? 'tag tag-accent' : 'tag tag-neutral',
         title: `#${x.n} · ${nameOf(x.model)}`,
