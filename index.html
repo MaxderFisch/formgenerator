@@ -19,6 +19,87 @@
   </style>
 </helmet>
 <div style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)">
+  <sc-if value="{{ isTest }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);padding:var(--space-2) var(--space-6);background:var(--color-accent-100);border-bottom:2px solid var(--color-accent);font-size:13px">
+      <strong style="color:var(--color-accent-800)">Testmodus</strong>
+      <span style="color:var(--color-neutral-800);flex:1 1 300px">Spieler, Galerie und Karten liegen nur in diesem Browser. Der echte Server wird nicht berührt.</span>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+        <button class="btn btn-secondary" onClick="{{ testSeed }}" style="padding:4px 10px;font-size:12px">Beispiel-Galerie erzeugen</button>
+        <button class="btn btn-secondary" onClick="{{ tBoost }}" style="padding:4px 10px;font-size:12px">{{ tBoostLabel }}</button>
+        <sc-if value="{{ tNoConfirm }}" hint-placeholder-val="{{ true }}">
+          <button class="btn btn-ghost" onClick="{{ tAskReset }}" style="padding:4px 10px;font-size:12px">Test zurücksetzen</button>
+        </sc-if>
+        <sc-if value="{{ tConfirm }}" hint-placeholder-val="{{ false }}">
+          <button class="btn btn-primary" onClick="{{ testReset }}" style="padding:4px 10px;font-size:12px">Ja, alles löschen (Spieler, Galerie, Karten, Ikonen)</button>
+          <button class="btn btn-ghost" onClick="{{ tCancel }}" style="padding:4px 10px;font-size:12px">Abbrechen</button>
+        </sc-if>
+      </div>
+      <sc-if value="{{ tMsg }}" hint-placeholder-val="{{ false }}">
+        <span style="flex-basis:100%;color:var(--color-accent-800);font-weight:700">{{ tMsg }}</span>
+      </sc-if>
+    </div>
+  </sc-if>
+  <sc-if value="{{ needLogin }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:100;background:var(--color-bg);overflow:auto">
+      <div style="max-width:560px;margin:0 auto;padding:12vh var(--space-6) var(--space-8);display:flex;flex-direction:column;gap:var(--space-6)">
+        <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+          <div style="font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--color-accent-700)">Formgenerator</div>
+          <h1 style="margin:0;font-family:var(--font-heading);font-weight:800;font-size:48px;line-height:1;letter-spacing:-0.02em">Wer spielt?</h1>
+          <p style="margin:0;font-size:15px;line-height:1.5;color:var(--color-neutral-800);text-wrap:pretty">Wähle deinen Namen und gib dein Passwort ein. Zum ersten Mal hier? Dann leg einen neuen Spieler an.</p>
+        </div>
+        <sc-if value="{{ lgLoading }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:14px;color:var(--color-neutral-700)">Spieler werden geladen …</div>
+        </sc-if>
+        <sc-if value="{{ lgHasUsers }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:var(--space-3);border-top:2px solid var(--color-text);padding-top:var(--space-4)">
+            <span style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Spieler</span>
+            <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+              <sc-for list="{{ lgUsers }}" as="u" hint-placeholder-count="0">
+                <button class="{{ u.cls }}" onClick="{{ u.pick }}" style="justify-content:flex-start;padding:8px 14px;font-size:15px">{{ u.name }}</button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ lgShowPin }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-2)">
+                <label style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Passwort für {{ lgSelName }}</label>
+                <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+                  <input class="input" type="password" value="{{ lgPin }}" onChange="{{ onLgPin }}" onKeyDown="{{ lgPinKey }}" style="flex:1 1 200px;font-size:15px">
+                  <button class="btn btn-primary" onClick="{{ lgLogin }}" disabled="{{ lgBusy }}" style="justify-content:flex-start;padding:10px 18px">Einloggen</button>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:var(--space-3);border-top:2px solid var(--color-divider);padding-top:var(--space-4)">
+          <sc-if value="{{ lgNewClosed }}" hint-placeholder-val="{{ false }}">
+            <button class="btn btn-secondary" onClick="{{ lgOpenNew }}" style="align-self:flex-start;justify-content:flex-start">Neuer Spieler</button>
+          </sc-if>
+          <sc-if value="{{ lgNewOpen }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Neuer Spieler</span>
+            <input class="input" value="{{ lgName }}" onChange="{{ onLgName }}" maxlength="24" placeholder="Dein Name, z. B. Max der Fisch" style="font-size:15px">
+            <input class="input" type="password" value="{{ lgPinNew }}" onChange="{{ onLgPinNew }}" onKeyDown="{{ lgNewKey }}" placeholder="Passwort (beliebig lang)" style="font-size:15px">
+            <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+              <button class="btn btn-primary" onClick="{{ lgCreate }}" disabled="{{ lgBusy }}" style="justify-content:flex-start;padding:10px 18px">Spieler anlegen</button>
+              <sc-if value="{{ lgHasUsers }}" hint-placeholder-val="{{ false }}">
+                <button class="btn btn-ghost" onClick="{{ lgCloseNew }}">Abbrechen</button>
+              </sc-if>
+            </div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ lgErr }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:14px;font-weight:700;color:var(--color-accent-700)">{{ lgErr }}</div>
+        </sc-if>
+        <sc-if value="{{ lgOff }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+            <button class="btn btn-secondary" onClick="{{ lgRetry }}">Erneut versuchen</button>
+            <button class="btn btn-ghost" onClick="{{ lgGuest }}">Ohne Anmeldung ansehen</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ lgTest }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:13px;line-height:1.5;color:var(--color-accent-800);background:var(--color-accent-100);border-left:0;padding:var(--space-3);text-wrap:pretty"><strong>Testmodus:</strong> Spieler, Galerie und Karten liegen nur in diesem Browser, der echte Server wird nicht berührt. Nach dem Anmelden kannst du oben eine Beispiel-Galerie mit Testspielern erzeugen.</div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
   <sc-if value="{{ isSimple }}" hint-placeholder-val="{{ true }}">
     <header style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);border-bottom:2px solid var(--color-divider)">
       <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-6)">
@@ -26,9 +107,19 @@
         <nav style="display:flex;gap:var(--space-2)">
           <button class="{{ tabCreateCls }}" onClick="{{ goCreate }}" style="padding:6px 14px">Erstellen</button>
           <button class="{{ tabGalleryCls }}" onClick="{{ goGallery }}" style="padding:6px 14px">Galerie</button>
+          <button class="{{ tabCardsCls }}" onClick="{{ goCards }}" style="padding:6px 14px">Sammelkarten</button>
+          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+            <button class="{{ tabAdminCls }}" onClick="{{ goAdmin }}" style="padding:6px 14px">Admin</button>
+          </sc-if>
         </nav>
       </div>
-      <button class="btn btn-ghost" onClick="{{ goDev }}" style="font-size:13px">Entwicklermodus</button>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3)">
+        <span style="font-size:13px;color:var(--color-neutral-700)">Spieler: <button onClick="{{ openMe }}" style="background:none;border:none;padding:0;font:inherit;font-weight:700;color:var(--color-text);cursor:pointer;text-decoration:underline;text-underline-offset:3px" style-hover="color:var(--color-accent)">{{ userName }}</button></span>
+        <sc-if value="{{ showLogout }}" hint-placeholder-val="{{ true }}">
+          <button class="btn btn-ghost" onClick="{{ logout }}" style="font-size:13px">{{ logoutLabel }}</button>
+        </sc-if>
+        <button class="btn btn-ghost" onClick="{{ goDev }}" style="font-size:13px">Entwicklermodus</button>
+      </div>
     </header>
 
     <sc-if value="{{ isCreate }}" hint-placeholder-val="{{ true }}">
@@ -131,14 +222,324 @@
             <div style="display:flex;flex-direction:column;gap:var(--space-2)">
               <div onClick="{{ it.open }}" style="width:100%;aspect-ratio:3/4;background-image:{{ it.bg }};background-size:cover;background-position:center;background-color:var(--color-surface);cursor:pointer"></div>
               <div style="font-weight:700;font-size:15px;line-height:1.25">{{ it.title }}</div>
-              <div style="font-size:12px;color:var(--color-neutral-700)">{{ it.sub }}</div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;font-size:12px;color:var(--color-neutral-700)">
+                <span>{{ it.sub }}</span>
+                <sc-if value="{{ it.hasOwner }}" hint-placeholder-val="{{ false }}">
+                  <span>·</span>
+                  <button onClick="{{ it.openOwner }}" style="background:none;border:none;padding:0;font:inherit;color:var(--color-neutral-800);cursor:pointer;text-decoration:underline;text-underline-offset:2px" style-hover="color:var(--color-accent)">von {{ it.owner }}</button>
+                </sc-if>
+              </div>
               <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
-                <button class="{{ it.likeCls }}" onClick="{{ it.like }}" style="padding:4px 10px;font-size:12px">{{ it.likeLabel }}</button>
+                <button class="{{ it.likeCls }}" onClick="{{ it.like }}" disabled="{{ it.likeOff }}" style="padding:4px 10px;font-size:12px">{{ it.likeLabel }}</button>
                 <button class="btn btn-secondary" onClick="{{ it.open }}" style="padding:4px 10px;font-size:12px">Öffnen</button>
               </div>
             </div>
           </sc-for>
         </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isCards }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-6);max-width:1400px;margin:0 auto">
+        <sc-if value="{{ isOwnCards }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--space-3)">
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--space-3)">
+              <div style="font-family:var(--font-heading);font-weight:800;font-size:32px">Meine Sammlung</div>
+              <div style="font-size:13px;color:var(--color-neutral-700)">{{ cStatus }}</div>
+            </div>
+            <div style="display:flex;gap:var(--space-2)">
+              <button class="{{ cNewCls }}" onClick="{{ cShowNew }}" style="padding:6px 12px;font-size:13px">Neueste</button>
+              <button class="{{ cRareCls }}" onClick="{{ cShowRare }}" style="padding:6px 12px;font-size:13px">Seltenste</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-6);border-top:2px solid var(--color-text);border-bottom:2px solid var(--color-divider);padding:var(--space-4) 0">
+            <div style="display:flex;flex-direction:column;gap:6px;min-width:180px">
+              <span style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Verfügbare Likes</span>
+              <span style="font-family:var(--font-heading);font-weight:800;font-size:44px;line-height:1">{{ cAvail }}</span>
+              <span style="font-size:12px;color:var(--color-neutral-700)">{{ cLikeSub }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;flex:0 1 300px;min-width:240px">
+              <button class="btn btn-primary" onClick="{{ drawCard }}" disabled="{{ drawOff }}" style="justify-content:flex-start;padding:14px 16px;font-size:16px;font-weight:700">Karte ziehen · 3 Likes</button>
+              <div style="height:6px;background:var(--color-neutral-300)"><div style="height:100%;width:{{ cProgress }};background:var(--color-accent)"></div></div>
+              <span style="font-size:12px;color:var(--color-neutral-700)">{{ cHint }}</span>
+            </div>
+            <div style="flex:1 1 280px;display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2)">
+              <p style="margin:0;font-size:13px;line-height:1.5;color:var(--color-neutral-800);text-wrap:pretty">{{ cExplain }}</p>
+            </div>
+          </div>
+          <sc-if value="{{ cEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:6px;padding:var(--space-6) 0">
+              <div style="font-family:var(--font-heading);font-weight:800;font-size:22px">Noch keine Karten</div>
+              <div style="font-size:14px;color:var(--color-neutral-700)">Zieh deine erste Karte. Sie kommt zufällig aus dem Pool aller geteilten Wesen.</div>
+            </div>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{ isPlayer }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:var(--space-4)">
+            <button class="btn btn-ghost" onClick="{{ pBack }}" style="align-self:flex-start;font-size:13px;padding:4px 0">← Zurück</button>
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--space-3)">
+              <div style="font-family:var(--font-heading);font-weight:800;font-size:40px;line-height:1">{{ pName }}</div>
+              <div style="font-size:13px;color:var(--color-neutral-700)">{{ pStatus }}</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));border-top:2px solid var(--color-text);border-bottom:2px solid var(--color-divider)">
+              <sc-for list="{{ pStats }}" as="ps" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;gap:4px;padding:var(--space-4) var(--space-4) var(--space-4) 0">
+                  <span style="font-family:var(--font-heading);font-weight:800;font-size:32px;line-height:1">{{ ps.v }}</span>
+                  <span style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--color-neutral-700)">{{ ps.k }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--space-3)">
+              <span style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Sammlung</span>
+              <div style="display:flex;gap:var(--space-2)">
+                <button class="{{ cNewCls }}" onClick="{{ cShowNew }}" style="padding:6px 12px;font-size:13px">Neueste</button>
+                <button class="{{ cRareCls }}" onClick="{{ cShowRare }}" style="padding:6px 12px;font-size:13px">Seltenste</button>
+              </div>
+            </div>
+            <sc-if value="{{ pEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:14px;color:var(--color-neutral-700)">Noch keine Karten gezogen.</div>
+            </sc-if>
+          </div>
+        </sc-if>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:var(--space-6)">
+          <sc-for list="{{ cCards }}" as="t" hint-placeholder-count="0">
+            <div style="display:flex;flex-direction:column;gap:var(--space-2);min-width:0">
+              <div onClick="{{ t.zoom }}" onPointerMove="{{ t.move }}" onPointerLeave="{{ t.leave }}" style="perspective:800px;cursor:zoom-in">
+                  <div style="position:relative;padding:8px;background-image:{{ t.frame }};background-size:220% 220%;background-position:var(--mx,30%) var(--my,30%);outline:2px solid {{ t.edge }};box-shadow:{{ t.shadow }};transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .18s ease-out">
+                    <div style="background:{{ t.panel }};border:2px solid {{ t.edge }};padding:8px;display:flex;flex-direction:column;gap:6px;color:{{ t.ink }}">
+                      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                        <span style="font-family:var(--font-heading);font-weight:800;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ t.title }}</span>
+                        <span style="font-size:11px;font-weight:700;flex:none">{{ t.nr }}</span>
+                      </div>
+                      <div style="position:relative;aspect-ratio:3/4;overflow:hidden;background-color:{{ t.color }};background-image:{{ t.pattern }};background-size:{{ t.patSize }};border:2px solid {{ t.edge }}">
+                        <div style="position:absolute;inset:0;background-image:{{ t.art }};background-size:cover;background-position:center"></div>
+                        <div style="position:absolute;inset:0;background-image:{{ t.foil }};background-size:300% 300%;background-position:var(--mx,30%) var(--my,30%);mix-blend-mode:overlay;opacity:{{ t.foilOp }};pointer-events:none"></div>
+                        <div style="position:absolute;inset:0;background-image:{{ cNoise }};mix-blend-mode:multiply;opacity:.55;pointer-events:none"></div>
+                        <div style="position:absolute;left:6px;top:6px;min-width:36px;padding:3px 5px;background:{{ t.panel }};border:2px solid {{ t.edge }};display:flex;justify-content:center;line-height:1">
+                          <span style="font-family:var(--font-heading);font-weight:800;font-size:22px;letter-spacing:-0.02em;font-variant-numeric:tabular-nums">{{ t.ovr }}</span>
+                        </div>
+                      </div>
+                      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px">
+                        <sc-for list="{{ t.stats }}" as="st" hint-placeholder-count="3">
+                          <div style="display:flex;flex-direction:column;line-height:1.05;min-width:0">
+                            <span style="font-weight:800;font-size:14px;font-variant-numeric:tabular-nums">{{ st.v }}</span>
+                            <span style="font-size:7.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:{{ t.sub }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ st.k }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <div style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:{{ t.sub }}">
+                        <span>{{ t.sorte }}</span>
+                        <div style="height:12px;background-image:{{ t.barcode }};background-size:100% 100%;background-repeat:no-repeat"></div>
+                        <span>{{ t.code }}</span>
+                      </div>
+                    </div>
+                    <div style="position:absolute;inset:0;background-image:{{ t.shine }};background-size:250% 250%;background-position:var(--mx,30%) var(--my,30%);mix-blend-mode:overlay;pointer-events:none"></div>
+                  </div>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;font-size:12px;color:var(--color-neutral-700)">
+                <span>{{ t.meta }}</span>
+                <sc-if value="{{ t.hasOwner }}" hint-placeholder-val="{{ false }}">
+                  <span>·</span>
+                  <button onClick="{{ t.openOwner }}" style="background:none;border:none;padding:0;font:inherit;color:var(--color-neutral-800);cursor:pointer;text-decoration:underline;text-underline-offset:2px" style-hover="color:var(--color-accent)">von {{ t.owner }}</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <sc-if value="{{ revealOn }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ revealClose }}" style="position:fixed;inset:0;z-index:50;background:rgba(32,30,29,.84);display:flex;padding:var(--space-6);overflow:auto">
+          <div ref="{{ fxRef }}" style="position:fixed;inset:0;pointer-events:none;opacity:0"></div>
+          <div onClick="{{ revealStop }}" style="position:relative;z-index:1;margin:auto;display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-4);width:min(330px, 100%, calc((100vh - 260px) * 0.6))">
+            <div ref="{{ raysRef }}" style="position:absolute;left:50%;top:38%;width:1000px;height:1000px;margin:-500px 0 0 -500px;pointer-events:none;opacity:0;z-index:-1;background:repeating-conic-gradient(from 0deg, rgba(255,224,150,.42) 0deg 6deg, rgba(255,224,150,0) 6deg 18deg);-webkit-mask:radial-gradient(circle, #000 0%, transparent 60%);mask:radial-gradient(circle, #000 0%, transparent 60%)"></div>
+            <div ref="{{ boxRef }}" style="perspective:1200px;width:100%">
+              <div ref="{{ flipRef }}" style="position:relative;width:100%;transform-style:preserve-3d;transform:{{ rv.flip }}">
+                <div onPointerMove="{{ rv.move }}" onPointerLeave="{{ rv.leave }}" style="backface-visibility:hidden;-webkit-backface-visibility:hidden;perspective:800px">
+                  <div style="position:relative;padding:8px;background-image:{{ rv.frame }};background-size:220% 220%;background-position:var(--mx,30%) var(--my,30%);outline:2px solid {{ rv.edge }};box-shadow:{{ rv.shadow }};transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .18s ease-out">
+                    <div style="background:{{ rv.panel }};border:2px solid {{ rv.edge }};padding:10px;display:flex;flex-direction:column;gap:7px;color:{{ rv.ink }}">
+                      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                        <span style="font-family:var(--font-heading);font-weight:800;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ rv.title }}</span>
+                        <span style="font-size:12px;font-weight:700;flex:none">{{ rv.nr }}</span>
+                      </div>
+                      <div style="position:relative;aspect-ratio:3/4;overflow:hidden;background-color:{{ rv.color }};background-image:{{ rv.pattern }};background-size:{{ rv.patSize }};border:2px solid {{ rv.edge }}">
+                        <div style="position:absolute;inset:0;background-image:{{ rv.art }};background-size:cover;background-position:center"></div>
+                        <div style="position:absolute;inset:0;background-image:{{ rv.foil }};background-size:300% 300%;background-position:var(--mx,30%) var(--my,30%);mix-blend-mode:overlay;opacity:{{ rv.foilOp }};pointer-events:none"></div>
+                        <div style="position:absolute;inset:0;background-image:{{ cNoise }};mix-blend-mode:multiply;opacity:.55;pointer-events:none"></div>
+                        <div style="position:absolute;left:8px;top:8px;min-width:44px;padding:4px 6px;background:{{ rv.panel }};border:2px solid {{ rv.edge }};display:flex;justify-content:center;line-height:1">
+                          <span style="font-family:var(--font-heading);font-weight:800;font-size:28px;letter-spacing:-0.02em;font-variant-numeric:tabular-nums">{{ rv.ovr }}</span>
+                        </div>
+                      </div>
+                      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px">
+                        <sc-for list="{{ rv.stats }}" as="st" hint-placeholder-count="3">
+                          <div style="display:flex;flex-direction:column;line-height:1.05;min-width:0">
+                            <span style="font-weight:800;font-size:16px;font-variant-numeric:tabular-nums">{{ st.v }}</span>
+                            <span style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:{{ rv.sub }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ st.k }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <div style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:{{ rv.sub }}">
+                        <span>{{ rv.sorte }}</span>
+                        <div style="height:13px;background-image:{{ rv.barcode }};background-size:100% 100%;background-repeat:no-repeat"></div>
+                        <span>{{ rv.code }}</span>
+                      </div>
+                    </div>
+                    <div style="position:absolute;inset:0;background-image:{{ rv.shine }};background-size:250% 250%;background-position:var(--mx,30%) var(--my,30%);mix-blend-mode:overlay;pointer-events:none"></div>
+                  </div>
+                </div>
+                <div style="position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--color-accent);outline:2px solid var(--color-text);padding:8px;box-sizing:border-box;display:flex">
+                  <div style="flex:1;border:2px solid #fff;display:flex;flex-direction:column;justify-content:space-between;padding:18px;color:#fff">
+                    <span style="font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase">Sammelkarte</span>
+                    <div style="display:flex;flex-direction:column;font-family:var(--font-heading);font-weight:800;font-size:40px;line-height:.95;letter-spacing:-.02em">
+                      <span>Form</span>
+                      <span>generator</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <sc-if value="{{ rv.done }}" hint-placeholder-val="{{ false }}">
+              <div style="font-family:var(--font-heading);font-weight:800;font-size:22px;color:#fff">{{ rv.label }}</div>
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3);width:100%;color:#fff;border-top:2px solid rgba(255,255,255,.55);padding-top:var(--space-3)">
+                <sc-for list="{{ rv.statsLong }}" as="sl" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                    <span style="font-family:var(--font-heading);font-weight:800;font-size:24px;line-height:1;font-variant-numeric:tabular-nums">{{ sl.v }}</span>
+                    <span style="font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase">{{ sl.name }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;font-size:13px;color:#fff">
+                <span>{{ rv.metaLong }}</span>
+                <sc-if value="{{ rv.hasOwner }}" hint-placeholder-val="{{ false }}">
+                  <span>·</span>
+                  <button onClick="{{ rv.openOwner }}" style="background:none;border:none;padding:0;font:inherit;color:#fff;cursor:pointer;text-decoration:underline;text-underline-offset:2px" style-hover="color:var(--color-accent)">von {{ rv.owner }}</button>
+                </sc-if>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+                <sc-if value="{{ rv.isDraw }}" hint-placeholder-val="{{ true }}">
+                  <button class="btn btn-primary" onClick="{{ revealClose }}" style="justify-content:flex-start">In die Sammlung</button>
+                  <button class="btn btn-secondary" onClick="{{ again }}" disabled="{{ againOff }}" style="justify-content:flex-start;background:var(--color-bg)">Noch eine ziehen</button>
+                </sc-if>
+                <sc-if value="{{ rv.isView }}" hint-placeholder-val="{{ false }}">
+                  <button class="btn btn-secondary" onClick="{{ revealClose }}" style="justify-content:flex-start;background:var(--color-bg)">Schließen</button>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+          <div ref="{{ flashRef }}" style="position:fixed;inset:0;pointer-events:none;background:#fff;opacity:0;z-index:2"></div>
+        </div>
+      </sc-if>
+    </sc-if>
+    <sc-if value="{{ isAdminView }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-8);max-width:1400px;margin:0 auto">
+        <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+          <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--space-3)">
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--space-3)">
+              <div style="font-family:var(--font-heading);font-weight:800;font-size:32px">Admin</div>
+              <div style="font-size:13px;color:var(--color-neutral-700)">{{ amStatus }}</div>
+            </div>
+            <button class="btn btn-secondary" onClick="{{ amReload }}" style="padding:6px 12px;font-size:13px">Neu laden</button>
+          </div>
+          <sc-if value="{{ amMsg }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:14px;font-weight:700;color:var(--color-accent-700)">{{ amMsg }}</div>
+          </sc-if>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-bottom:2px solid var(--color-text);padding-bottom:var(--space-2)">Spieler</div>
+          <div style="overflow-x:auto">
+            <div style="min-width:1040px;display:flex;flex-direction:column">
+              <div style="display:grid;grid-template-columns:minmax(140px,1.4fr) repeat(6,minmax(96px,.7fr)) minmax(230px,1.6fr);gap:var(--space-3);padding:var(--space-2) 0;font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--color-neutral-700);border-bottom:1px solid var(--color-divider)">
+                <span>Name</span><span>Likes bekommen</span><span>Bonus</span><span>Ausgegeben</span><span>Verfügbar</span><span>Karten</span><span>Wesen</span><span>Likes gutschreiben</span>
+              </div>
+              <sc-for list="{{ amUsers }}" as="u" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:minmax(140px,1.4fr) repeat(6,minmax(96px,.7fr)) minmax(230px,1.6fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;font-size:14px;border-bottom:1px solid var(--color-divider)">
+                  <span style="font-weight:700">{{ u.name }}</span>
+                  <span>{{ u.liked }}</span>
+                  <span>{{ u.bonus }}</span>
+                  <span>{{ u.spent }}</span>
+                  <span style="font-weight:800">{{ u.avail }}</span>
+                  <span>{{ u.cards }}</span>
+                  <span>{{ u.items }}</span>
+                  <div style="display:flex;gap:var(--space-2);align-items:center">
+                    <input class="input" type="number" value="{{ u.amt }}" onChange="{{ u.onAmt }}" style="width:84px;min-height:32px;padding:4px 8px;font-size:13px">
+                    <button class="btn btn-primary" onClick="{{ u.give }}" style="padding:6px 10px;font-size:12px;justify-content:flex-start">Gutschreiben</button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--color-neutral-700)">Eine negative Zahl zieht Bonus-Likes wieder ab.</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-bottom:2px solid var(--color-text);padding-bottom:var(--space-2)">Galerie · normaler Kartenpool ({{ amGalleryN }})</div>
+          <div style="font-size:12px;color:var(--color-neutral-700)">Gelöschte Wesen verschwinden aus Galerie und Kartenpool. Schon gezogene Karten bleiben bei den Spielern.</div>
+          <sc-if value="{{ amGalleryEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13px;color:var(--color-neutral-700)">Leer.</div>
+          </sc-if>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--space-3)">
+          <sc-for list="{{ amGallery }}" as="i" hint-placeholder-count="0">
+            <div style="display:flex;flex-direction:column;gap:var(--space-2);background:var(--color-surface);padding:var(--space-2)">
+              <div style="width:100%;aspect-ratio:3/4;background-image:{{ i.bg }};background-size:cover;background-position:center;background-color:var(--color-bg)"></div>
+              <div style="font-size:13px;font-weight:700;line-height:1.25">{{ i.title }}</div>
+              <div style="font-size:11px;line-height:1.35;color:var(--color-neutral-700)">{{ i.sub }}</div>
+              <div style="font-size:11px;color:var(--color-neutral-700)">{{ i.meta }}</div>
+              <sc-if value="{{ i.notConfirm }}" hint-placeholder-val="{{ true }}">
+                <button class="btn btn-secondary" onClick="{{ i.ask }}" style="padding:4px 10px;font-size:12px;justify-content:flex-start">Löschen</button>
+              </sc-if>
+              <sc-if value="{{ i.confirm }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-wrap:wrap;gap:var(--space-1)">
+                  <button class="btn btn-primary" onClick="{{ i.remove }}" style="padding:4px 10px;font-size:12px;justify-content:flex-start">Wirklich löschen</button>
+                  <button class="btn btn-ghost" onClick="{{ i.cancel }}" style="padding:4px 8px;font-size:12px">Nein</button>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-bottom:2px solid var(--color-text);padding-bottom:var(--space-2)">Ikonen-Pool ({{ amIconsN }})</div>
+          <sc-if value="{{ amIconsEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13px;color:var(--color-neutral-700)">Noch keine Ikonen.</div>
+          </sc-if>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--space-3)">
+          <sc-for list="{{ amIcons }}" as="i" hint-placeholder-count="0">
+            <div style="display:flex;flex-direction:column;gap:var(--space-2);background:var(--color-surface);padding:var(--space-2)">
+              <div style="width:100%;aspect-ratio:3/4;background-image:{{ i.bg }};background-size:cover;background-position:center;background-color:var(--color-bg)"></div>
+              <div style="font-size:13px;font-weight:700;line-height:1.25">{{ i.title }}</div>
+              <div style="font-size:11px;line-height:1.35;color:var(--color-neutral-700)">{{ i.sub }}</div>
+              <div style="font-size:11px;color:var(--color-neutral-700)">{{ i.meta }}</div>
+              <sc-if value="{{ i.notConfirm }}" hint-placeholder-val="{{ true }}">
+                <button class="btn btn-secondary" onClick="{{ i.ask }}" style="padding:4px 10px;font-size:12px;justify-content:flex-start">Löschen</button>
+              </sc-if>
+              <sc-if value="{{ i.confirm }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-wrap:wrap;gap:var(--space-1)">
+                  <button class="btn btn-primary" onClick="{{ i.remove }}" style="padding:4px 10px;font-size:12px;justify-content:flex-start">Wirklich löschen</button>
+                  <button class="btn btn-ghost" onClick="{{ i.cancel }}" style="padding:4px 8px;font-size:12px">Nein</button>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        </div>
+
+        <sc-if value="{{ amHasRemoved }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-bottom:2px solid var(--color-text);padding-bottom:var(--space-2)">Gelöscht ({{ amRemovedN }})</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--space-3)">
+          <sc-for list="{{ amRemoved }}" as="i" hint-placeholder-count="0">
+            <div style="display:flex;flex-direction:column;gap:var(--space-2);background:var(--color-surface);padding:var(--space-2)">
+              <div style="width:100%;aspect-ratio:3/4;background-image:{{ i.bg }};background-size:cover;background-position:center;background-color:var(--color-bg)"></div>
+              <div style="font-size:13px;font-weight:700;line-height:1.25">{{ i.title }}</div>
+              <div style="font-size:11px;line-height:1.35;color:var(--color-neutral-700)">{{ i.sub }}</div>
+              <div style="font-size:11px;color:var(--color-neutral-700)">{{ i.meta }}</div>
+              <button class="btn btn-secondary" onClick="{{ i.restore }}" style="padding:4px 10px;font-size:12px;justify-content:flex-start">Wiederherstellen</button>
+            </div>
+          </sc-for>
+        </div>
+          </div>
+        </sc-if>
       </div>
     </sc-if>
   </sc-if>
@@ -319,7 +720,7 @@
               <div style="width:100%;aspect-ratio:3/4;background-image:{{ it.bg }};background-size:cover;background-position:center;background-color:var(--color-bg)"></div>
               <div style="font-size:12px;font-weight:700">{{ it.title }}</div>
               <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
-                <button class="{{ it.likeCls }}" onClick="{{ it.like }}" style="padding:4px 10px;font-size:12px">{{ it.likeLabel }}</button>
+                <button class="{{ it.likeCls }}" onClick="{{ it.like }}" disabled="{{ it.likeOff }}" style="padding:4px 10px;font-size:12px">{{ it.likeLabel }}</button>
                 <button class="btn btn-secondary" onClick="{{ it.load }}" style="padding:4px 10px;font-size:12px">Laden</button>
               </div>
             </div>
@@ -337,6 +738,28 @@
             <span style="text-wrap:pretty">{{ l.text }}</span>
           </div>
         </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-2);padding:0 var(--space-6) var(--space-6)">
+        <button class="btn btn-secondary" onClick="{{ adToggle }}" style="padding:4px 10px;font-size:12px;justify-content:flex-start">Admin · Ikonen</button>
+        <sc-if value="{{ adOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:var(--space-2);width:min(360px,100%);border-top:2px solid var(--color-text);padding-top:var(--space-3)">
+            <span style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Testphase abschließen</span>
+            <span style="font-size:12px;line-height:1.45;color:var(--color-neutral-700);text-wrap:pretty">Alle Wesen, die gerade in der Galerie sind, werden zu Ikonen. Sie verschwinden aus der Galerie und können nur noch sehr selten als Karte gezogen werden.</span>
+            <input class="input" type="password" value="{{ adKey }}" onChange="{{ onAdKey }}" placeholder="Schlüssel" style="font-size:14px">
+            <sc-if value="{{ adHint }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:11px;color:var(--color-neutral-700)">{{ adHint }}</span>
+            </sc-if>
+            <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+              <button class="btn btn-secondary" onClick="{{ adCheck }}" disabled="{{ adBusy }}" style="justify-content:flex-start">Prüfen</button>
+              <sc-if value="{{ adCanRun }}" hint-placeholder-val="{{ false }}">
+                <button class="btn btn-primary" onClick="{{ adRun }}" disabled="{{ adBusy }}" style="justify-content:flex-start">Jetzt umwandeln</button>
+              </sc-if>
+            </div>
+            <sc-if value="{{ adMsg }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:13px;font-weight:700;color:var(--color-accent-700);text-wrap:pretty">{{ adMsg }}</span>
+            </sc-if>
+          </div>
+        </sc-if>
       </div>
     </main>
   </div>
@@ -499,7 +922,12 @@ class Component extends DCLogic {
     try { ui = JSON.parse(localStorage.getItem('formgen.ui.v1') || '{}') || {}; } catch (e) {}
     const exSaved = { eye: true, eyeCount: 1, mouth: false, hat: false, arms: false, pattern: true, form: 'sorte', sorte: 'zufall', pins: {}, ...(ui.extras || {}) };
     exSaved.eyeCount = exSaved.eyeCount === 2 ? 2 : 1;
-    const base = { hist: Array.isArray(ui.hist) ? ui.hist.slice(-10) : [], extras: exSaved, view: ui.view || 'create', name: ui.name || '', gSort: 'new', gItems: [], gLoading: false, gError: '', shareMsg: '', liked, model: 'raupe', target: 'kokon', morph: 0, params: Component.preset('raupe'), wire: false, lines3d: true, collapsed: {}, copied: false, ready: false, error: '', basicOnly: true, snaps, snapsCopied: false };
+    let auth = {};
+    try { auth = JSON.parse(localStorage.getItem('formgen.auth.v1') || '{}') || {}; } catch (e) {}
+    const base = {
+      user: auth.user || null, token: auth.token || null, authMode: auth.mode || '', srv: 'unknown', guest: false,
+      lgUsers: [], lgSel: null, lgPin: '', lgNew: false, lgName: '', lgPinNew: '', lgErr: '', lgBusy: false, lgLoading: true,
+      player: null, pData: null, pLoading: false, prevView: 'create', adm: null, amLoading: false, amMsg: '', amAmt: {}, amConfirm: null, cards: [], cPool: [], cPoolN: 0, cIconN: 0, adOpen: false, adKey: '', adCount: null, adMsg: '', adBusy: false, tConfirm: false, tMsg: '', cEarned: 0, cSpent: 0, cLoading: false, cDrawing: false, cNote: '', cDemo: false, cSort: 'new', reveal: null, cArtTick: 0, hist: Array.isArray(ui.hist) ? ui.hist.slice(-10) : [], extras: exSaved, view: ui.view || 'create', name: ui.name || '', gSort: 'new', gItems: [], gLoading: false, gError: '', shareMsg: '', liked, model: 'raupe', target: 'kokon', morph: 0, params: Component.preset('raupe'), wire: false, lines3d: true, collapsed: {}, copied: false, ready: false, error: '', basicOnly: true, snaps, snapsCopied: false };
     try {
       const s = JSON.parse(localStorage.getItem('formgen.v1') || 'null');
       if (s && s.params) return { ...base, model: s.model || 'bohne', target: s.target || 'kokon', morph: s.morph || 0, params: { ...Component.defaults(), ...s.params }, wire: !!s.wire, lines3d: s.lines3d !== false, collapsed: s.collapsed || {}, basicOnly: s.basicOnly !== false };
@@ -509,6 +937,7 @@ class Component extends DCLogic {
   canvasRef = React.createRef();
   svgRef = React.createRef();
   svgRef2 = React.createRef();
+  fxRef = React.createRef(); raysRef = React.createRef(); boxRef = React.createRef(); flipRef = React.createRef(); flashRef = React.createRef();
   componentDidUpdate(_, prev) {
     if (prev && prev.view !== this.state.view && this.lastSvg) {
       if (this.svgRef2.current) this.svgRef2.current.innerHTML = this.lastSvg;
@@ -518,14 +947,17 @@ class Component extends DCLogic {
 
   static GEN_VERSION = 1;
   api() { return String(window.FORMGEN_API || '').trim().replace(/\/+$/, ''); }
-  async apiCall(path, opt) {
-    const r = await fetch(this.api() + path, opt);
+  async apiCall(path, opt = {}) {
+    if (this.testMode()) return this.mockApi(path, opt);
+    const headers = { ...(opt.headers || {}) }, t = this.state.token;
+    if (t && this.state.srv === 'v2' && !String(t).startsWith('demo-')) headers['X-Token'] = t;
+    const r = await fetch(this.api() + path, { ...opt, headers });
     let j = {}; try { j = await r.json(); } catch (e) {}
     if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
     return j;
   }
   share = async () => {
-    if (!this.api()) { this.flashShare('Nicht verbunden (config.js)'); return; }
+    if (!this.connected()) { this.flashShare('Nicht verbunden (config.js)'); return; }
     this.setState({ shareMsg: 'Wird geteilt …' });
     try {
       const j = await this.apiCall('/api/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: this.state.model, name: (this.state.name || '').trim().slice(0, 40), version: Component.GEN_VERSION, params: this.state.params }) });
@@ -535,7 +967,7 @@ class Component extends DCLogic {
   };
   flashShare(msg) { this.setState({ shareMsg: msg }); clearTimeout(this.shareT); this.shareT = setTimeout(() => this.setState({ shareMsg: '' }), 4000); }
   loadGallery = async (sort) => {
-    if (!this.api()) return;
+    if (!this.connected()) return;
     sort = typeof sort === 'string' ? sort : this.state.gSort;
     this.setState({ gSort: sort, gLoading: true, gError: '' });
     try {
@@ -557,6 +989,15 @@ class Component extends DCLogic {
     this.schedule();
   }
   like = async (id) => {
+    if (this.state.srv === 'v2') {
+      const s = this.state, it = s.gItems.find(x => x.id === id);
+      if (!it || it.liked || !s.user || it.user_id === s.user.id) return;
+      const set = v => this.setState(st => ({ gItems: st.gItems.map(x => x.id === id ? { ...x, ...v } : x) }));
+      set({ liked: 1 });
+      try { const j = await this.apiCall('/api/like/' + id, { method: 'POST' }); set({ likes: j.likes, liked: 1 }); }
+      catch (e) { set({ liked: 0 }); }
+      return;
+    }
     if (this.state.liked.includes(id)) return;
     const liked = [...this.state.liked, id];
     this.setState({ liked });
@@ -570,6 +1011,7 @@ class Component extends DCLogic {
   componentDidMount() {
     window.__formgen = this;
     this.loadGallery('new');
+    this.checkServer();
     const url = new URL('./linegen.js', document.baseURI).href;
     import(url).then(mod => {
       if (this.dead) return;
@@ -803,6 +1245,626 @@ class Component extends DCLogic {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
 
+  // ---------- Sammelkarten ----------
+  static CARD_COST = 3;
+  static ADMIN_NAME = 'maxking';
+  static ICON_CHANCE = 0.02;
+  static TEST_ADMIN_KEY = 'test';
+  static CARD_TIERS = [
+    { name: 'Papier', img: 'linear-gradient(#fbfaf8,#fbfaf8)' },
+    { name: 'Bronze', img: 'linear-gradient(135deg,#6e3f1a 0%,#b5753f 30%,#f0c08e 50%,#b5753f 70%,#6e3f1a 100%)' },
+    { name: 'Silber', img: 'linear-gradient(135deg,#6f757b 0%,#b3b8bd 30%,#f6f7f8 50%,#b3b8bd 70%,#6f757b 100%)' },
+    { name: 'Gold', img: 'linear-gradient(135deg,#7a560c 0%,#c99528 30%,#fbe39a 50%,#c99528 70%,#7a560c 100%)', shine: true },
+    { name: 'Holo', img: 'linear-gradient(125deg,#ff9ab8,#ffe09a,#b8ffa6,#9aeeff,#bfa6ff,#ff9ae8,#ff9ab8)', shine: true, foil: true },
+    { name: 'Ikone', img: 'linear-gradient(135deg,#7a5a1c 0%,#c9a356 18%,#f6e7bf 34%,#fffaf0 50%,#f6e7bf 66%,#c9a356 82%,#7a5a1c 100%)', shine: true, icon: true },
+  ];
+  static CARD_PAT = {
+    raupe: [28, 20, "<path d='M2 14q5-8 10 0M16 4q5-8 10 0' fill='none' stroke='#201e1d' stroke-width='1.6' stroke-linecap='round'/>"],
+    bohne: [16, 16, "<g fill='#201e1d'><circle cx='4' cy='4' r='1.8'/><circle cx='12' cy='12' r='1.8'/></g>"],
+    kokon: [32, 14, "<path d='M0 7q8-7 16 0t16 0' fill='none' stroke='#201e1d' stroke-width='1.6'/>"],
+    tropfen: [24, 24, "<g fill='none' stroke='#201e1d' stroke-width='1.5'><circle cx='6' cy='6' r='3.5'/><circle cx='18' cy='18' r='3.5'/></g>"],
+    kiesel: [40, 40, "<g fill='#201e1d'><circle cx='6' cy='8' r='2.6'/><circle cx='27' cy='5' r='1.5'/><circle cx='18' cy='22' r='3.2'/><circle cx='35' cy='30' r='2'/><circle cx='8' cy='33' r='1.6'/></g>"],
+    horn: [12, 12, "<path d='M-3 3L3-3M0 12L12 0M9 15L15 9' stroke='#201e1d' stroke-width='1.4'/>"],
+    kristall: [24, 20, "<path d='M12 0L24 10L12 20L0 10Z' fill='none' stroke='#201e1d' stroke-width='1.4'/>"],
+  };
+  static CARD_NOISE = (() => {
+    const s = "<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .13 0 0 0 0 .12 0 0 0 0 .11 0 0 0 .9 -.34'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>";
+    return 'url("data:image/svg+xml,' + encodeURIComponent(s) + '")';
+  })();
+  static CARD_SHINE = 'linear-gradient(115deg,transparent 30%,rgba(255,255,255,.8) 46%,transparent 62%)';
+  static CARD_FOIL = 'linear-gradient(125deg,#ff5f8f 0%,#ffcf5f 16%,#7dff6a 33%,#5fdcff 50%,#9a6aff 66%,#ff6ad8 83%,#ff5f8f 100%)';
+  static ICON_RAYS = 'repeating-conic-gradient(from 0deg at 50% 42%, rgba(176,132,44,.22) 0deg 5deg, rgba(176,132,44,0) 5deg 15deg), radial-gradient(circle at 50% 42%, #fffaf0 0%, #f1e2bf 75%)';
+  static ICON_PEARL = 'linear-gradient(125deg,#fff1c2 0%,#ffd9ec 25%,#d6f1ff 50%,#fff1c2 75%,#ffd9ec 100%)';
+  cardPattern(model) {
+    const P = Component.CARD_PAT[model] || Component.CARD_PAT.bohne;
+    const s = "<svg xmlns='http://www.w3.org/2000/svg' width='" + P[0] + "' height='" + P[1] + "'><g opacity='.17'>" + P[2] + '</g></svg>';
+    return { img: 'url("data:image/svg+xml,' + encodeURIComponent(s) + '")', size: P[0] + 'px ' + P[1] + 'px' };
+  }
+  cardHsl(hex) {
+    const m = /^#?([0-9a-f]{6})$/i.exec(hex || ''); if (!m) return null;
+    const v = parseInt(m[1], 16), r = (v >> 16 & 255) / 255, g = (v >> 8 & 255) / 255, b = (v & 255) / 255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    let h = 0; if (d) h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return { h: (h * 60 + 360) % 360, s: d ? d / (1 - Math.abs(mx + mn - 1)) : 0 };
+  }
+  cardTon(a, b) {
+    const x = this.cardHsl(a), y = this.cardHsl(b);
+    if (!x || !y || x.s < 0.15 || y.s < 0.15) return false;
+    const dh = Math.abs(x.h - y.h); return Math.min(dh, 360 - dh) < 24;
+  }
+  // Punkte: Krone 3 · Kristall 2 · Handschuh 2 · Hut+Hand+Mund 2 · Ton in Ton 2 · großes Einzelauge 1 · Likes (1–2: 1, 3–5: 2, ab 6: 3)
+  // Stufen: 0 Papier · 1–2 Bronze · 3–4 Silber · 5–6 Gold · ab 7 Holo · Ikone = Wesen aus der Testphase
+  cardRarity(p, model, likes, icon) {
+    if (icon) return 5;
+    let n = 0;
+    if (p.hat && p.hatType === 2) n += 3;
+    if (model === 'kristall') n += 2;
+    if (p.arms && p.handGlove) n += 2;
+    if (p.hat && p.arms && p.mouth) n += 2;
+    if (p.eye && (p.eyeCount || 1) === 1 && p.eyeSize >= 0.2) n += 1;
+    if (this.cardTon(p.cBody, p.cBg)) n += 2;
+    const l = likes || 0;
+    n += l >= 6 ? 3 : l >= 3 ? 2 : l >= 1 ? 1 : 0;
+    return n >= 7 ? 4 : n >= 5 ? 3 : n >= 3 ? 2 : n >= 1 ? 1 : 0;
+  }
+  cardCode(obj) {
+    const s = JSON.stringify(obj || {});
+    let h1 = 0x811c9dc5, h2 = 0x01234567;
+    for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 16777619) >>> 0; h2 = Math.imul(h2 ^ c, 2246822519) >>> 0; }
+    const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    for (let i = 0; i < 6; i++) out += A[((i < 3 ? h1 : h2) >>> ((i % 3) * 5 + 2)) & 31];
+    return out.slice(0, 3) + '·' + out.slice(3);
+  }
+  cardBarcode(code) {
+    const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', bits = [1, 0, 1];
+    for (const ch of code.replace('·', '')) { const v = Math.max(0, A.indexOf(ch)); for (let b = 4; b >= 0; b--) bits.push((v >> b) & 1); bits.push(0); }
+    bits.push(1, 0, 1);
+    let x = 0, rects = '';
+    bits.forEach((b, i) => { const w = b ? (i % 3 === 0 ? 2 : 1) : (i % 4 === 0 ? 2 : 1); if (b) rects += "<rect x='" + x + "' width='" + w + "' height='10'/>"; x += w; });
+    const s = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 " + x + " 10' preserveAspectRatio='none'><g fill='#201e1d'>" + rects + '</g></svg>';
+    return 'url("data:image/svg+xml,' + encodeURIComponent(s) + '")';
+  }
+  cardMeta(c) {
+    this.cardMetaCache = this.cardMetaCache || new Map();
+    let m = this.cardMetaCache.get(c.uid);
+    if (!m) {
+      const p = this.fromSaved(c.model, c.params), code = this.cardCode(c.params);
+      const tier = this.cardRarity(p, c.model, c.likes, c.icon);
+      m = { p, code, tier, barcode: this.cardBarcode(code), st: this.cardStats(p, c.model, tier, code) };
+      this.cardMetaCache.set(c.uid, m);
+    }
+    return m;
+  }
+  clearCardCache() { this.cardArt && this.cardArt.clear(); this.cardMetaCache && this.cardMetaCache.clear(); }
+  cardTilt = e => {
+    const el = e.currentTarget, r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    el.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+    el.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+    el.style.setProperty('--rx', ((0.5 - y) * 16).toFixed(1) + 'deg');
+    el.style.setProperty('--ry', ((x - 0.5) * 16).toFixed(1) + 'deg');
+  };
+  cardUntilt = e => { const el = e.currentTarget; for (const k of ['--mx', '--my', '--rx', '--ry']) el.style.removeProperty(k); };
+
+  // ---------- Testmodus: lokaler Test-Server (nur dieser Browser) ----------
+  testMode() { try { return !this.api() || new URLSearchParams(location.search).has('test'); } catch (e) { return !this.api(); } }
+  connected() { return this.testMode() || !!this.api(); }
+  testDb() {
+    if (!this._tdb) {
+      try { this._tdb = JSON.parse(localStorage.getItem('formgen.testdb.v1') || 'null'); } catch (e) {}
+      if (!this._tdb || !this._tdb.seq) this._tdb = { users: [], items: [], likes: [], cards: [], seq: { user: 0, item: 0, card: 0 }, iconBoost: false };
+    }
+    return this._tdb;
+  }
+  testSave() { try { localStorage.setItem('formgen.testdb.v1', JSON.stringify(this._tdb)); } catch (e) { console.warn('Testdaten zu groß', e); } }
+  async mockApi(path, opt = {}) {
+    await new Promise(r => setTimeout(r, 60));
+    const db = this.testDb(), url = new URL(path, 'http://test.local'), p = url.pathname, method = (opt.method || 'GET').toUpperCase();
+    let body = {}; try { body = opt.body ? JSON.parse(opt.body) : {}; } catch (e) {}
+    if (!db.users.some(u => u.name.toLowerCase() === Component.ADMIN_NAME)) {
+      db.users.push({ id: ++db.seq.user, name: Component.ADMIN_NAME, pin: '1234', token: 'test-' + Math.random().toString(36).slice(2) + Date.now().toString(36), bonus: 0 });
+      this.testSave();
+    }
+    const token = (opt.headers && opt.headers['X-Token']) || this.state.token;
+    const me = token ? db.users.find(u => u.token === token) || null : null;
+    const err = m => { throw new Error(m); };
+    const uname = id => { const u = db.users.find(x => x.id === id); return u ? u.name : null; };
+    const isAdm = u => !!u && String(u.name).toLowerCase() === Component.ADMIN_NAME;
+    const pub = u => ({ id: u.id, name: u.name, admin: isAdm(u) });
+    const likedCount = uid => db.likes.filter(l => { const i = db.items.find(x => x.id === l.item_id); return l.user_id !== uid && i && i.user_id === uid; }).length;
+    const out = i => ({ id: i.id, created: i.created, name: i.name, model: i.model, version: 1, params: i.params, likes: i.likes, user_id: i.user_id, user_name: uname(i.user_id), icon: i.icon ? 1 : 0 });
+    const stats = uid => ({
+      earned: likedCount(uid) + ((db.users.find(u => u.id === uid) || {}).bonus || 0),
+      spent: db.cards.filter(c => c.user_id === uid).length * Component.CARD_COST,
+    });
+    if (p === '/api/users') return { users: db.users.map(pub).sort((a, b) => a.name.localeCompare(b.name)) };
+    if (p === '/api/register' && method === 'POST') {
+      const name = String(body.name || '').replace(/\s+/g, ' ').trim().slice(0, 24), pin = String(body.pin || '');
+      if (!name) err('Bitte einen Namen eingeben.');
+      if (!pin) err('Bitte ein Passwort vergeben.');
+      if (db.users.some(u => u.name.toLowerCase() === name.toLowerCase())) err('Den Namen gibt es schon.');
+      const u = { id: ++db.seq.user, name, pin, token: 'test-' + Math.random().toString(36).slice(2) + Date.now().toString(36) };
+      db.users.push(u); this.testSave();
+      return { user: pub(u), token: u.token };
+    }
+    if (p === '/api/login' && method === 'POST') {
+      const u = db.users.find(x => x.id === body.id);
+      if (!u) err('Spieler nicht gefunden.');
+      if (u.pin !== body.pin) err('Falsches Passwort.');
+      return { user: pub(u), token: u.token };
+    }
+    if (p === '/api/me') { if (!me) err('Nicht angemeldet'); return { user: pub(me) }; }
+    if (p === '/api/list') {
+      const top = url.searchParams.get('sort') === 'top', limit = Math.min(60, parseInt(url.searchParams.get('limit')) || 24);
+      const list = db.items.filter(i => !i.hidden).sort((a, b) => top ? (b.likes - a.likes || b.id - a.id) : b.id - a.id).slice(0, limit);
+      return { items: list.map(i => ({ ...out(i), liked: me && db.likes.some(l => l.item_id === i.id && l.user_id === me.id) ? 1 : 0 })) };
+    }
+    if (p === '/api/save' && method === 'POST') {
+      if (!body.params || !body.model) err('Ungültige Daten');
+      const i = { id: ++db.seq.item, created: Date.now(), name: String(body.name || '').slice(0, 40), model: body.model, params: body.params, likes: 0, user_id: me ? me.id : null, hidden: false, icon: false };
+      db.items.push(i); this.testSave();
+      return { id: i.id };
+    }
+    const lk = p.match(/^\/api\/like\/(\d+)$/);
+    if (lk && method === 'POST') {
+      const i = db.items.find(x => x.id === +lk[1]);
+      if (!i) err('Nicht gefunden');
+      if (!me) err('Bitte anmelden');
+      if (i.user_id === me.id) err('Eigene Wesen kann man nicht liken.');
+      if (!db.likes.some(l => l.item_id === i.id && l.user_id === me.id)) { db.likes.push({ item_id: i.id, user_id: me.id }); i.likes++; this.testSave(); }
+      return { likes: i.likes, liked: true };
+    }
+    if (p === '/api/cards') {
+      if (!me) err('Bitte anmelden');
+      const cards = db.cards.filter(c => c.user_id === me.id).sort((a, b) => b.id - a.id)
+        .map(c => { const i = db.items.find(x => x.id === c.item_id); return i ? { ...out(i), card_id: c.id, drawn: c.drawn, likes: c.likes, icon: c.icon ? 1 : 0 } : null; }).filter(Boolean);
+      return { cards, pool: db.items.filter(i => !i.hidden).length, icons: db.items.filter(i => i.icon).length, ...stats(me.id) };
+    }
+    if (p === '/api/draw' && method === 'POST') {
+      if (!me) err('Bitte anmelden');
+      const st = stats(me.id);
+      if (st.earned - st.spent < Component.CARD_COST) err('Nicht genug Likes');
+      const normal = db.items.filter(i => !i.hidden), icons = db.items.filter(i => i.icon);
+      const chance = db.iconBoost ? 0.5 : Component.ICON_CHANCE;
+      const from = icons.length && Math.random() < chance ? icons : normal;
+      if (!from.length) err('Der Pool ist leer');
+      const i = from[Math.floor(Math.random() * from.length)];
+      const c = { id: ++db.seq.card, user_id: me.id, item_id: i.id, drawn: Date.now(), likes: i.likes, icon: !!i.icon };
+      db.cards.push(c); this.testSave();
+      return { card: { ...out(i), card_id: c.id, drawn: c.drawn, likes: c.likes, icon: c.icon ? 1 : 0 }, earned: st.earned, spent: st.spent + Component.CARD_COST };
+    }
+    if (p === '/api/admin/icons' && method === 'POST') {
+      if (body.key !== Component.TEST_ADMIN_KEY && !isAdm(me)) err('Falscher Schlüssel.');
+      if (db.items.some(i => i.icon)) err('Ikonen gibt es schon. Das geht nur einmal.');
+      const list = db.items.filter(i => !i.hidden);
+      if (body.dry) return { count: list.length };
+      list.forEach(i => { i.icon = true; i.hidden = true; });
+      this.testSave();
+      return { converted: list.length };
+    }
+    const pm = p.match(/^\/api\/player\/(\d+)$/);
+    if (pm) {
+      const u = db.users.find(x => x.id === +pm[1]);
+      if (!u) err('Spieler nicht gefunden.');
+      const cards = db.cards.filter(c => c.user_id === u.id).sort((a, b) => b.id - a.id)
+        .map(c => { const i = db.items.find(x => x.id === c.item_id); return i ? { ...out(i), owner_id: i.user_id, card_id: c.id, drawn: c.drawn, likes: c.likes, icon: c.icon ? 1 : 0 } : null; }).filter(Boolean);
+      return { user: pub(u), stats: { items: db.items.filter(i => i.user_id === u.id).length, liked: likedCount(u.id), cards: cards.length, icons: cards.filter(c => c.icon).length }, cards };
+    }
+    if (p.startsWith('/api/admin/') && p !== '/api/admin/icons') {
+      if (!isAdm(me)) err('Nur für den Admin.');
+      if (p === '/api/admin/overview') {
+        return {
+          users: db.users.map(u => ({ ...pub(u), bonus: u.bonus || 0, liked: likedCount(u.id), cards: db.cards.filter(c => c.user_id === u.id).length, items: db.items.filter(i => i.user_id === u.id).length })).sort((a, b) => a.name.localeCompare(b.name)),
+          items: db.items.slice().sort((a, b) => b.id - a.id).map(i => ({ ...out(i), hidden: i.hidden ? 1 : 0, drawn: db.cards.filter(c => c.item_id === i.id).length })),
+        };
+      }
+      if (p === '/api/admin/bonus' && method === 'POST') {
+        const u = db.users.find(x => x.id === body.user_id), amount = parseInt(body.amount);
+        if (!u) err('Spieler nicht gefunden.');
+        if (!Number.isFinite(amount) || Math.abs(amount) > 100000) err('Ungültige Zahl.');
+        u.bonus = Math.max(0, (u.bonus || 0) + amount); this.testSave();
+        return { bonus: u.bonus };
+      }
+      if (p === '/api/admin/item' && method === 'POST') {
+        const i = db.items.find(x => x.id === body.id);
+        if (!i) err('Nicht gefunden');
+        if (body.action === 'remove') { i.hidden = true; i.icon = false; }
+        else if (body.action === 'restore') { i.hidden = false; i.icon = false; }
+        else err('Unbekannte Aktion');
+        this.testSave();
+        return { ok: true };
+      }
+    }
+    err('Nicht gefunden');
+  }
+  testSeed = () => {
+    const db = this.testDb(), R = Math.random, M = Component.MODELS;
+    for (const n of ['Anna', 'Ben', 'Cleo', 'Dana', 'Emil', 'Finn'])
+      if (!db.users.some(u => u.name.toLowerCase() === n.toLowerCase())) db.users.push({ id: ++db.seq.user, name: n, pin: 'test', token: 'test-' + R().toString(36).slice(2) + Date.now().toString(36) });
+    const me = db.users.find(u => u.token === this.state.token), others = db.users.filter(u => !me || u.id !== me.id);
+    for (let k = 0; k < 12; k++) {
+      const model = M[Math.floor(R() * M.length)].id;
+      const ex = { eye: true, eyeCount: R() < 0.55 ? 2 : 1, mouth: R() < 0.7, hat: R() < 0.55, arms: R() < 0.6, pattern: true, form: 'sorte' };
+      const params = this.applyExtras(this.randomParams(Component.preset(model)), ex, true);
+      const owner = me && k < 3 ? me : others[Math.floor(R() * others.length)];
+      const item = { id: ++db.seq.item, created: Date.now() - (12 - k) * 60000, name: this.randomName(), model, params, likes: 0, user_id: owner.id, hidden: false, icon: false };
+      db.items.push(item);
+      const fans = db.users.filter(u => u.id !== owner.id && (!me || u.id !== me.id)).sort(() => R() - 0.5).slice(0, Math.floor(R() * 6));
+      for (const f of fans) { db.likes.push({ item_id: item.id, user_id: f.id }); item.likes++; }
+    }
+    this.testSave();
+    this.setState({ lgUsers: db.users.map(u => ({ id: u.id, name: u.name })).sort((a, b) => a.name.localeCompare(b.name)), tMsg: '12 Wesen erzeugt. Testspieler Anna, Ben, Cleo, Dana, Emil, Finn haben das Passwort „test“.' + (me ? ' 3 davon gehören dir und haben schon Likes.' : '') });
+    clearTimeout(this.tMsgT); this.tMsgT = setTimeout(() => this.setState({ tMsg: '' }), 8000);
+    this.loadGallery(); this.afterServer();
+  };
+  testReset = () => {
+    try { localStorage.removeItem('formgen.testdb.v1'); } catch (e) {}
+    this._tdb = null;
+    this.setState({ tConfirm: false, gItems: [], tMsg: '' });
+    this.logout();
+  };
+
+  // ---------- Testphase abschließen (Ikonen) ----------
+  adCheck = async () => {
+    const s = this.state;
+    if (s.adBusy) return;
+    if (s.srv !== 'v2') { this.setState({ adMsg: 'Geht erst mit Server Version 2 oder im Testmodus.' }); return; }
+    this.setState({ adBusy: true, adMsg: '' });
+    try {
+      const d = await this.apiCall('/api/admin/icons', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: s.adKey, dry: true }) });
+      this.setState({ adBusy: false, adCount: d.count, adMsg: d.count ? d.count + ' Wesen in der Galerie werden zu Ikonen und verschwinden aus der Galerie. Das lässt sich nicht rückgängig machen.' : 'In der Galerie ist gerade nichts.' });
+    } catch (e) { this.setState({ adBusy: false, adCount: null, adMsg: 'Fehler: ' + e.message }); }
+  };
+  adRun = async () => {
+    const s = this.state;
+    if (s.adBusy || !s.adCount) return;
+    this.setState({ adBusy: true });
+    try {
+      const j = await this.apiCall('/api/admin/icons', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: s.adKey }) });
+      this.setState({ adBusy: false, adCount: null, adKey: '', adMsg: 'Fertig: ' + j.converted + ' Ikonen erstellt. Die Galerie ist jetzt leer.' });
+      this.loadGallery();
+    } catch (e) { this.setState({ adBusy: false, adMsg: 'Fehler: ' + e.message }); }
+  };
+
+  // ---------- Spieler ----------
+  modeKey() { return this.testMode() ? 'test' : this.api(); }
+  storeAuth(user, token) {
+    try {
+      if (user) localStorage.setItem('formgen.auth.v1', JSON.stringify({ user, token, mode: this.modeKey() }));
+      else localStorage.removeItem('formgen.auth.v1');
+    } catch (e) {}
+  }
+  afterServer() { const v = this.state.view; if (v === 'cards') this.loadPool(); if (v === 'admin') this.loadAdmin(); if (v === 'player' && this.state.player) this.loadPlayer(this.state.player.id); }
+  checkServer = async () => {
+    this.setState({ lgLoading: true, lgErr: '' });
+    let { user, token } = this.state;
+    if (this.state.authMode && this.state.authMode !== this.modeKey()) { this.storeAuth(null); user = null; token = null; }
+    try {
+      let users;
+      if (this.testMode()) users = (await this.mockApi('/api/users')).users;
+      else {
+        const r = await fetch(this.api() + '/api/users');
+        if (r.status === 404) {
+          this.storeAuth(null);
+          this.setState({ srv: 'old', user: null, token: null, lgLoading: false });
+          setTimeout(() => { this.loadGallery(); this.afterServer(); }, 0);
+          return;
+        }
+        let j = {}; try { j = await r.json(); } catch (e) {}
+        if (!r.ok) throw new Error(j.error || 'HTTP ' + r.status);
+        users = j.users || [];
+      }
+      this.setState({ srv: 'v2', user, token, lgUsers: users, lgLoading: false });
+      if (token) {
+        try {
+          let m;
+          if (this.testMode()) m = await this.mockApi('/api/me', { headers: { 'X-Token': token } });
+          else {
+            const rm = await fetch(this.api() + '/api/me', { headers: { 'X-Token': token } });
+            if (!rm.ok) throw new Error('abgelaufen');
+            m = await rm.json();
+          }
+          this.storeAuth(m.user, token);
+          this.setState({ user: m.user });
+        } catch (e) { this.storeAuth(null); this.setState({ user: null, token: null }); }
+      }
+      setTimeout(() => { this.loadGallery(); this.afterServer(); }, 0);
+    } catch (e) {
+      this.setState({ srv: 'off', lgLoading: false, lgErr: e instanceof TypeError ? 'Server nicht erreichbar.' : 'Server-Fehler: ' + e.message });
+    }
+  };
+  setAuth(user, token) {
+    this.storeAuth(user, token);
+    this.clearCardCache();
+    this.setState({ user, token, authMode: this.modeKey(), guest: false, lgPin: '', lgPinNew: '', lgName: '', lgErr: '', lgBusy: false, lgNew: false, lgSel: null, cards: [], reveal: null });
+    setTimeout(() => { this.loadGallery(); this.afterServer(); }, 0);
+  }
+  logout = () => {
+    this.storeAuth(null);
+    this.clearCardCache();
+    this.setState({ user: null, token: null, authMode: '', guest: false, cards: [], reveal: null, lgSel: null, lgPin: '', lgErr: '' });
+    setTimeout(() => this.checkServer(), 0);
+  };
+  lgLogin = async () => {
+    const s = this.state, u = s.lgUsers.find(x => x.id === s.lgSel);
+    if (!u || s.lgBusy) return;
+    if (!s.lgPin) { this.setState({ lgErr: 'Bitte Passwort eingeben.' }); return; }
+    this.setState({ lgBusy: true, lgErr: '' });
+    try {
+      const j = await this.apiCall('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: u.id, pin: s.lgPin }) });
+      this.setAuth(j.user, j.token);
+    } catch (e) { this.setState({ lgBusy: false, lgErr: e.message || 'Fehler' }); }
+  };
+  lgCreate = async () => {
+    const s = this.state, name = s.lgName.replace(/\s+/g, ' ').trim().slice(0, 24), pin = s.lgPinNew;
+    if (s.lgBusy) return;
+    if (!name) { this.setState({ lgErr: 'Bitte einen Namen eingeben.' }); return; }
+    if (!pin) { this.setState({ lgErr: 'Bitte ein Passwort vergeben.' }); return; }
+    if (s.lgUsers.some(x => x.name.toLowerCase() === name.toLowerCase())) { this.setState({ lgErr: 'Den Namen gibt es schon. Wähl ihn oben aus.' }); return; }
+    this.setState({ lgBusy: true, lgErr: '' });
+    try {
+      const j = await this.apiCall('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, pin }) });
+      this.setState(st => ({ lgUsers: [...st.lgUsers, j.user].sort((a, b) => a.name.localeCompare(b.name)) }));
+      this.setAuth(j.user, j.token);
+    } catch (e) { this.setState({ lgBusy: false, lgErr: e.message || 'Fehler' }); }
+  };
+  serverCard(c) { return { uid: 'c' + c.card_id, id: c.id, name: c.name || '', model: c.model, params: c.params, created: c.created, drawn: c.drawn, owner: c.user_name || '', ownerId: c.owner_id != null ? c.owner_id : (c.user_id || null), likes: c.likes || 0, icon: !!c.icon }; }
+  loadPool = async () => {
+    const s = this.state;
+    if (s.srv === 'unknown') return;
+    if (s.srv !== 'v2' || !s.user) {
+      this.setState({ cards: [], cLoading: false, cNote: s.srv === 'old' ? 'Sammelkarten brauchen das Server-Update (Version 2).' : s.srv === 'off' ? 'Server nicht erreichbar.' : 'Bitte anmelden.' });
+      return;
+    }
+    this.setState({ cLoading: true });
+    try {
+      const j = await this.apiCall('/api/cards');
+      const cards = (j.cards || []).map(c => this.serverCard(c));
+      this.setState({ cards, cEarned: j.earned || 0, cSpent: j.spent || 0, cPoolN: j.pool || 0, cIconN: j.icons || 0, cLoading: false, cNote: '' });
+      this.renderCardArts(cards);
+    } catch (e) { this.setState({ cLoading: false, cNote: 'Fehler: ' + e.message }); }
+  };
+  async renderCardArts(cards) {
+    const token = (this.cardToken = (this.cardToken || 0) + 1);
+    this.cardArt = this.cardArt || new Map();
+    while (!this.engine) { await new Promise(r => setTimeout(r, 200)); if (this.dead) return; }
+    let n = 0;
+    for (const c of cards) {
+      if (token !== this.cardToken || this.dead) return;
+      if (this.cardArt.has(c.uid)) continue;
+      try {
+        const svg = this.engine.update({ ...this.fromSaved(c.model, c.params), cBg: 'none' }, {}).svg;
+        this.cardArt.set(c.uid, 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")');
+      } catch (e) {}
+      if (++n % 4 === 0) { this.setState(st => ({ cArtTick: st.cArtTick + 1 })); await new Promise(r => setTimeout(r, 0)); }
+    }
+    this.setState(st => ({ cArtTick: st.cArtTick + 1 }));
+    this.schedule();
+  }
+  likeInfo() {
+    const s = this.state;
+    return { earned: s.cEarned, spent: s.cSpent, avail: Math.max(0, s.cEarned - s.cSpent) };
+  }
+  drawCard = async () => {
+    const s = this.state;
+    if (s.cLoading || s.cDrawing || s.srv !== 'v2' || !s.user || this.likeInfo().avail < Component.CARD_COST) return;
+    this.setState({ cDrawing: true });
+    let card, cards;
+    try {
+      const j = await this.apiCall('/api/draw', { method: 'POST' });
+      card = this.serverCard(j.card); cards = [card, ...s.cards];
+      this.setState({ cards, cEarned: j.earned, cSpent: j.spent, cDrawing: false, cNote: '' });
+    } catch (e) { this.setState({ cDrawing: false, cNote: 'Fehler: ' + e.message }); return; }
+    this.setState({ reveal: { card, front: false, done: false, mode: 'draw' } });
+    this.renderCardArts(cards);
+    this.playReveal(card);
+  };
+
+  // ---------- Karten-Werte (wie Fußball-Sammelkarten) ----------
+  static STAT_NAMES = [['Arschfix', 'Arschfix-Skill'], ['Chill', 'Chill-Skill'], ['Gurke', 'Gurkenresonanz']];
+  cardStats(p, model, tier, seed) {
+    let h = 2166136261;
+    for (let i = 0; i < seed.length; i++) h = Math.imul(h ^ seed.charCodeAt(i), 16777619) >>> 0;
+    const rnd = () => { h = (h + 0x6D2B79F5) >>> 0; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    const band = [[41, 58], [54, 66], [63, 74], [72, 82], [81, 90], [89, 98]][tier] || [41, 58];
+    const ovr = Math.round(band[0] + (band[1] - band[0]) * rnd());
+    let a = (rnd() - 0.5) * 22, c = (rnd() - 0.5) * 22, g = (rnd() - 0.5) * 36;
+    if (p.arms) { a += 7; c -= 2; }
+    if (p.hat && p.hatType === 2) a += 4;
+    if (model === 'horn' || model === 'kristall') a += 6;
+    if (p.mouth && p.mouthType === 2) a += 5;
+    if (model === 'kiesel' || model === 'bohne' || model === 'kokon') c += 7;
+    c += ((p.lid || 0) - 0.3) * 16;
+    if ((p.rTop || 0) + (p.rBot || 0) > 1.1) c += 4;
+    g += p.eyeCount === 2 ? 4 : -2;
+    g += Math.min(12, Math.abs(p.twist || 0) / 4) + Math.abs(p.sCurve || 0) * 10;
+    if (p.hat && p.hatType === 1) g += 8;
+    if (p.mouth && p.mouthType === 3) g += 6;
+    const mean = (a + c + g) / 3, head = Math.max(1, 99 - ovr);
+    const cl = v => Math.max(1, Math.min(99, Math.round(v)));
+    const val = off => { off -= mean; return cl(ovr + (off > 0 ? off * Math.min(1, head / 25) : off)); };
+    return { ovr, vals: [val(a), val(c), val(g)] };
+  }
+
+  // ---------- Karte groß ansehen & Spielerprofil ----------
+  zoomCard(card) {
+    this.setState({ reveal: { card, front: true, done: true, mode: 'view' } });
+    setTimeout(() => { this.resetFx(); if (this.cardMeta(card).tier === 5) this.iconRays(0.55); }, 30);
+  }
+  openPlayer = (id, name) => {
+    if (!id) return;
+    this.setState(st => ({ prevView: st.view !== 'player' ? st.view : st.prevView, view: 'player', player: { id, name: name || '' }, pData: null, reveal: null }));
+    setTimeout(() => this.loadPlayer(id), 0);
+  };
+  loadPlayer = async (id) => {
+    if (this.state.srv !== 'v2') { this.setState({ pData: { user: { id, name: (this.state.player || {}).name || '' }, stats: {}, cards: [], error: 'Spielerprofile brauchen das Server-Update.' } }); return; }
+    this.setState({ pLoading: true });
+    try {
+      const j = await this.apiCall('/api/player/' + id);
+      const cards = (j.cards || []).map(c => this.serverCard(c));
+      this.setState({ pData: { user: j.user, stats: j.stats || {}, cards }, pLoading: false, player: { id: j.user.id, name: j.user.name } });
+      this.renderCardArts(cards);
+    } catch (e) { this.setState({ pLoading: false, pData: { user: this.state.player || { id, name: '' }, stats: {}, cards: [], error: 'Fehler: ' + e.message } }); }
+  };
+
+  // ---------- Aufdecken mit Effekten je Stufe ----------
+  resetFx() {
+    for (const r of [this.fxRef, this.raysRef, this.boxRef, this.flipRef, this.flashRef]) { const el = r.current; if (el && el.getAnimations) el.getAnimations().forEach(a => a.cancel()); }
+    const fx = this.fxRef.current, rays = this.raysRef.current, box = this.boxRef.current;
+    if (fx) { fx.style.opacity = '0'; fx.style.background = 'none'; }
+    if (rays) rays.style.opacity = '0';
+    if (box) box.style.opacity = '';
+  }
+  iconRays(op) {
+    const rays = this.raysRef.current;
+    if (!rays || !rays.animate) return;
+    rays.style.opacity = String(op);
+    rays.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], { duration: 40000, iterations: Infinity });
+  }
+  async playReveal(card) {
+    const tok = (this.revealTok = (this.revealTok || 0) + 1);
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+    await wait(40);
+    this.resetFx();
+    const fx = this.fxRef.current, box = this.boxRef.current, flip = this.flipRef.current, flash = this.flashRef.current, rays = this.raysRef.current;
+    const alive = () => tok === this.revealTok && !this.dead && this.state.reveal && this.state.reveal.card && this.state.reveal.card.uid === card.uid;
+    const finish = () => { if (alive()) this.setState(st => ({ reveal: { ...st.reveal, front: true, done: true } })); };
+    if (!fx || !box || !flip || !flip.animate) { finish(); return; }
+    const A = (el, kf, opt) => el.animate(kf, { fill: 'none', ...opt }).finished.catch(() => {});
+    const front = () => this.setState(st => ({ reveal: { ...st.reveal, front: true } }));
+    const flipIn = (dur = 700) => { front(); return A(flip, [{ transform: 'rotateY(180deg)' }, { transform: 'rotateY(0deg)' }], { duration: dur, easing: 'cubic-bezier(.2,.7,.2,1)' }); };
+    const sweep = (color, op, dur) => {
+      fx.style.background = 'linear-gradient(105deg, transparent 30%, ' + color + ' 50%, transparent 70%)';
+      fx.style.backgroundSize = '300% 100%';
+      return A(fx, [{ opacity: 0, backgroundPosition: '100% 0' }, { opacity: op, offset: 0.35 }, { opacity: op, offset: 0.65 }, { opacity: 0, backgroundPosition: '0% 0' }], { duration: dur, easing: 'ease-in-out' });
+    };
+    const flashIt = (op, dur) => flash ? A(flash, [{ opacity: 0 }, { opacity: op, offset: 0.15 }, { opacity: 0 }], { duration: dur, easing: 'ease-out' }) : Promise.resolve();
+    const tier = this.cardMeta(card).tier;
+
+    if (tier === 0) {
+      await wait(500); if (!alive()) return;
+      await flipIn(700);
+    } else if (tier === 1) {
+      await sweep('rgba(214,148,86,.55)', 0.55, 1100); if (!alive()) return;
+      await flipIn(700);
+    } else if (tier === 2) {
+      await sweep('rgba(232,238,244,.8)', 0.7, 1050); if (!alive()) return;
+      await A(box, [{ transform: 'rotate(0deg)' }, { transform: 'rotate(-4deg)' }, { transform: 'rotate(4deg)' }, { transform: 'rotate(-2deg)' }, { transform: 'rotate(0deg)' }], { duration: 520, easing: 'ease-in-out' });
+      if (!alive()) return;
+      await Promise.all([flipIn(650), A(box, [{ transform: 'scale(1)' }, { transform: 'scale(1.06)', offset: 0.5 }, { transform: 'scale(1)' }], { duration: 650 })]);
+    } else if (tier === 3) {
+      await Promise.all([
+        sweep('rgba(255,204,80,.9)', 0.85, 1500),
+        A(box, [{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 1500, easing: 'ease-in-out' }),
+      ]);
+      if (!alive()) return;
+      flashIt(0.6, 420);
+      await Promise.all([flipIn(700), A(box, [{ transform: 'translateY(0) scale(1)' }, { transform: 'translateY(-10px) scale(1.12)', offset: 0.4 }, { transform: 'translateY(0) scale(1)' }], { duration: 750, easing: 'cubic-bezier(.2,.7,.2,1)' })]);
+    } else if (tier === 4) {
+      fx.style.background = 'linear-gradient(120deg,#ff5f8f,#ffcf5f,#7dff6a,#5fdcff,#9a6aff,#ff6ad8,#ff5f8f)';
+      fx.style.backgroundSize = '400% 400%';
+      const glow = A(fx, [
+        { opacity: 0, backgroundPosition: '0% 50%', filter: 'hue-rotate(0deg) saturate(1.2)' },
+        { opacity: 0.9, offset: 0.2 },
+        { opacity: 0.7, backgroundPosition: '100% 50%', filter: 'hue-rotate(180deg) saturate(1.7)', offset: 0.6 },
+        { opacity: 0.95, backgroundPosition: '0% 50%', filter: 'hue-rotate(360deg) saturate(1.2)' },
+      ], { duration: 2300, easing: 'linear' });
+      const steps = 14, shakeKf = [];
+      for (let i = 0; i <= steps; i++) { const o = i / steps, amp = o * 9; shakeKf.push({ offset: o, transform: i === steps ? 'translate(0,0) rotate(0deg)' : 'translate(' + (i % 2 ? -amp : amp).toFixed(1) + 'px,' + (((i % 3) - 1) * o * 5).toFixed(1) + 'px) rotate(' + ((i % 2 ? -1 : 1) * o * 3).toFixed(1) + 'deg)' }); }
+      const shake = A(box, shakeKf, { duration: 2300 });
+      setTimeout(() => alive() && flashIt(0.45, 260), 700);
+      setTimeout(() => alive() && flashIt(0.55, 260), 1300);
+      setTimeout(() => alive() && flashIt(0.65, 260), 1850);
+      await Promise.all([glow, shake]); if (!alive()) return;
+      flashIt(1, 650);
+      front();
+      await Promise.all([
+        A(flip, [{ transform: 'rotateY(180deg)' }, { transform: 'rotateY(1440deg)' }], { duration: 1500, easing: 'cubic-bezier(.15,.8,.2,1)' }),
+        A(box, [{ transform: 'scale(.7)' }, { transform: 'scale(1.1)', offset: 0.7 }, { transform: 'scale(1)' }], { duration: 1500, easing: 'ease-out' }),
+        A(fx, [{ opacity: 0.9 }, { opacity: 0 }], { duration: 1700, easing: 'ease-out' }),
+      ]);
+    } else {
+      // Ikone: Schwarz-Weiß-Flackern, Standbild, dann Enthüllung
+      const seq = [90, 60, 140, 50, 90, 220, 40, 70, 130, 60, 320, 50, 80, 40, 170, 60, 90, 240];
+      const total = seq.reduce((x, y) => x + y, 0);
+      const flick = [], glitch = [];
+      let t = 0;
+      seq.forEach((d, i) => {
+        flick.push({ offset: t / total, opacity: 1, backgroundColor: i % 2 ? '#f4f1ea' : '#050505', easing: 'steps(1, end)' });
+        glitch.push({ offset: t / total, transform: 'translate(' + ((i * 37) % 13 - 6) + 'px,' + ((i * 23) % 9 - 4) + 'px) skewX(' + ((i * 17) % 7 - 3) + 'deg)', easing: 'steps(1, end)' });
+        t += d;
+      });
+      flick.push({ offset: 1, opacity: 1, backgroundColor: '#050505' });
+      glitch.push({ offset: 1, transform: 'none' });
+      fx.style.background = '#050505';
+      await Promise.all([A(fx, flick, { duration: total }), A(box, glitch, { duration: total })]);
+      if (!alive()) return;
+      fx.style.background = Component.CARD_NOISE + ', #0a0a0a';
+      fx.style.opacity = '1';
+      await A(box, [{ transform: 'translate(3px,-2px) skewX(2deg)' }, { transform: 'translate(3px,-2px) skewX(2deg)' }], { duration: 850 });
+      if (!alive()) return;
+      fx.style.background = '#000';
+      box.style.opacity = '0';
+      front();
+      await wait(500); if (!alive()) return;
+      flashIt(1, 750);
+      this.iconRays(1);
+      if (rays) A(rays, [{ opacity: 0 }, { opacity: 1 }], { duration: 1200, easing: 'ease-out' });
+      fx.style.opacity = '0';
+      box.style.opacity = '';
+      await Promise.all([
+        A(box, [{ opacity: 0, transform: 'scale(.35) translateY(40px)' }, { opacity: 1, transform: 'scale(1.14) translateY(-6px)', offset: 0.65 }, { opacity: 1, transform: 'scale(1) translateY(0)' }], { duration: 1500, easing: 'cubic-bezier(.2,.8,.2,1)' }),
+        A(fx, [{ opacity: 1 }, { opacity: 1, offset: 0.35 }, { opacity: 0 }], { duration: 2300, easing: 'ease-in-out' }),
+      ]);
+    }
+    finish();
+  }
+
+  // ---------- Admin-Bereich ----------
+  loadAdmin = async () => {
+    const s = this.state;
+    if (s.srv !== 'v2' || !s.user || !s.user.admin) return;
+    this.setState({ amLoading: true });
+    try {
+      const j = await this.apiCall('/api/admin/overview');
+      this.setState({ adm: j, amLoading: false });
+      this.renderAdminArts(j.items || []);
+    } catch (e) { this.setState({ amLoading: false, amMsg: 'Fehler: ' + e.message }); }
+  };
+  async renderAdminArts(items) {
+    const token = (this.adminToken = (this.adminToken || 0) + 1);
+    this.adminArt = this.adminArt || new Map();
+    while (!this.engine) { await new Promise(r => setTimeout(r, 200)); if (this.dead) return; }
+    let n = 0;
+    for (const it of items) {
+      if (token !== this.adminToken || this.dead) return;
+      if (this.adminArt.has(it.id)) continue;
+      try { this.adminArt.set(it.id, 'url("data:image/svg+xml,' + encodeURIComponent(this.engine.update(this.fromSaved(it.model, it.params), {}).svg) + '")'); } catch (e) {}
+      if (++n % 4 === 0) { this.forceUpdate(); await new Promise(r => setTimeout(r, 0)); }
+    }
+    this.forceUpdate();
+    this.schedule();
+  }
+  flashAdmin(msg) { this.setState({ amMsg: msg }); clearTimeout(this.amT); this.amT = setTimeout(() => this.setState({ amMsg: '' }), 5000); }
+  adminBonus = async (uid, name) => {
+    const raw = this.state.amAmt[uid], amount = parseInt(raw == null || raw === '' ? '3' : raw);
+    if (!Number.isFinite(amount) || amount === 0) { this.flashAdmin('Bitte eine Zahl eingeben.'); return; }
+    try {
+      await this.apiCall('/api/admin/bonus', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: uid, amount }) });
+      this.flashAdmin((amount > 0 ? amount + ' Likes an ' : (-amount) + ' Likes von ') + name + (amount > 0 ? ' gutgeschrieben.' : ' abgezogen.'));
+      this.loadAdmin();
+    } catch (e) { this.flashAdmin('Fehler: ' + e.message); }
+  };
+  adminItem = async (id, action) => {
+    try {
+      await this.apiCall('/api/admin/item', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, action }) });
+      this.setState({ amConfirm: null });
+      this.flashAdmin(action === 'remove' ? 'Gelöscht.' : 'Zurück in der Galerie.');
+      this.loadAdmin(); this.loadGallery();
+    } catch (e) { this.flashAdmin('Fehler: ' + e.message); }
+  };
+
   renderVals() {
     this.afterRender();
     const segStyle = on => ({ width: '28px', height: '26px', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px', fontWeight: 700, padding: 0, background: on ? 'var(--color-accent)' : 'transparent', color: on ? 'var(--color-bg)' : 'var(--color-text)' });
@@ -829,7 +1891,122 @@ class Component extends DCLogic {
       };
     });
     const nameOf = id => (M.find(m => m.id === id) || M[0]).name;
+    const T = Component.CARD_TIERS, cost = Component.CARD_COST, info = this.likeInfo();
+    const fmtDate = ms => { const d = new Date(ms || Date.now()); return String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear(); };
+    const cardView = c => {
+      const m = this.cardMeta(c), t = T[m.tier], ic = !!t.icon, pt = ic ? null : this.cardPattern(c.model);
+      return {
+        title: String(c.name || '').trim() || 'Namenlos', nr: 'Nr. ' + String(c.id).padStart(3, '0'), sorte: nameOf(c.model), code: m.code, barcode: m.barcode,
+        color: ic ? '#f1e2bf' : m.p.cBg, art: (this.cardArt && this.cardArt.get(c.uid)) || 'none',
+        pattern: ic ? Component.ICON_RAYS : pt.img, patSize: ic ? '100% 100%' : pt.size,
+        frame: t.img, panel: ic ? '#fffaf0' : '#fbfaf8', edge: ic ? '#7a5a1c' : 'var(--color-text)',
+        shadow: ic ? '0 10px 24px rgba(122,90,28,.32)' : t.foil ? '0 6px 14px rgba(32,30,29,.16)' : 'none',
+        shine: t.shine ? Component.CARD_SHINE : 'none',
+        foil: t.foil ? Component.CARD_FOIL : ic ? Component.ICON_PEARL : 'none', foilOp: t.foil ? 0.55 : ic ? 0.35 : 0,
+        move: t.shine ? this.cardTilt : undefined, leave: t.shine ? this.cardUntilt : undefined, tier: m.tier, tierName: t.name, icon: ic,
+        ink: ic ? '#4a3510' : 'var(--color-text)', sub: ic ? '#7a5a1c' : 'var(--color-neutral-700)',
+        ovr: m.st.ovr, stats: m.st.vals.map((v, k) => ({ k: Component.STAT_NAMES[k][0], v })), statsLong: m.st.vals.map((v, k) => ({ name: Component.STAT_NAMES[k][1], v })),
+        hasOwner: !!c.owner, owner: c.owner || '', openOwner: () => this.openPlayer(c.ownerId, c.owner),
+        metaLong: nameOf(c.model) + ' · gezogen am ' + fmtDate(c.drawn) + (c.icon ? '' : ' · ' + (c.likes || 0) + (c.likes === 1 ? ' Like' : ' Likes') + ' beim Ziehen'),
+        zoom: () => this.zoomCard(c),
+      };
+    };
+    const groupOf = list => {
+      const grp = new Map();
+      for (const c of list) { const m = this.cardMeta(c), k = c.id + ':' + m.code + ':' + m.tier, g = grp.get(k); if (g) g.n++; else grp.set(k, { c, n: 1 }); }
+      const gl = [...grp.values()];
+      if (s.cSort === 'rare') gl.sort((a, b) => this.cardMeta(b.c).tier - this.cardMeta(a.c).tier || (b.c.drawn || 0) - (a.c.drawn || 0));
+      return gl;
+    };
+    const glist = groupOf(s.cards), grpSize = glist.length, isPlayerView = s.view === 'player' && !!s.player;
+    const PD = s.pData || { stats: {}, cards: [] }, showList = isPlayerView ? groupOf(PD.cards || []) : glist;
+    const rvCard = s.reveal ? s.reveal.card : null, rv = rvCard ? cardView(rvCard) : null;
+    const need = Math.max(0, cost - info.avail), canN = Math.floor(info.avail / cost), ready = s.srv === 'v2' && !!s.user;
+    const cardVals = {
+      fxRef: this.fxRef, raysRef: this.raysRef, boxRef: this.boxRef, flipRef: this.flipRef, flashRef: this.flashRef,
+      isCards: s.view === 'cards' || isPlayerView, isOwnCards: s.view === 'cards', isPlayer: isPlayerView,
+      pName: (PD.user && PD.user.name) || (s.player && s.player.name) || '',
+      pStatus: s.pLoading ? 'lädt …' : PD.error || '',
+      pStats: [['Wesen geteilt', PD.stats.items], ['Likes bekommen', PD.stats.liked], ['Karten gezogen', PD.stats.cards], ['Ikonen', PD.stats.icons]].map(([k, v]) => ({ k, v: v == null ? '–' : String(v) })),
+      pEmpty: isPlayerView && !s.pLoading && !!s.pData && !(PD.cards || []).length,
+      pBack: () => this.setState(st => ({ view: st.prevView && st.prevView !== 'player' ? st.prevView : 'gallery', reveal: null })),
+      tabCardsCls: s.view === 'cards' ? 'btn btn-primary' : 'btn btn-secondary',
+      goCards: () => { this.setState({ view: 'cards' }); this.loadPool(); },
+      cCards: showList.map(g => ({ ...cardView(g.c), meta: (g.n > 1 ? '×' + g.n + ' · ' : '') + 'gezogen am ' + fmtDate(g.c.drawn) })),
+      cEmpty: ready && !s.cLoading && !s.cards.length,
+      cStatus: s.cLoading ? 'lädt …' : s.cards.length + ' ' + (s.cards.length === 1 ? 'Karte' : 'Karten') + ' · ' + grpSize + ' verschieden · ' + s.cPoolN + ' Wesen im Pool' + (s.cIconN ? ' · ' + s.cIconN + ' Ikonen' : ''),
+      cAvail: String(info.avail), cLikeSub: info.earned + ' erhalten · ' + info.spent + ' ausgegeben',
+      drawCard: this.drawCard, drawOff: !ready || s.cLoading || s.cDrawing || info.avail < cost,
+      cProgress: Math.min(100, info.avail / cost * 100).toFixed(0) + '%',
+      cHint: s.cLoading ? 'Wird geladen …' : need ? 'Noch ' + need + ' ' + (need === 1 ? 'Like' : 'Likes') + ' bis zur nächsten Karte' : 'Reicht für ' + canN + ' ' + (canN === 1 ? 'Karte' : 'Karten'),
+      cExplain: !ready ? s.cNote : 'Likes bekommst du, wenn andere Spieler deine geteilten Wesen mögen. Jede Karte kommt zufällig aus allen Wesen der Galerie; Wesen mit mehr Likes werden eher zu Gold oder Holo.' + (s.cIconN ? ' Mit sehr viel Glück ziehst du eine Ikone aus der Testphase.' : '') + (s.cNote ? ' ' + s.cNote : ''),
+      cNewCls: s.cSort !== 'rare' ? 'btn btn-primary' : 'btn btn-secondary', cRareCls: s.cSort === 'rare' ? 'btn btn-primary' : 'btn btn-secondary',
+      cShowNew: () => this.setState({ cSort: 'new' }), cShowRare: () => this.setState({ cSort: 'rare' }),
+      cNoise: Component.CARD_NOISE,
+      revealOn: !!rv,
+      rv: rv ? { ...rv, flip: s.reveal.front ? 'rotateY(0deg)' : 'rotateY(180deg)', done: !!s.reveal.done, isDraw: s.reveal.mode === 'draw', isView: s.reveal.mode === 'view', label: rv.icon ? 'Ikone · aus der Testphase' : 'Stufe ' + (rv.tier + 1) + ' · ' + rv.tierName } : {},
+      revealClose: () => { if (this.state.reveal && this.state.reveal.done) this.setState({ reveal: null }); }, revealStop: e => e.stopPropagation(),
+      again: this.drawCard, againOff: !ready || info.avail < cost,
+    };
+    const test = this.testMode();
+    const toolVals = {
+      isTest: test, testSeed: this.testSeed, testReset: this.testReset,
+      tConfirm: !!s.tConfirm, tNoConfirm: !s.tConfirm, tAskReset: () => this.setState({ tConfirm: true }), tCancel: () => this.setState({ tConfirm: false }),
+      tBoostLabel: test && this.testDb().iconBoost ? 'Ikonen-Chance: 50 %' : 'Ikonen-Chance: 2 %',
+      tBoost: () => { const db = this.testDb(); db.iconBoost = !db.iconBoost; this.testSave(); this.forceUpdate(); },
+      tMsg: s.tMsg,
+      adOpen: !!s.adOpen, adToggle: () => this.setState(st => ({ adOpen: !st.adOpen, adMsg: '', adCount: null })),
+      adKey: s.adKey, onAdKey: e => this.setState({ adKey: e.target.value, adCount: null, adMsg: '' }),
+      adCheck: this.adCheck, adRun: this.adRun, adCanRun: s.adCount > 0, adMsg: s.adMsg, adBusy: s.adBusy,
+      adHint: test ? 'Testmodus: Der Schlüssel ist „test“.' : '',
+    };
+    const isAdminUser = s.srv === 'v2' && !!s.user && !!s.user.admin, A = s.adm || { users: [], items: [] };
+    const amItem = i => ({
+      title: i.name || 'Namenlos', sub: nameOf(i.model) + ' · #' + i.id + (i.user_name ? ' · von ' + i.user_name : ''),
+      meta: i.likes + (i.likes === 1 ? ' Like' : ' Likes') + ' · ' + i.drawn + '× gezogen',
+      bg: (this.adminArt && this.adminArt.get(i.id)) || 'none',
+      confirm: s.amConfirm === i.id, notConfirm: s.amConfirm !== i.id,
+      ask: () => this.setState({ amConfirm: i.id }), cancel: () => this.setState({ amConfirm: null }),
+      remove: () => this.adminItem(i.id, 'remove'), restore: () => this.adminItem(i.id, 'restore'),
+    });
+    const amG = A.items.filter(i => !i.hidden), amI = A.items.filter(i => i.icon), amR = A.items.filter(i => i.hidden && !i.icon);
+    const adminVals = {
+      isAdmin: isAdminUser, isAdminView: isAdminUser && s.view === 'admin',
+      tabAdminCls: s.view === 'admin' ? 'btn btn-primary' : 'btn btn-secondary',
+      goAdmin: () => { this.setState({ view: 'admin' }); setTimeout(() => this.loadAdmin(), 0); },
+      amReload: this.loadAdmin, amMsg: s.amMsg,
+      amStatus: s.amLoading ? 'lädt …' : A.users.length + ' Spieler · ' + amG.length + ' in der Galerie · ' + amI.length + ' Ikonen',
+      amUsers: A.users.map(u => ({
+        name: u.name + (u.admin ? ' (Admin)' : ''), liked: u.liked, bonus: u.bonus, spent: u.cards * Component.CARD_COST,
+        avail: Math.max(0, u.liked + u.bonus - u.cards * Component.CARD_COST), cards: u.cards, items: u.items,
+        amt: s.amAmt[u.id] == null ? '3' : s.amAmt[u.id],
+        onAmt: e => { const v = e.target.value; this.setState(st => ({ amAmt: { ...st.amAmt, [u.id]: v } })); },
+        give: () => this.adminBonus(u.id, u.name),
+      })),
+      amGallery: amG.map(amItem), amGalleryN: amG.length, amGalleryEmpty: !amG.length,
+      amIcons: amI.map(amItem), amIconsN: amI.length, amIconsEmpty: !amI.length,
+      amRemoved: amR.map(amItem), amRemovedN: amR.length, amHasRemoved: amR.length > 0,
+    };
+    const lgNewOpen = s.lgNew || (!s.lgLoading && !s.lgUsers.length && s.srv !== 'off');
+    const loginVals = {
+      needLogin: !s.user && !s.guest && s.srv !== 'old',
+      lgLoading: s.lgLoading && s.srv === 'unknown', lgHasUsers: s.lgUsers.length > 0,
+      lgUsers: s.lgUsers.map(u => ({ name: u.name, cls: u.id === s.lgSel ? 'btn btn-primary' : 'btn btn-secondary', pick: () => this.setState({ lgSel: u.id, lgPin: '', lgErr: '', lgNew: false }) })),
+      lgShowPin: s.lgSel != null, lgSelName: (s.lgUsers.find(u => u.id === s.lgSel) || {}).name || '',
+      lgPin: s.lgPin, onLgPin: e => this.setState({ lgPin: e.target.value, lgErr: '' }), lgPinKey: e => { if (e.key === 'Enter') this.lgLogin(); },
+      lgLogin: this.lgLogin, lgBusy: s.lgBusy,
+      lgNewOpen, lgNewClosed: !lgNewOpen && !s.lgLoading && s.srv !== 'off',
+      lgOpenNew: () => this.setState({ lgNew: true, lgSel: null, lgErr: '' }), lgCloseNew: () => this.setState({ lgNew: false, lgErr: '' }),
+      lgName: s.lgName, onLgName: e => this.setState({ lgName: e.target.value.slice(0, 24), lgErr: '' }),
+      lgPinNew: s.lgPinNew, onLgPinNew: e => this.setState({ lgPinNew: e.target.value, lgErr: '' }), lgNewKey: e => { if (e.key === 'Enter') this.lgCreate(); },
+      lgCreate: this.lgCreate, lgErr: s.lgErr, lgOff: s.srv === 'off', lgRetry: this.checkServer, lgGuest: () => this.setState({ guest: true }), lgTest: this.testMode(),
+      userName: s.user ? s.user.name : 'Gast', openMe: () => { if (this.state.user) this.openPlayer(this.state.user.id, this.state.user.name); }, logout: this.logout, logoutLabel: s.user ? 'Wechseln' : 'Anmelden', showLogout: s.srv !== 'old',
+    };
     return {
+      ...cardVals,
+      ...loginVals,
+      ...toolVals,
+      ...adminVals,
       models: M.map(m => ({ id: m.id, name: m.name, cls: m.id === s.model ? 'btn btn-primary' : 'btn btn-secondary', pick: () => this.setState({ model: m.id, morph: 0, params: Component.preset(m.id) }),
         pickRoll: () => this.setState(st => ({ model: m.id, morph: 0, params: this.applyExtras(this.randomParams(Component.preset(m.id)), st.extras, true), name: this.randomName(), shareMsg: '' })) })),
       onSorte: e => { const id = e.target.value; this.setState(st => ({ hist: this.pushHist(st), model: id, morph: 0, params: this.keepPinned(this.applyExtras(this.randomParams(Component.preset(id)), st.extras, true), st.params, st.extras.pins), name: this.randomName(), shareMsg: '' })); },
@@ -855,7 +2032,7 @@ class Component extends DCLogic {
       })),
       undo: this.undo, undoOff: !(s.hist && s.hist.length), undoLabel: s.hist && s.hist.length ? `Zurück (${s.hist.length})` : 'Zurück',
       setEye1: () => this.setExtra('eyeCount', 1), setEye2: () => this.setExtra('eyeCount', 2),
-      isSimple: s.view !== 'dev', isCreate: s.view === 'create', isGallery: s.view === 'gallery',
+      isSimple: s.view !== 'dev', isCreate: s.view === 'create' || (s.view === 'admin' && !isAdminUser) || (s.view === 'player' && !s.player), isGallery: s.view === 'gallery',
       devDisplay: s.view === 'dev' ? 'flex' : 'none',
       tabCreateCls: s.view === 'create' ? 'btn btn-primary' : 'btn btn-secondary',
       tabGalleryCls: s.view === 'gallery' ? 'btn btn-primary' : 'btn btn-secondary',
@@ -884,21 +2061,23 @@ class Component extends DCLogic {
       onLines3d: e => this.setState({ lines3d: e.target.checked }),
       canvasRef: this.canvasRef, svgRef: this.svgRef,
       loading: !s.ready, loadingText: s.error ? 'Fehler: ' + s.error : '3D-Engine lädt …',
-      apiOff: !this.api(),
+      apiOff: !this.connected(),
       share: this.share, shareLabel: s.shareMsg || 'In Galerie teilen',
       gNewCls: s.gSort === 'new' ? 'btn btn-primary' : 'btn btn-secondary',
       gTopCls: s.gSort === 'top' ? 'btn btn-primary' : 'btn btn-secondary',
       showNew: () => this.loadGallery('new'), showTop: () => this.loadGallery('top'), reloadGallery: () => this.loadGallery(),
-      gStatus: !this.api() ? 'nicht verbunden' : s.gLoading ? 'lädt …' : s.gError ? 'Fehler: ' + s.gError : `${s.gItems.length} Einträge`,
+      gStatus: !this.connected() ? 'nicht verbunden' : s.gLoading ? 'lädt …' : s.gError ? 'Fehler: ' + s.gError : `${s.gItems.length} Einträge`,
       gItems: s.gItems.map(it => {
-        const isLiked = s.liked.includes(it.id);
+        const v2 = s.srv === 'v2', own = v2 && !!s.user && it.user_id === s.user.id;
+        const isLiked = v2 ? !!it.liked : s.liked.includes(it.id);
         return {
           bg: it.svg ? `url("data:image/svg+xml,${encodeURIComponent(it.svg)}")` : 'none',
           title: it.name || `Namenlos #${it.id}`,
-          sub: `${nameOf(it.model)} · #${it.id}`,
+          sub: `${nameOf(it.model)} · #${it.id}`, hasOwner: !!it.user_name, owner: it.user_name || '', openOwner: () => this.openPlayer(it.user_id, it.user_name),
           open: () => this.setState({ view: s.view === 'dev' ? 'dev' : 'create', name: it.name || '', model: M.some(m => m.id === it.model) ? it.model : 'bohne', morph: 0, params: this.fromSaved(it.model, it.params) }),
-          likeCls: isLiked ? 'btn btn-primary' : 'btn btn-secondary',
-          likeLabel: `${isLiked ? 'Gefällt dir' : 'Gefällt mir'} · ${it.likes}`,
+          likeCls: isLiked && !own ? 'btn btn-primary' : 'btn btn-secondary',
+          likeLabel: own ? `Dein Wesen · ${it.likes}` : `${isLiked ? 'Gefällt dir' : 'Gefällt mir'} · ${it.likes}`,
+          likeOff: own || (v2 && !s.user),
           like: () => this.like(it.id),
           load: () => this.setState({ model: M.some(m => m.id === it.model) ? it.model : 'bohne', morph: 0, params: this.fromSaved(it.model, it.params) }),
         };
