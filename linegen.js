@@ -462,29 +462,82 @@ export function createEngine(canvas) {
       }
     }
 
-    // eye geometry
-    let eyeInfo = null;
+    // surface helpers
+    const surfPt = (ss, a) => { const P = new THREE.Vector3(), Nn = new THREE.Vector3(); grid.onMesh(clamp(ss, 0.002, 0.998), a, P, Nn); return { P, N: Nn }; };
+    const camRight = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+    const pxPer = P => { const a = proj(P), b = proj(tmp2.copy(P).addScaledVector(camRight, 1)); return Math.hypot(b[0] - a[0], b[1] - a[1]); };
+    const dS = (ss, a) => { const A = surfPt(ss - 0.01, a).P, B = surfPt(ss + 0.01, a).P; return B.sub(A).length() / 0.02 || 1; };
+    const dA = (ss, a) => { const A = surfPt(ss, a - 0.02).P, B = surfPt(ss, a + 0.02).P; return B.sub(A).length() / 0.04 || 1; };
+    const f2 = n => (Math.round(n * 100) / 100).toString();
+
+    // eyes (1-5)
+    const EYE_LAYOUT = [
+      [[0, 0, 1]],
+      [[-1, 0, 1], [1, 0, 1]],
+      [[-1.1, -0.2, 0.9], [0, 0.45, 1.1], [1.1, -0.2, 0.9]],
+      [[-1.6, -0.3, 0.85], [-0.55, 0.15, 1], [0.55, 0.15, 1], [1.6, -0.3, 0.85]],
+      [[0, 0, 1.15], [-1.35, -0.35, 0.85], [1.35, -0.35, 0.85], [-0.8, 1.05, 0.7], [0.85, 1.0, 0.75]],
+    ];
+    const EYE_SHRINK = [1, 0.78, 0.68, 0.6, 0.55];
+    const eyes = [];
+    let eyeLow = 0;
     eye3d.visible = !!p.eye && opt.lines3d !== false;
     if (p.eye) {
-      const P = new THREE.Vector3(), Nn = new THREE.Vector3();
-      grid.onMesh(p.eyeS, p.eyeA * D2R, P, Nn);
-      eye3d.position.copy(P).addScaledVector(Nn, 0.004); eye3d.lookAt(tmp.copy(P).add(Nn)); eye3d.scale.setScalar(p.eyeSize);
-      if (visible(P, Nn)) {
+      const n = clamp(Math.round(p.eyeCount ?? 1), 1, 5), lay = EYE_LAYOUT[n - 1];
+      const size0 = p.eyeSize * EYE_SHRINK[n - 1], sp = size0 * (p.eyeSpread ?? 1.15);
+      const a0 = p.eyeA * D2R, s0 = p.eyeS, rs = dS(s0, a0), ra = dA(s0, a0);
+      const er = mulberry32((p.seed | 0) * 131 + n * 17 + 5);
+      const base = surfPt(s0, a0);
+      eye3d.position.copy(base.P).addScaledVector(base.N, 0.004); eye3d.lookAt(tmp.copy(base.P).add(base.N)); eye3d.scale.setScalar(size0);
+      const bx = proj(base.P)[0];
+      eyeLow = Math.min(0, ...lay.map(l => l[1])) * sp - size0;
+      for (const [lx, ly, ls] of lay) {
+        const size = size0 * ls * (n > 1 ? 1 + (p.eyeVar ?? 0.3) * (er() - 0.5) * 0.9 : 1);
+        const { P, N } = surfPt(clamp(s0 + ly * sp / rs, 0.03, 0.97), a0 + lx * sp / ra);
+        if (!visible(P, N)) continue;
         const [cx, cy] = proj(P);
-        const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-        const [rx, ry] = proj(tmp2.copy(P).addScaledVector(right, p.eyeSize));
+        const [rx, ry] = proj(tmp2.copy(P).addScaledVector(camRight, size));
         const R = Math.hypot(rx - cx, ry - cy);
-        const [nx, ny] = proj(tmp2.copy(P).addScaledVector(Nn, 0.1));
+        const [nx, ny] = proj(tmp2.copy(P).addScaledVector(N, 0.1));
         const ang = Math.atan2(ny - cy, nx - cx) / D2R;
-        const cosT = Math.max(0.12, Nn.dot(tmp2.copy(camera.position).sub(P).normalize()));
-        eyeInfo = { cx, cy, R, ang, q: 1 + (cosT - 1) * p.eyePersp };
+        const cosT = Math.max(0.12, N.dot(tmp2.copy(camera.position).sub(P).normalize()));
+        const depth = -tmp.copy(P).applyMatrix4(camera.matrixWorldInverse).z;
+        eyes.push({ cx, cy, R, ang, q: 1 + (cosT - 1) * p.eyePersp, side: n > 1 ? (Math.sign(cx - bx) || 1) : 0, depth });
+      }
+      eyes.sort((a, b) => b.depth - a.depth);
+    }
+    const insideEye = (x, y, grow = 0) => eyes.some(({ cx, cy, R, ang, q }) => {
+      const c = Math.cos(-ang * D2R), sn = Math.sin(-ang * D2R), dx = x - cx, dy = y - cy, lx = dx * c - dy * sn, ly = dx * sn + dy * c;
+      return (lx / (R * q + grow)) ** 2 + (ly / (R + grow)) ** 2 <= 1;
+    });
+
+    // mouth: affine frame on the surface (x = around the body, y = down the body)
+    let mouth = null;
+    if (p.mouth) {
+      const a = (p.eyeA + (p.mouthA ?? 0)) * D2R, rs = dS(p.eyeS, a);
+      const ss = clamp(p.eyeS + ((p.eye ? eyeLow : 0) - (p.mouthDist ?? 0.16)) / rs, 0.04, 0.96);
+      const { P, N } = surfPt(ss, a);
+      if (visible(P, N)) {
+        const Ta = surfPt(ss, a + 0.02).P.sub(surfPt(ss, a - 0.02).P).normalize();
+        const Ts = surfPt(ss + 0.01, a).P.sub(surfPt(ss - 0.01, a).P).normalize();
+        const hw = p.mouthW ?? 0.17, hh = hw * (p.mouthH ?? 0.7);
+        const o = proj(P);
+        const px = proj(tmp2.copy(P).addScaledVector(Ta, hw)), mx = proj(tmp2.copy(P).addScaledVector(Ta, -hw));
+        const py = proj(tmp2.copy(P).addScaledVector(Ts, -hh)), my = proj(tmp2.copy(P).addScaledVector(Ts, hh));
+        const ex = [(px[0] - mx[0]) / 2, (px[1] - mx[1]) / 2], ey = [(py[0] - my[0]) / 2, (py[1] - my[1]) / 2];
+        if (ex[0] < 0) { ex[0] = -ex[0]; ex[1] = -ex[1]; }
+        mouth = { o, ex, ey, at: (lx, ly) => [o[0] + ex[0] * lx + ey[0] * ly, o[1] + ex[1] * lx + ey[1] * ly] };
       }
     }
-    const insideEye = (x, y, grow = 0) => {
-      if (!eyeInfo) return false;
-      const { cx, cy, R, ang, q } = eyeInfo, c = Math.cos(-ang * D2R), sn = Math.sin(-ang * D2R);
-      const dx = x - cx, dy = y - cy, lx = dx * c - dy * sn, ly = dx * sn + dy * c;
-      return (lx / (R * q + grow)) ** 2 + (ly / (R + grow)) ** 2 <= 1;
+
+    // keep-out zone around the mouth: pattern lines never touch or cross it
+    const insideMouth = (x, y) => {
+      if (!mouth) return false;
+      const { o, ex, ey } = mouth, det = ex[0] * ey[1] - ex[1] * ey[0];
+      if (Math.abs(det) < 1e-6) return false;
+      const dx = x - o[0], dy = y - o[1], lx = (dx * ey[1] - dy * ey[0]) / det, ly = (ex[0] * dy - ex[1] * dx) / det;
+      const m = Math.max(0.25, (p.patW * 0.8) / Math.max(1, Math.hypot(ex[0], ex[1])));
+      return (lx / (1.2 + m)) ** 2 + ((ly - 0.15) / (0.85 + m)) ** 2 <= 1;
     };
 
     // pattern: grid on the surface, cleaned up in 2D (no dead ends, no lines hugging other lines)
@@ -525,11 +578,12 @@ export function createEngine(canvas) {
       for (const l of loops) addPts(hOther, l, true);
       for (const r of innerKept) addPts(hOther, r.pts, r.closed);
       for (const r of contourKept) addPts(hOther, r.pts, r.closed);
-      if (eyeInfo) {
-        const { cx, cy, R, ang, q } = eyeInfo, c = Math.cos(ang * D2R), sn = Math.sin(ang * D2R), ep = [];
+      for (const { cx, cy, R, ang, q } of eyes) {
+        const c = Math.cos(ang * D2R), sn = Math.sin(ang * D2R), ep = [];
         for (let t = 0; t < 48; t++) { const lx = R * q * Math.cos(t / 48 * 2 * Math.PI), ly = R * Math.sin(t / 48 * 2 * Math.PI); ep.push([cx + lx * c - ly * sn, cy + lx * sn + ly * c]); }
         addPts(hOther, ep, true);
       }
+
 
       const rnd = mulberry32((p.patSeed | 0) * 7919 + 3);
       const s0 = clamp(Math.min(p.patFrom, p.patTo), 0.005, 0.995), s1 = clamp(Math.max(p.patFrom, p.patTo), 0.005, 0.995);
@@ -585,19 +639,20 @@ export function createEngine(canvas) {
       for (const r of runs) {
         if (acc.length >= maxLines) break;
         const a0 = r.pts[0], a1 = r.pts[r.pts.length - 1];
-        let tot = 0, nr = 0;
+        let tot = 0, nr = 0, mHit = false;
         for (let i = 0; i < r.pts.length - 1; i++) {
           const a = r.pts[i], b = r.pts[i + 1], L = Math.hypot(b[0] - a[0], b[1] - a[1]), st = Math.max(1, Math.ceil(L / 4));
           if (L < 1e-6) continue;
           const vx = (b[0] - a[0]) / L, vy = (b[1] - a[1]) / L;
           for (let t = 0; t < st; t++) {
             const x = a[0] + (b[0] - a[0]) * t / st, y = a[1] + (b[1] - a[1]) * t / st;
+            if (insideMouth(x, y)) mHit = true;
             if (Math.hypot(x - a0[0], y - a0[1]) < endX || Math.hypot(x - a1[0], y - a1[1]) < endX) continue;
             tot++;
             if (nearIn(hOther, x, y, gap, -2, vx, vy) || nearIn(hPat, x, y, gap, -2, vx, vy)) nr++;
           }
         }
-        if (tot >= 2 && nr / tot > 0.3) continue;
+        if (mHit || (tot >= 2 && nr / tot > 0.3)) continue;
         const ad = Math.max(8, p.patW * 1.2);
         r.anchA = (r.na >= 0 && anchor[r.na]) || nearIn(hOther, a0[0], a0[1], r.na >= 0 ? ad : ad * 1.6) || insideEye(a0[0], a0[1]);
         r.anchB = (r.nb >= 0 && anchor[r.nb]) || nearIn(hOther, a1[0], a1[1], r.nb >= 0 ? ad : ad * 1.6) || insideEye(a1[0], a1[1]);
@@ -616,6 +671,7 @@ export function createEngine(canvas) {
         dx /= L; dy /= L;
         for (let t = hitD + 2; t <= maxExt; t += 2) {
           const x = e[0] + dx * t, y = e[1] + dy * t;
+          if (insideMouth(x, y)) return false;
           if (nearIn(hOther, x, y, hitD) || nearIn(hKept, x, y, hitD, r.id) || insideEye(x, y)) {
             const hp = [x + dx * hitD * 0.5, y + dy * hitD * 0.5];
             if (atEnd) pts.push(hp); else pts.unshift(hp);
@@ -652,17 +708,121 @@ export function createEngine(canvas) {
 
     // eye svg
     let eyeSvg = '';
-    if (eyeInfo) {
-      const { cx, cy, R, ang, q } = eyeInfo;
+    eyes.forEach(({ cx, cy, R, ang, q, side }, i) => {
+      const tilt = side ? p.lidTilt * (side < 0 ? -1 : 1) : p.lidTilt;
       const lidY = -R + 2 * R * p.lid, ew = p.eyeLineW, big = R * 3;
-      const lid = p.lid > 0.005 ? `<g transform="rotate(${f1(p.lidTilt)})"><rect x="${f1(-big)}" y="${f1(-big)}" width="${f1(2 * big)}" height="${f1(big + lidY)}" fill="${p.cBody}"/><line x1="${f1(-big)}" y1="${f1(lidY)}" x2="${f1(big)}" y2="${f1(lidY)}" stroke="${p.cLine}" stroke-width="${f1(ew * 0.85)}"/></g>` : '';
-      const eye = `<g transform="translate(${f1(cx)} ${f1(cy)}) rotate(${f1(ang)})">` +
+      const lid = p.lid > 0.005 ? `<g transform="rotate(${f1(tilt)})"><rect x="${f1(-big)}" y="${f1(-big)}" width="${f1(2 * big)}" height="${f1(big + lidY)}" fill="${p.cBody}"/><line x1="${f1(-big)}" y1="${f1(lidY)}" x2="${f1(big)}" y2="${f1(lidY)}" stroke="${p.cLine}" stroke-width="${f1(ew * 0.85)}"/></g>` : '';
+      eyeSvg += `<defs><clipPath id="fgEye${i}"><ellipse rx="${f1(R * q)}" ry="${f1(R)}"/></clipPath></defs>` +
+        `<g transform="translate(${f1(cx)} ${f1(cy)}) rotate(${f1(ang)})">` +
         `<ellipse rx="${f1(R * q)}" ry="${f1(R)}" fill="${p.cEye}"/>` +
-        `<g clip-path="url(#fgEye)"><g transform="rotate(${f1(-ang)})">` +
+        `<g clip-path="url(#fgEye${i})"><g transform="rotate(${f1(-ang)})">` +
         `<circle cx="${f1(p.pupilX * R * 0.6)}" cy="${f1(p.pupilY * R * 0.6)}" r="${f1(p.pupil * R)}" fill="${p.cLine}"/>${lid}</g></g>` +
         `<ellipse rx="${f1(R * q)}" ry="${f1(R)}" fill="none" stroke="${p.cLine}" stroke-width="${f1(ew)}"/></g>`;
-      eyeSvg = `<defs><clipPath id="fgEye"><ellipse rx="${f1(R * q)}" ry="${f1(R)}"/></clipPath></defs>` +
-        (p.eyeClip ? `<g clip-path="url(#fgBody)">${eye}</g>` : eye);
+    });
+    if (eyeSvg && p.eyeClip) eyeSvg = `<g clip-path="url(#fgBody)">${eyeSvg}</g>`;
+
+    // mouth svg
+    let mouthSvg = '';
+    if (mouth) {
+      const { o, ex, ey } = mouth, c = clamp(p.mouthCurve ?? 0.5, -1, 1), t = clamp(Math.round(p.mouthType ?? 0), 0, 4), cc = clamp(c, 0.1, 1);
+      const VE = 'vector-effect="non-scaling-stroke"', mw = f1(p.eyeLineW);
+      const open = `M-1 -0.2C-0.4 ${f2(-0.2 + 0.2 * cc)} 0.4 ${f2(-0.2 + 0.2 * cc)} 1 -0.2C0.9 ${f2(0.5 + 0.7 * cc)} -0.9 ${f2(0.5 + 0.7 * cc)} -1 -0.2Z`;
+      let inner = '';
+      if (t === 0) inner = `<path d="M-1 0Q0 ${f2(c * 0.9)} 1 0" fill="none" stroke="${p.cLine}" stroke-width="${mw}" stroke-linecap="round" ${VE}/>`;
+      else if (t === 4) inner = `<path d="M-1 0.05C-0.4 ${f2(0.25 + 0.4 * cc)} 0.35 ${f2(0.2 + 0.3 * cc)} 1 -0.45M0.8 -0.62Q1.05 -0.48 1.08 -0.22" fill="none" stroke="${p.cLine}" stroke-width="${mw}" stroke-linecap="round" ${VE}/>`;
+      else {
+        let extra = '';
+        if (t === 2) extra = `<rect x="-1.2" y="-0.4" width="2.4" height="0.55" fill="${p.cEye}"/><path d="M-0.33 -0.4V0.15M0.33 -0.4V0.15M-1.2 0.15H1.2" fill="none" stroke="${p.cLine}" stroke-width="${f1(p.eyeLineW * 0.7)}" ${VE}/>`;
+        if (t === 3) extra = `<ellipse cx="0.15" cy="${f2(0.45 + 0.6 * cc)}" rx="0.6" ry="${f2(0.25 + 0.3 * cc)}" fill="#e8746a"/>`;
+        inner = `<defs><clipPath id="fgMouth"><path d="${open}"/></clipPath></defs>` +
+          `<path d="${open}" fill="${p.cLine}"/>` + (extra ? `<g clip-path="url(#fgMouth)">${extra}</g>` : '') +
+          `<path d="${open}" fill="none" stroke="${p.cLine}" stroke-width="${mw}" stroke-linejoin="round" ${VE}/>`;
+      }
+      const halo = t === 0 || t === 4 ? `<ellipse cx="0" cy="0.1" rx="1.25" ry="0.8" fill="${p.cBody}"/>` : '';
+      mouthSvg = `<g clip-path="url(#fgBody)"><g transform="matrix(${f1(ex[0])} ${f1(ex[1])} ${f1(ey[0])} ${f1(ey[1])} ${f1(o[0])} ${f1(o[1])})">${halo}${inner}</g></g>`;
+    }
+
+    // hat on the top tip
+    let hatSvg = '';
+    if (p.hat) {
+      const sR = clamp(1 - (p.hatSink ?? 0.1), 0.5, 0.99);
+      const cen = ss => { const c = new THREE.Vector3(), pts = []; for (let k = 0; k < 16; k++) { const q = surfPt(ss, 2 * Math.PI * k / 16).P; pts.push(q); c.add(q); } return { c: c.multiplyScalar(1 / 16), pts }; };
+      const top = cen(sR), low = cen(sR - 0.06);
+      const A3 = top.c.clone().sub(low.c); if (A3.lengthSq() < 1e-10) A3.set(0, 1, 0); A3.normalize();
+      const c2 = proj(top.c), u3 = proj(tmp2.copy(top.c).addScaledVector(A3, 0.3));
+      let ux = u3[0] - c2[0], uy = u3[1] - c2[1]; const ul = Math.hypot(ux, uy);
+      if (ul < 4) { ux = 0; uy = -1; } else { ux /= ul; uy /= ul; }
+      let hw = 0; for (const q of top.pts) { const r = proj(q); hw = Math.max(hw, Math.abs((r[0] - c2[0]) * -uy + (r[1] - c2[1]) * ux)); }
+      hw = Math.max(hw, pxPer(top.c) * 0.12);
+      const tp = proj(surfPt(0.998, 0).P), tipH = Math.max(0, (tp[0] - c2[0]) * ux + (tp[1] - c2[1]) * uy);
+      const W = 2 * hw * (p.hatSize ?? 1.1), lw = p.lineW * 0.85, ht = clamp(Math.round(p.hatType ?? 0), 0, 3);
+      const th = Math.atan2(ux, -uy) / D2R + (p.hatTilt ?? 0);
+      const F = n => f1(n), col = p.hatColor || '#e4572e';
+      let body = '';
+      if (ht === 0) {
+        const H = Math.max(0.85 * W, tipH + lw * 1.5), crown = `M${F(-0.36 * W)} 0L${F(-0.33 * W)} ${F(-H)}L${F(0.33 * W)} ${F(-H)}L${F(0.36 * W)} 0Z`;
+        body = `<defs><clipPath id="fgHat"><path d="${crown}"/></clipPath></defs><path d="${crown}"/>` +
+          `<g clip-path="url(#fgHat)"><rect x="${F(-W)}" y="${F(-0.3 * W)}" width="${F(2 * W)}" height="${F(0.14 * W)}" fill="${p.cLine}" stroke="none"/></g>` +
+          `<rect x="${F(-0.62 * W)}" y="${F(-0.07 * W)}" width="${F(1.24 * W)}" height="${F(0.14 * W)}" rx="${F(0.07 * W)}"/>`;
+      } else if (ht === 1) {
+        const H = Math.max(1.0 * W, tipH * 1.15 + lw * 2), tri = `M${F(-0.4 * W)} 0L0 ${F(-H)}L${F(0.4 * W)} 0Z`;
+        body = `<defs><clipPath id="fgHat"><path d="${tri}"/></clipPath></defs><path d="${tri}"/>` +
+          `<g clip-path="url(#fgHat)" fill="none"><path d="M${F(-W)} ${F(-0.3 * H)}L${F(W)} ${F(-0.55 * H)}M${F(-W)} ${F(-0.62 * H)}L${F(W)} ${F(-0.87 * H)}"/></g>` +
+          `<circle cx="0" cy="${F(-H)}" r="${F(0.11 * W)}" fill="${p.cEye}"/>`;
+      } else if (ht === 2) {
+        const H = Math.max(0.5 * W, tipH * 0.75 + lw), cr = `M${F(-0.42 * W)} 0L${F(-0.46 * W)} ${F(-H)}L${F(-0.23 * W)} ${F(-0.55 * H)}L0 ${F(-1.08 * H)}L${F(0.23 * W)} ${F(-0.55 * H)}L${F(0.46 * W)} ${F(-H)}L${F(0.42 * W)} 0Z`;
+        body = `<path d="${cr}"/><path d="M${F(-0.43 * W)} ${F(-0.2 * H)}L${F(0.43 * W)} ${F(-0.2 * H)}" fill="none"/>` +
+          [[-0.46, -1], [0, -1.08], [0.46, -1]].map(([x, y]) => `<circle cx="${F(x * W)}" cy="${F(y * H)}" r="${F(0.06 * W)}" fill="${p.cEye}"/>`).join('');
+      } else {
+        const H = Math.max(0.6 * W, tipH + lw * 1.5);
+        body = `<path d="M${F(-0.5 * W)} 0C${F(-0.5 * W)} ${F(-1.25 * H)} ${F(0.5 * W)} ${F(-1.25 * H)} ${F(0.5 * W)} 0Z"/>` +
+          `<circle cx="0" cy="${F(-0.94 * H - 0.08 * W)}" r="${F(0.12 * W)}" fill="${p.cEye}"/>` +
+          `<rect x="${F(-0.54 * W)}" y="${F(-0.16 * W)}" width="${F(1.08 * W)}" height="${F(0.24 * W)}" rx="${F(0.06 * W)}"/>`;
+      }
+      hatSvg = `<g transform="translate(${F(c2[0])} ${F(c2[1])}) rotate(${F(th)})" fill="${col}" stroke="${p.cLine}" stroke-width="${F(lw)}" stroke-linejoin="round" stroke-linecap="round">${body}</g>`;
+    }
+
+    // one arm with a hand (attached or floating)
+    let armBack = '', armFront = '';
+    if (p.arms) {
+      const sA = clamp(p.armS ?? 0.45, 0.05, 0.95);
+      const cen = ss => { const c = new THREE.Vector3(); for (let k = 0; k < 12; k++) c.add(surfPt(ss, 2 * Math.PI * k / 12).P); return c.multiplyScalar(1 / 12); };
+      const Cw = cen(sA), c = proj(Cw), cu = proj(cen(Math.min(0.99, sA + 0.05))), cd = proj(cen(Math.max(0.01, sA - 0.05)));
+      let Dx = cu[0] - cd[0], Dy = cu[1] - cd[1]; const Dl = Math.hypot(Dx, Dy);
+      if (Dl < 2) { Dx = 0; Dy = -1; } else { Dx /= Dl; Dy /= Dl; }
+      const side = (p.armSide ?? 1) >= 0 ? 1 : -1;
+      let ox = -Dy, oy = Dx; if (ox < 0) { ox = -ox; oy = -oy; } ox *= side; oy *= side;
+      const inside = (fx, fy) => { const nx = fx / FW * 2 - 1, ny = 1 - fy / FH * 2; const gx = Math.round((nx / SCALE + 1) / 2 * MW - 0.5), gy = Math.round((ny / SCALE + 1) / 2 * MH - 0.5); return gx >= 0 && gy >= 0 && gx < MW && gy < MH && cov[gy * MW + gx] >= 0.5; };
+      let ex = c[0], ey = c[1], seen = false;
+      for (let t = 0; t < 900; t += 1.5) { const x = c[0] + ox * t, y = c[1] + oy * t; if (inside(x, y)) { seen = true; ex = x; ey = y; } else if (seen) break; }
+      const U = pxPer(Cw), lw = p.lineW * 0.85;
+      const L = (p.armLen ?? 0.5) * U, thk = (p.armThick ?? 0.07) * U, hs = (p.handSize ?? 0.12) * U;
+      const pose = clamp(p.armPose ?? 0.2, -1, 1) * 75 * D2R;
+      const dx = ox * Math.cos(pose) + Dx * Math.sin(pose), dy = oy * Math.cos(pose) + Dy * Math.sin(pose);
+      const E = [ex - ox * lw * 0.6, ey - oy * lw * 0.6];
+      const hand = (hx, hy, vx, vy) => {
+        const ang = Math.atan2(vy, vx) / D2R, flip = (vy * Dx - vx * Dy) < 0 ? -1 : 1, h = hs;
+        const ht = clamp(Math.round(p.handType ?? 0), 0, 2);
+        let sh;
+        if (ht === 0) sh = `<ellipse cx="${F(0.75 * h)}" cy="0" rx="${F(0.85 * h)}" ry="${F(0.72 * h)}"/><circle cx="${F(0.45 * h)}" cy="${F(-0.68 * h)}" r="${F(0.32 * h)}"/>`;
+        else if (ht === 1) sh = `<circle cx="${F(0.55 * h)}" cy="0" r="${F(0.6 * h)}"/>` + [[1.15, -0.42], [1.32, 0.02], [1.12, 0.45], [0.42, -0.72]].map(([x, y], i) => `<circle cx="${F(x * h)}" cy="${F(y * h)}" r="${F((i === 3 ? 0.27 : 0.3) * h)}"/>`).join('');
+        else sh = `<circle cx="${F(0.6 * h)}" cy="0" r="${F(0.68 * h)}"/>`;
+        const fill = p.handGlove ? p.cEye : p.cBody;
+        return `<g transform="translate(${F(hx)} ${F(hy)}) rotate(${F(ang)}) scale(1 ${flip})"><g fill="${p.cLine}" stroke="${p.cLine}" stroke-width="${F(2 * lw)}" stroke-linejoin="round">${sh}</g><g fill="${fill}">${sh}</g></g>`;
+      };
+      const F = n => f1(n);
+      if (Math.round(p.armMode ?? 0) === 0) {
+        const end = [E[0] + dx * L, E[1] + dy * L];
+        let px = -dy, py = dx; if (px * Dx + py * Dy > 0) { px = -px; py = -py; }
+        const bend = p.armBend ?? 0.35, ctrl = [E[0] + dx * L * 0.5 + px * bend * L * 0.4, E[1] + dy * L * 0.5 + py * bend * L * 0.4];
+        const d = `M${F(E[0])} ${F(E[1])}Q${F(ctrl[0])} ${F(ctrl[1])} ${F(end[0])} ${F(end[1])}`;
+        armBack = `<path d="${d}" fill="none" stroke="${p.cLine}" stroke-width="${F(thk + 2 * lw)}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${p.cBody}" stroke-width="${F(thk)}" stroke-linecap="round"/>`;
+        let vx = end[0] - ctrl[0], vy = end[1] - ctrl[1]; const vl = Math.hypot(vx, vy) || 1;
+        armFront = hand(end[0], end[1], vx / vl, vy / vl);
+      } else {
+        const gap = (p.armGap ?? 0.12) * U, hx = E[0] + ox * gap + dx * L * 0.55, hy = E[1] + oy * gap + dy * L * 0.55;
+        armFront = hand(hx, hy, dx, dy);
+      }
     }
 
     renderer.render(scene, camera);
@@ -671,11 +831,12 @@ export function createEngine(canvas) {
     const grp = (ds, w) => ds.length && w > 0 ? `<g clip-path="url(#fgBody)" fill="none" stroke="${p.cLine}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="${join}" stroke-miterlimit="4">${ds.map(d => `<path d="${d}"/>`).join('')}</g>` : '';
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${FW} ${FH}" width="100%" height="100%" style="display:block">` +
       `<defs><clipPath id="fgBody"><path d="${outlineD}" clip-rule="evenodd"/></clipPath></defs>` +
-      `<rect width="${FW}" height="${FH}" fill="${p.cBg}"/>` +
+      `<rect width="${FW}" height="${FH}" fill="${p.cBg}"/>` + armBack +
       (outlineD ? `<path d="${outlineD}" fill="${p.cBody}" fill-rule="evenodd"/>` : '') +
       grp(patDs, p.patW) + grp(innerDs.concat(contourDs), p.innerW) +
-      eyeSvg +
+      mouthSvg + eyeSvg +
       (outlineD && p.lineW > 0 ? `<path d="${outlineD}" fill="none" stroke="${p.cLine}" stroke-width="${p.lineW}" stroke-linejoin="${join}" stroke-miterlimit="4"/>` : '') +
+      armFront + hatSvg +
       `</svg>`;
     return { svg, dbg };
   }
