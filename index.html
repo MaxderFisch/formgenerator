@@ -33,11 +33,29 @@
 
     <sc-if value="{{ isCreate }}" hint-placeholder-val="{{ true }}">
       <div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:var(--space-8);padding:var(--space-6)">
-        <div style="flex:0 1 180px;min-width:150px;display:flex;flex-direction:column;gap:var(--space-2)">
-          <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:var(--space-1)">Kategorie</div>
-          <sc-for list="{{ models }}" as="m" hint-placeholder-count="7">
-            <button class="{{ m.cls }}" onClick="{{ m.pickRoll }}" style="justify-content:flex-start;padding:8px 12px;font-size:14px">{{ m.name }}</button>
-          </sc-for>
+        <div style="flex:0 1 220px;min-width:190px;display:flex;flex-direction:column;gap:var(--space-4)">
+          <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+            <label style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Sorte</label>
+            <select class="input" value="{{ model }}" onChange="{{ onSorte }}" style="font-size:15px;cursor:pointer">
+              <sc-for list="{{ models }}" as="m" hint-placeholder-count="7">
+                <option value="{{ m.id }}">{{ m.name }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div style="border-top:2px solid var(--color-divider);padding-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-3)">
+            <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Extras</div>
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exEye }}" onChange="{{ onExEye }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Augen</label>
+            <sc-if value="{{ exEye }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-2);padding-left:28px">
+                <button class="{{ eye1Cls }}" onClick="{{ setEye1 }}" style="justify-content:flex-start;padding:6px 10px;font-size:13px">1 Auge</button>
+                <button class="{{ eye2Cls }}" onClick="{{ setEye2 }}" style="justify-content:flex-start;padding:6px 10px;font-size:13px">2 Augen</button>
+              </div>
+            </sc-if>
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exMouth }}" onChange="{{ onExMouth }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Mund</label>
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exHat }}" onChange="{{ onExHat }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Kopfbedeckung</label>
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exArms }}" onChange="{{ onExArms }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Hand</label>
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exPattern }}" onChange="{{ onExPattern }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Muster</label>
+          </div>
         </div>
         <div style="flex:1 1 360px;max-width:calc((100vh - 130px) * 0.75);min-width:260px;display:flex;flex-direction:column;gap:var(--space-3)">
           <div ref="{{ svgRef2 }}" style="width:100%;aspect-ratio:3/4;background:var(--color-surface)"></div>
@@ -365,6 +383,9 @@ class Component extends DCLogic {
       { k: 'F10', id: 'eyePersp', label: 'Perspektive', min: 0, max: 1, step: 0.01, def: 0.5, hint: '0 flacher Kreis · 1 folgt der Oberfläche' },
       { k: 'F11', id: 'eyeLineW', label: 'Linien-Stärke', min: 0, max: 30, step: 0.5, def: 9 },
       { k: 'F12', id: 'eyeClip', label: 'Am Umriss schneiden', t: 'bool', def: true },
+      { k: 'F13', id: 'eyeCount', label: 'Anzahl Augen', t: 'int', min: 1, max: 5, step: 1, def: 1 },
+      { k: 'F14', id: 'eyeSpread', label: 'Augen-Abstand', min: 0.6, max: 2.5, step: 0.01, def: 1.15 },
+      { k: 'F15', id: 'eyeVar', label: 'Augen ungleich', min: 0, max: 1, step: 0.01, def: 0.3 },
     ] },
     { key: 'G', title: 'Muster', params: [
       { k: 'G1', id: 'pattern', label: 'Muster', t: 'bool', def: true },
@@ -381,6 +402,37 @@ class Component extends DCLogic {
       { k: 'G10', id: 'patW', label: 'Linienstärke', min: 0, max: 40, step: 0.5, def: 9 },
       { k: 'G11', id: 'patSeed', label: 'Muster-Seed', t: 'int', min: 0, max: 999, step: 1, def: 1 },
     ] },
+    { key: 'I', title: 'Mund', params: [
+      { k: 'I1', id: 'mouth', label: 'Mund', t: 'bool', def: false },
+      { k: 'I2', id: 'mouthType', label: 'Art', t: 'int', min: 0, max: 4, step: 1, def: 0, names: ['Strich', 'Offen', 'Zähne', 'Zunge', 'Schief'] },
+      { k: 'I3', id: 'mouthCurve', label: 'Lächeln', min: -1, max: 1, step: 0.01, def: 0.5, hint: '− traurig · + fröhlich' },
+      { k: 'I4', id: 'mouthW', label: 'Breite', min: 0.05, max: 0.5, step: 0.005, def: 0.17 },
+      { k: 'I5', id: 'mouthH', label: 'Höhe', min: 0.2, max: 1.5, step: 0.01, def: 0.7 },
+      { k: 'I6', id: 'mouthDist', label: 'Abstand zu Augen', min: 0, max: 1, step: 0.01, def: 0.16 },
+      { k: 'I7', id: 'mouthA', label: 'Seitlich', min: -60, max: 60, step: 1, def: 0, unit: '°' },
+    ] },
+    { key: 'J', title: 'Kopfbedeckung', params: [
+      { k: 'J1', id: 'hat', label: 'Kopfbedeckung', t: 'bool', def: false },
+      { k: 'J2', id: 'hatType', label: 'Art', t: 'int', min: 0, max: 3, step: 1, def: 0, names: ['Zylinder', 'Partyhut', 'Krone', 'Mütze'] },
+      { k: 'J3', id: 'hatSize', label: 'Größe', min: 0.5, max: 2, step: 0.01, def: 1.1 },
+      { k: 'J4', id: 'hatSink', label: 'Sitz-Tiefe', min: 0.02, max: 0.3, step: 0.005, def: 0.1 },
+      { k: 'J5', id: 'hatTilt', label: 'Schräg', min: -45, max: 45, step: 1, def: 8, unit: '°' },
+      { k: 'J6', id: 'hatColor', label: 'Farbe', t: 'color', def: '#e4572e' },
+    ] },
+    { key: 'K', title: 'Arm & Hand', params: [
+      { k: 'K1', id: 'arms', label: 'Arm', t: 'bool', def: false },
+      { k: 'K2', id: 'armMode', label: 'Art', t: 'int', min: 0, max: 1, step: 1, def: 0, names: ['angewachsen', 'schwebend'] },
+      { k: 'K3', id: 'armSide', label: 'Seite', t: 'int', min: -1, max: 1, step: 2, def: 1, names: { '-1': 'links', '1': 'rechts' } },
+      { k: 'K4', id: 'armS', label: 'Höhe am Körper', min: 0.1, max: 0.9, step: 0.01, def: 0.45 },
+      { k: 'K5', id: 'armLen', label: 'Länge', min: 0.1, max: 1.2, step: 0.01, def: 0.5 },
+      { k: 'K6', id: 'armThick', label: 'Dicke', min: 0.02, max: 0.2, step: 0.005, def: 0.07 },
+      { k: 'K7', id: 'armPose', label: 'Haltung', min: -1, max: 1, step: 0.01, def: 0.3, hint: '− hängt · + hebt' },
+      { k: 'K8', id: 'armBend', label: 'Ellbogen', min: -1, max: 1, step: 0.01, def: 0.35 },
+      { k: 'K9', id: 'armGap', label: 'Abstand (schwebend)', min: 0, max: 0.6, step: 0.01, def: 0.14 },
+      { k: 'K10', id: 'handType', label: 'Hand', t: 'int', min: 0, max: 2, step: 1, def: 0, names: ['Fäustling', '3 Finger', 'Kugel'] },
+      { k: 'K11', id: 'handSize', label: 'Hand-Größe', min: 0.04, max: 0.3, step: 0.005, def: 0.12 },
+      { k: 'K12', id: 'handGlove', label: 'Weißer Handschuh', t: 'bool', def: false },
+    ] },
     { key: 'H', title: 'Farbe', params: [
       { k: 'H1', id: 'cBody', label: 'Körper', t: 'color', def: '#62b04a' },
       { k: 'H2', id: 'cBg', label: 'Hintergrund', t: 'color', def: '#b5c7dd' },
@@ -388,13 +440,13 @@ class Component extends DCLogic {
       { k: 'H4', id: 'cEye', label: 'Augenweiß', t: 'color', def: '#ffffff' },
     ] },
   ];
-  static BASIC = new Set(['A1', 'A2', 'A3', 'A4', 'A7', 'A9', 'A10', 'B1', 'B2', 'B4', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'E1', 'E2', 'E3', 'E4', 'E6', 'E9', 'E13', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'G1', 'G2', 'G3', 'G4', 'G5', 'G12', 'G13', 'G10', 'G11', 'H1', 'H2']);
+  static BASIC = new Set(['A1', 'A2', 'A3', 'A4', 'A7', 'A9', 'A10', 'B1', 'B2', 'B4', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'E1', 'E2', 'E3', 'E4', 'E6', 'E9', 'E13', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'G1', 'G2', 'G3', 'G4', 'G5', 'G12', 'G13', 'G10', 'G11', 'H1', 'H2', 'F13', 'I1', 'I2', 'I3', 'J1', 'J2', 'J3', 'J6', 'K1', 'K2', 'K3', 'K5', 'K7', 'K10', 'K12']);
 
   static MODELS = [
+    { id: 'raupe', name: 'Raupe', p: { length: 3.3, rTop: 0.4, rBot: 0.38, waist: 0, depth: 0.9, sqExp: 2.2, capTop: 0.45, capBot: 0.55, capLen: 0.9, bend: 0.1, sCurve: 0.55, ribs: 0.18, ribN: 6, segL: 96, segR: 40, meridian: false, eyeS: 0.9, eyeA: 20, eyeSize: 0.14, zoom: 0.9, roll: 0, cBody: '#e2b53a', cBg: '#c9d7c0' } },
     { id: 'bohne', name: 'Bohne', p: {} },
     { id: 'kokon', name: 'Kokon', p: { length: 2.7, rTop: 0.42, rBot: 0.72, waist: -0.12, waistPos: 0.4, depth: 0.75, sqExp: 1.35, asym: 0.25, capTop: 0.95, capBot: 0.3, capLen: 1.2, bend: 0.55, bendPos: 0.62, bendWidth: 0.3, bendZ: 0.2, twist: 20, segL: 7, segR: 6, flat: true, yaw: 30, pitch: 10, roll: 20, zoom: 1.75, panX: 0.05, panY: -0.3, fov: 35, lineW: 14, innerW: 11, simplify: 2, round: 1, ring: true, ringPos: 0.35, ringTilt: 0.08, meridian: true, meridianA: 25, meridianFrom: 0.1, meridianTo: 0.95, eyeS: 0.8, eyeA: -20, eyeSize: 0.19, lid: 0.38, lidTilt: -10, pupil: 0.4, pupilX: 0.2, pupilY: -0.1, ring: false, meridian: false, pattern: true, patRings: 2, patMer: 4, patDiag: 0.35, patKeep: 0.75, patJitter: 0.3, patFrom: 0.12, patTo: 0.92, patW: 11, patSeed: 4, patMax: 10 } },
     { id: 'tropfen', name: 'Tropfen', p: { length: 2.0, rTop: 0.22, rBot: 0.82, waist: 0, depth: 1, capTop: 1.25, capBot: 0.45, capLen: 1.5, bend: 0.18, bendPos: 0.7, meridian: false, ring: true, ringPos: 0.3, ringTilt: 0.04, eyeS: 0.55, eyeA: 0, eyeSize: 0.22, lid: 0.15, roll: 0, cBody: '#4d97d1', cBg: '#efe3c4' } },
-    { id: 'raupe', name: 'Raupe', p: { length: 3.3, rTop: 0.4, rBot: 0.38, waist: 0, depth: 0.9, sqExp: 2.2, capTop: 0.45, capBot: 0.55, capLen: 0.9, bend: 0.1, sCurve: 0.55, ribs: 0.18, ribN: 6, segL: 96, segR: 40, meridian: false, eyeS: 0.9, eyeA: 20, eyeSize: 0.14, zoom: 0.9, roll: 0, cBody: '#e2b53a', cBg: '#c9d7c0' } },
     { id: 'kiesel', name: 'Kiesel', p: { length: 1.5, rTop: 0.78, rBot: 0.82, waist: 0, depth: 0.6, sqExp: 2.6, capTop: 0.35, capBot: 0.35, capLen: 0.9, bend: 0.12, noise: 0.1, noiseScale: 2.5, seed: 3, segL: 48, segR: 40, pitch: 20, roll: -6, zoom: 1.15, meridianA: -20, meridianFrom: 0.05, meridianTo: 0.95, eyeS: 0.68, eyeA: -15, eyeSize: 0.2, lid: 0.5, lidTilt: 0, cBody: '#9a8fc9', cBg: '#f0d9cf' } },
     { id: 'horn', name: 'Horn', p: { length: 3.0, rTop: 0.08, rBot: 0.66, waist: 0, capTop: 1.2, capBot: 0.4, bend: 0.72, bendPos: 0.6, bendWidth: 0.55, bendZ: 0.3, meridianA: -50, meridianFrom: 0.05, meridianTo: 0.85, eyeS: 0.3, eyeA: 20, eyeSize: 0.2, roll: 0, yaw: 15, cBody: '#d8664a', cBg: '#e9e4da' } },
     { id: 'kristall', name: 'Kristall', p: { length: 2.1, rTop: 0.5, rBot: 0.6, waist: 0.05, depth: 0.9, capTop: 0.6, capBot: 0.6, capLen: 1.1, bend: -0.25, segL: 4, segR: 5, flat: true, simplify: 1, round: 0, joinRound: false, meridianA: 0, meridianFrom: 0, meridianTo: 1, eyeS: 0.66, eyeA: 10, eyeSize: 0.17, yaw: 12, roll: -8, cBody: '#3fb3a6', cBg: '#f2f0e8' } },
@@ -411,7 +463,9 @@ class Component extends DCLogic {
     try { liked = JSON.parse(localStorage.getItem('formgen.liked.v1') || '[]') || []; } catch (e) {}
     let ui = {};
     try { ui = JSON.parse(localStorage.getItem('formgen.ui.v1') || '{}') || {}; } catch (e) {}
-    const base = { view: ui.view || 'create', name: ui.name || '', gSort: 'new', gItems: [], gLoading: false, gError: '', shareMsg: '', liked, model: 'bohne', target: 'kokon', morph: 0, params: Component.preset('bohne'), wire: false, lines3d: true, collapsed: {}, copied: false, ready: false, error: '', basicOnly: true, snaps, snapsCopied: false };
+    const exSaved = { eye: true, eyeCount: 1, mouth: false, hat: false, arms: false, pattern: true, ...(ui.extras || {}) };
+    exSaved.eyeCount = exSaved.eyeCount === 2 ? 2 : 1;
+    const base = { extras: exSaved, view: ui.view || 'create', name: ui.name || '', gSort: 'new', gItems: [], gLoading: false, gError: '', shareMsg: '', liked, model: 'raupe', target: 'kokon', morph: 0, params: Component.preset('raupe'), wire: false, lines3d: true, collapsed: {}, copied: false, ready: false, error: '', basicOnly: true, snaps, snapsCopied: false };
     try {
       const s = JSON.parse(localStorage.getItem('formgen.v1') || 'null');
       if (s && s.params) return { ...base, model: s.model || 'bohne', target: s.target || 'kokon', morph: s.morph || 0, params: { ...Component.defaults(), ...s.params }, wire: !!s.wire, lines3d: s.lines3d !== false, collapsed: s.collapsed || {}, basicOnly: s.basicOnly !== false };
@@ -511,7 +565,7 @@ class Component extends DCLogic {
     if (!prev || prev[0] !== key[0] || prev[1] !== key[1] || prev[2] !== key[2]) { this.lastKey = key; this.schedule(); }
     clearTimeout(this.saveT);
     this.saveT = setTimeout(() => {
-      try { localStorage.setItem('formgen.ui.v1', JSON.stringify({ view: s.view, name: s.name })); } catch (e) {}
+      try { localStorage.setItem('formgen.ui.v1', JSON.stringify({ view: s.view, name: s.name, extras: s.extras })); } catch (e) {}
       try { localStorage.setItem('formgen.v1', JSON.stringify({ model: s.model, target: s.target, morph: s.morph, params: s.params, wire: s.wire, lines3d: s.lines3d, collapsed: s.collapsed, basicOnly: s.basicOnly })); } catch (e) {}
     }, 300);
   }
@@ -550,6 +604,7 @@ class Component extends DCLogic {
   }
   fmt(d, v) {
     if (d.t === 'bool') return v ? 'an' : 'aus';
+    if (d.names && d.names[v] !== undefined) return d.names[v];
     if (d.t === 'color') return String(v).toUpperCase();
     const dec = Math.max(0, -Math.floor(Math.log10(d.step) + 1e-9));
     return Number(v).toFixed(dec) + (d.unit || '');
@@ -564,7 +619,28 @@ class Component extends DCLogic {
     const first = pick(Component.NAME_A) + pick(Component.NAME_B);
     return Math.random() < 0.65 ? `${first} ${pick(Component.NAME_C)}` : first;
   }
-  roll = () => this.setState(s => ({ params: this.randomParams(Component.preset(s.model)), morph: 0, name: this.randomName(), shareMsg: '' }));
+  static HAT_COLORS = ['#e4572e', '#f2c14e', '#4d97d1', '#ffffff', '#9a8fc9', '#3fb3a6', '#2f2d2c'];
+  rollPart(key, p) {
+    const R = (a, b) => a + Math.random() * (b - a), I = n => Math.floor(Math.random() * n);
+    if (key === 'mouth') Object.assign(p, { mouthType: I(5), mouthCurve: +R(-0.5, 1).toFixed(2), mouthW: +R(0.12, 0.24).toFixed(3), mouthH: +R(0.5, 0.9).toFixed(2), mouthDist: +R(0.1, 0.22).toFixed(2), mouthA: Math.round(R(-12, 12)) });
+    if (key === 'hat') { const t = I(4); Object.assign(p, { hatType: t, hatSize: +R(0.95, 1.3).toFixed(2), hatTilt: Math.round(R(-18, 18)), hatSink: +R(0.07, 0.14).toFixed(3), hatColor: t === 2 ? '#f2c14e' : Component.HAT_COLORS[I(Component.HAT_COLORS.length)] }); p.eyeS = Math.min(p.eyeS, 0.74); }
+    if (key === 'arms') Object.assign(p, { armMode: Math.random() < 0.35 ? 1 : 0, armSide: Math.random() < 0.5 ? -1 : 1, armS: +R(0.35, 0.6).toFixed(2), armLen: +R(0.35, 0.65).toFixed(2), armThick: +R(0.05, 0.085).toFixed(3), armPose: +R(-0.7, 0.9).toFixed(2), armBend: +R(-0.2, 0.6).toFixed(2), handType: I(3), handSize: +R(0.1, 0.15).toFixed(3), handGlove: Math.random() < 0.35 });
+    return p;
+  }
+  applyExtras(p, ex, rollParts) {
+    p.eye = !!ex.eye; p.eyeCount = ex.eyeCount; p.mouth = !!ex.mouth; p.hat = !!ex.hat; p.arms = !!ex.arms; p.pattern = !!ex.pattern;
+    if (rollParts) for (const k of ['mouth', 'hat', 'arms']) if (ex[k]) this.rollPart(k, p);
+    return p;
+  }
+  setExtra(key, val) {
+    this.setState(s => {
+      const extras = { ...s.extras, [key]: val }, p = { ...s.params };
+      p[key] = val;
+      if (val && ['mouth', 'hat', 'arms'].includes(key)) this.rollPart(key, p);
+      return { extras, params: p };
+    });
+  }
+  roll = () => this.setState(s => ({ params: this.applyExtras(this.randomParams(Component.preset(s.model)), s.extras, true), morph: 0, name: this.randomName(), shareMsg: '' }));
   randomize = () => this.setState(s => ({ params: this.randomParams(s.params), morph: 0 }));
   randomParams(src) {
     const p = { ...src };
@@ -666,7 +742,17 @@ class Component extends DCLogic {
     const nameOf = id => (M.find(m => m.id === id) || M[0]).name;
     return {
       models: M.map(m => ({ id: m.id, name: m.name, cls: m.id === s.model ? 'btn btn-primary' : 'btn btn-secondary', pick: () => this.setState({ model: m.id, morph: 0, params: Component.preset(m.id) }),
-        pickRoll: () => this.setState({ model: m.id, morph: 0, params: this.randomParams(Component.preset(m.id)), name: this.randomName(), shareMsg: '' }) })),
+        pickRoll: () => this.setState(st => ({ model: m.id, morph: 0, params: this.applyExtras(this.randomParams(Component.preset(m.id)), st.extras, true), name: this.randomName(), shareMsg: '' })) })),
+      onSorte: e => { const id = e.target.value; this.setState(st => ({ model: id, morph: 0, params: this.applyExtras(this.randomParams(Component.preset(id)), st.extras, true), name: this.randomName(), shareMsg: '' })); },
+      exEye: !!s.extras.eye, exMouth: !!s.extras.mouth, exHat: !!s.extras.hat, exArms: !!s.extras.arms, exPattern: !!s.extras.pattern,
+      exEyeCount: s.extras.eyeCount, exEyeLabel: s.extras.eyeCount === 1 ? '1 Auge' : s.extras.eyeCount + ' Augen',
+      onExEye: e => this.setExtra('eye', e.target.checked), onExMouth: e => this.setExtra('mouth', e.target.checked),
+      onExHat: e => this.setExtra('hat', e.target.checked), onExArms: e => this.setExtra('arms', e.target.checked),
+      onExPattern: e => this.setExtra('pattern', e.target.checked),
+      onExEyeCount: e => this.setExtra('eyeCount', parseInt(e.target.value)),
+      eye1Cls: s.extras.eyeCount === 2 ? 'btn btn-secondary' : 'btn btn-primary',
+      eye2Cls: s.extras.eyeCount === 2 ? 'btn btn-primary' : 'btn btn-secondary',
+      setEye1: () => this.setExtra('eyeCount', 1), setEye2: () => this.setExtra('eyeCount', 2),
       isSimple: s.view !== 'dev', isCreate: s.view === 'create', isGallery: s.view === 'gallery',
       devDisplay: s.view === 'dev' ? 'flex' : 'none',
       tabCreateCls: s.view === 'create' ? 'btn btn-primary' : 'btn btn-secondary',
@@ -679,6 +765,7 @@ class Component extends DCLogic {
       rollName: () => this.setState({ name: this.randomName() }),
       roll: this.roll, svgRef2: this.svgRef2,
       modelName: nameOf(s.model),
+      model: s.model,
       target: s.target,
       onTarget: e => { const id = e.target.value; this.setState(st => ({ target: id, params: st.morph > 0 ? this.blend(Component.preset(st.model), Component.preset(id), st.morph) : st.params })); },
       morph: s.morph,
