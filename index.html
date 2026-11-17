@@ -33,28 +33,59 @@
 
     <sc-if value="{{ isCreate }}" hint-placeholder-val="{{ true }}">
       <div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:var(--space-8);padding:var(--space-6)">
-        <div style="flex:0 1 220px;min-width:190px;display:flex;flex-direction:column;gap:var(--space-4)">
-          <div style="display:flex;flex-direction:column;gap:var(--space-2)">
-            <label style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Sorte</label>
-            <select class="input" value="{{ model }}" onChange="{{ onSorte }}" style="font-size:15px;cursor:pointer">
-              <sc-for list="{{ models }}" as="m" hint-placeholder-count="7">
-                <option value="{{ m.id }}">{{ m.name }}</option>
-              </sc-for>
-            </select>
-          </div>
-          <div style="border-top:2px solid var(--color-divider);padding-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-3)">
-            <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Extras</div>
-            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exEye }}" onChange="{{ onExEye }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Augen</label>
-            <sc-if value="{{ exEye }}" hint-placeholder-val="{{ true }}">
-              <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-2);padding-left:28px">
-                <button class="{{ eye1Cls }}" onClick="{{ setEye1 }}" style="justify-content:flex-start;padding:6px 10px;font-size:13px">1 Auge</button>
-                <button class="{{ eye2Cls }}" onClick="{{ setEye2 }}" style="justify-content:flex-start;padding:6px 10px;font-size:13px">2 Augen</button>
-              </div>
-            </sc-if>
-            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exMouth }}" onChange="{{ onExMouth }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Mund</label>
-            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exHat }}" onChange="{{ onExHat }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Kopfbedeckung</label>
-            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exArms }}" onChange="{{ onExArms }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Hand</label>
-            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exPattern }}" onChange="{{ onExPattern }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Muster</label>
+        <div style="flex:0 1 260px;min-width:240px;display:flex;flex-direction:column;gap:var(--space-4)">
+          <div style="display:flex;flex-direction:column;gap:var(--space-1)">
+            <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:-4px">Eigenschaften</div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto 32px 32px;gap:var(--space-2);align-items:center;min-height:32px">
+              <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exEye }}" onChange="{{ onExEye }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Augen</label>
+              <div style="display:flex"><sc-if value="{{ exEye }}" hint-placeholder-val="{{ true }}"><div style="display:flex;border:1px solid var(--color-divider)"><button onClick="{{ setEye1 }}" style="{{ eye1Style }}">1</button><button onClick="{{ setEye2 }}" style="{{ eye2Style }}">2</button></div></sc-if></div>
+              <button class="btn btn-ghost btn-icon" onClick="{{ reEye }}" disabled="{{ eyeOff }}" title="Nur Augen neu würfeln" style="width:32px;height:32px;justify-content:center;color:var(--color-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><path d="M16 8h.01"></path><path d="M8 8h.01"></path><path d="M8 16h.01"></path><path d="M16 16h.01"></path><path d="M12 12h.01"></path></svg></button>
+              <button class="btn btn-ghost btn-icon" onClick="{{ pin_eye }}" title="{{ pinTitle_eye }}" style="width:32px;height:32px;justify-content:center;color:{{ pinColor_eye }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="{{ pinFill_eye }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path></svg></button>
+            </div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto 32px 32px;gap:var(--space-2);align-items:center;min-height:32px">
+              <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exMouth }}" onChange="{{ onExMouth }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Mund</label>
+              <div style="display:flex"></div>
+              <button class="btn btn-ghost btn-icon" onClick="{{ reMouth }}" disabled="{{ mouthOff }}" title="Nur Mund neu würfeln" style="width:32px;height:32px;justify-content:center;color:var(--color-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><path d="M16 8h.01"></path><path d="M8 8h.01"></path><path d="M8 16h.01"></path><path d="M16 16h.01"></path><path d="M12 12h.01"></path></svg></button>
+              <button class="btn btn-ghost btn-icon" onClick="{{ pin_mouth }}" title="{{ pinTitle_mouth }}" style="width:32px;height:32px;justify-content:center;color:{{ pinColor_mouth }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="{{ pinFill_mouth }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path></svg></button>
+            </div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto 32px 32px;gap:var(--space-2);align-items:center;min-height:32px">
+              <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exHat }}" onChange="{{ onExHat }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Kopfbedeckung</label>
+              <div style="display:flex"></div>
+              <button class="btn btn-ghost btn-icon" onClick="{{ reHat }}" disabled="{{ hatOff }}" title="Nur Kopfbedeckung neu würfeln" style="width:32px;height:32px;justify-content:center;color:var(--color-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><path d="M16 8h.01"></path><path d="M8 8h.01"></path><path d="M8 16h.01"></path><path d="M16 16h.01"></path><path d="M12 12h.01"></path></svg></button>
+              <button class="btn btn-ghost btn-icon" onClick="{{ pin_hat }}" title="{{ pinTitle_hat }}" style="width:32px;height:32px;justify-content:center;color:{{ pinColor_hat }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="{{ pinFill_hat }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path></svg></button>
+            </div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto 32px 32px;gap:var(--space-2);align-items:center;min-height:32px">
+              <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exArms }}" onChange="{{ onExArms }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Hand</label>
+              <div style="display:flex"></div>
+              <button class="btn btn-ghost btn-icon" onClick="{{ reArms }}" disabled="{{ armsOff }}" title="Nur Hand neu würfeln" style="width:32px;height:32px;justify-content:center;color:var(--color-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><path d="M16 8h.01"></path><path d="M8 8h.01"></path><path d="M8 16h.01"></path><path d="M16 16h.01"></path><path d="M12 12h.01"></path></svg></button>
+              <button class="btn btn-ghost btn-icon" onClick="{{ pin_arms }}" title="{{ pinTitle_arms }}" style="width:32px;height:32px;justify-content:center;color:{{ pinColor_arms }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="{{ pinFill_arms }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path></svg></button>
+            </div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto 32px 32px;gap:var(--space-2);align-items:center;min-height:32px">
+              <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:15px"><input type="checkbox" checked="{{ exPattern }}" onChange="{{ onExPattern }}" style="width:18px;height:18px;margin:0;accent-color:var(--color-accent)">Muster</label>
+              <div style="display:flex"></div>
+              <button class="btn btn-ghost btn-icon" onClick="{{ rePattern }}" disabled="{{ patternOff }}" title="Nur Muster neu würfeln" style="width:32px;height:32px;justify-content:center;color:var(--color-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><path d="M16 8h.01"></path><path d="M8 8h.01"></path><path d="M8 16h.01"></path><path d="M16 16h.01"></path><path d="M12 12h.01"></path></svg></button>
+              <button class="btn btn-ghost btn-icon" onClick="{{ pin_pattern }}" title="{{ pinTitle_pattern }}" style="width:32px;height:32px;justify-content:center;color:{{ pinColor_pattern }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="{{ pinFill_pattern }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path></svg></button>
+            </div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto 32px 32px;gap:var(--space-2);align-items:center;min-height:32px">
+              <span style="font-size:15px;padding-left:28px">Form</span>
+              <select value="{{ formVal }}" onChange="{{ onForm }}" style="height:26px;width:104px;padding:0 4px;font-family:inherit;font-size:13px;font-weight:700;color:var(--color-text);background:transparent;border:1px solid var(--color-divider);border-radius:0;cursor:pointer">
+                <sc-for list="{{ forms }}" as="fm" hint-placeholder-count="9">
+                  <option value="{{ fm.id }}">{{ fm.name }}</option>
+                </sc-for>
+              </select>
+              <button class="btn btn-ghost btn-icon" onClick="{{ reForm }}" title="Nur Form neu würfeln" style="width:32px;height:32px;justify-content:center;color:var(--color-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><path d="M16 8h.01"></path><path d="M8 8h.01"></path><path d="M8 16h.01"></path><path d="M16 16h.01"></path><path d="M12 12h.01"></path></svg></button>
+              <button class="btn btn-ghost btn-icon" onClick="{{ pin_form }}" title="{{ pinTitle_form }}" style="width:32px;height:32px;justify-content:center;color:{{ pinColor_form }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="{{ pinFill_form }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path></svg></button>
+            </div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto 32px 32px;gap:var(--space-2);align-items:center;min-height:32px">
+              <span style="font-size:15px;padding-left:28px">Sorte</span>
+              <select value="{{ sorteVal }}" onChange="{{ onSorteSel }}" style="height:26px;width:104px;padding:0 4px;font-family:inherit;font-size:13px;font-weight:700;color:var(--color-text);background:transparent;border:1px solid var(--color-divider);border-radius:0;cursor:pointer">
+                <sc-for list="{{ sorten }}" as="so" hint-placeholder-count="8">
+                  <option value="{{ so.id }}">{{ so.name }}</option>
+                </sc-for>
+              </select>
+              <button class="btn btn-ghost btn-icon" onClick="{{ reSorte }}" title="Nur Sorte neu würfeln" style="width:32px;height:32px;justify-content:center;color:var(--color-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><path d="M16 8h.01"></path><path d="M8 8h.01"></path><path d="M8 16h.01"></path><path d="M16 16h.01"></path><path d="M12 12h.01"></path></svg></button>
+              <button class="btn btn-ghost btn-icon" onClick="{{ pin_sorte }}" title="{{ pinTitle_sorte }}" style="width:32px;height:32px;justify-content:center;color:{{ pinColor_sorte }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="{{ pinFill_sorte }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path></svg></button>
+            </div>
           </div>
         </div>
         <div style="flex:1 1 360px;max-width:calc((100vh - 130px) * 0.75);min-width:260px;display:flex;flex-direction:column;gap:var(--space-3)">
@@ -66,6 +97,7 @@
         </div>
         <div style="flex:0 1 260px;min-width:220px;display:flex;flex-direction:column;gap:var(--space-3)">
           <button class="btn btn-primary" onClick="{{ roll }}" style="justify-content:flex-start;padding:14px 16px;font-size:16px;font-weight:700">Neu würfeln</button>
+          <button class="btn btn-ghost" onClick="{{ undo }}" disabled="{{ undoOff }}" style="align-self:flex-start;margin-top:-6px;font-size:13px;gap:6px;color:var(--color-text)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"></path></svg>{{ undoLabel }}</button>
           <div style="border-top:2px solid var(--color-divider);margin-top:var(--space-2);padding-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)">
             <label style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Name</label>
             <input class="input" value="{{ name }}" onChange="{{ onName }}" maxlength="40" placeholder="Wie heißt das Wesen?" style="font-size:15px">
@@ -354,6 +386,7 @@ class Component extends DCLogic {
       { k: 'D5', id: 'panX', label: 'Versatz X', min: -1.5, max: 1.5, step: 0.01, def: 0 },
       { k: 'D6', id: 'panY', label: 'Versatz Y', min: -1.5, max: 1.5, step: 0.01, def: 0 },
       { k: 'D7', id: 'fov', label: 'Perspektive', min: 5, max: 90, step: 1, def: 30, unit: '°', hint: 'klein flach · groß starke Perspektive' },
+      { k: 'D8', id: 'fit', label: 'Ins Bild einpassen', t: 'bool', def: true, hint: 'verkleinert automatisch, wenn etwas über den Rand ragt' },
     ] },
     { key: 'E', title: 'Linie (2D)', params: [
       { k: 'E1', id: 'lineW', label: 'Umriss-Stärke', min: 0, max: 40, step: 0.5, def: 12 },
@@ -440,12 +473,12 @@ class Component extends DCLogic {
       { k: 'H4', id: 'cEye', label: 'Augenweiß', t: 'color', def: '#ffffff' },
     ] },
   ];
-  static BASIC = new Set(['A1', 'A2', 'A3', 'A4', 'A7', 'A9', 'A10', 'B1', 'B2', 'B4', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'E1', 'E2', 'E3', 'E4', 'E6', 'E9', 'E13', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'G1', 'G2', 'G3', 'G4', 'G5', 'G12', 'G13', 'G10', 'G11', 'H1', 'H2', 'F13', 'I1', 'I2', 'I3', 'J1', 'J2', 'J3', 'J6', 'K1', 'K2', 'K3', 'K5', 'K7', 'K10', 'K12']);
+  static BASIC = new Set(['A1', 'A2', 'A3', 'A4', 'A7', 'A9', 'A10', 'B1', 'B2', 'B4', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'E1', 'E2', 'E3', 'E4', 'E6', 'E9', 'E13', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'G1', 'G2', 'G3', 'G4', 'G5', 'G12', 'G13', 'G10', 'G11', 'H1', 'H2', 'D8', 'F13', 'I1', 'I2', 'I3', 'J1', 'J2', 'J3', 'J6', 'K1', 'K2', 'K3', 'K5', 'K7', 'K10', 'K12']);
 
   static MODELS = [
     { id: 'raupe', name: 'Raupe', p: { length: 3.3, rTop: 0.4, rBot: 0.38, waist: 0, depth: 0.9, sqExp: 2.2, capTop: 0.45, capBot: 0.55, capLen: 0.9, bend: 0.1, sCurve: 0.55, ribs: 0.18, ribN: 6, segL: 96, segR: 40, meridian: false, eyeS: 0.9, eyeA: 20, eyeSize: 0.14, zoom: 0.9, roll: 0, cBody: '#e2b53a', cBg: '#c9d7c0' } },
     { id: 'bohne', name: 'Bohne', p: {} },
-    { id: 'kokon', name: 'Kokon', p: { length: 2.7, rTop: 0.42, rBot: 0.72, waist: -0.12, waistPos: 0.4, depth: 0.75, sqExp: 1.35, asym: 0.25, capTop: 0.95, capBot: 0.3, capLen: 1.2, bend: 0.55, bendPos: 0.62, bendWidth: 0.3, bendZ: 0.2, twist: 20, segL: 7, segR: 6, flat: true, yaw: 30, pitch: 10, roll: 20, zoom: 1.75, panX: 0.05, panY: -0.3, fov: 35, lineW: 14, innerW: 11, simplify: 2, round: 1, ring: true, ringPos: 0.35, ringTilt: 0.08, meridian: true, meridianA: 25, meridianFrom: 0.1, meridianTo: 0.95, eyeS: 0.8, eyeA: -20, eyeSize: 0.19, lid: 0.38, lidTilt: -10, pupil: 0.4, pupilX: 0.2, pupilY: -0.1, ring: false, meridian: false, pattern: true, patRings: 2, patMer: 4, patDiag: 0.35, patKeep: 0.75, patJitter: 0.3, patFrom: 0.12, patTo: 0.92, patW: 11, patSeed: 4, patMax: 10 } },
+    { id: 'kokon', name: 'Kokon', p: { fit: false, length: 2.7, rTop: 0.42, rBot: 0.72, waist: -0.12, waistPos: 0.4, depth: 0.75, sqExp: 1.35, asym: 0.25, capTop: 0.95, capBot: 0.3, capLen: 1.2, bend: 0.55, bendPos: 0.62, bendWidth: 0.3, bendZ: 0.2, twist: 20, segL: 7, segR: 6, flat: true, yaw: 30, pitch: 10, roll: 20, zoom: 1.75, panX: 0.05, panY: -0.3, fov: 35, lineW: 14, innerW: 11, simplify: 2, round: 1, ring: true, ringPos: 0.35, ringTilt: 0.08, meridian: true, meridianA: 25, meridianFrom: 0.1, meridianTo: 0.95, eyeS: 0.8, eyeA: -20, eyeSize: 0.19, lid: 0.38, lidTilt: -10, pupil: 0.4, pupilX: 0.2, pupilY: -0.1, ring: false, meridian: false, pattern: true, patRings: 2, patMer: 4, patDiag: 0.35, patKeep: 0.75, patJitter: 0.3, patFrom: 0.12, patTo: 0.92, patW: 11, patSeed: 4, patMax: 10 } },
     { id: 'tropfen', name: 'Tropfen', p: { length: 2.0, rTop: 0.22, rBot: 0.82, waist: 0, depth: 1, capTop: 1.25, capBot: 0.45, capLen: 1.5, bend: 0.18, bendPos: 0.7, meridian: false, ring: true, ringPos: 0.3, ringTilt: 0.04, eyeS: 0.55, eyeA: 0, eyeSize: 0.22, lid: 0.15, roll: 0, cBody: '#4d97d1', cBg: '#efe3c4' } },
     { id: 'kiesel', name: 'Kiesel', p: { length: 1.5, rTop: 0.78, rBot: 0.82, waist: 0, depth: 0.6, sqExp: 2.6, capTop: 0.35, capBot: 0.35, capLen: 0.9, bend: 0.12, noise: 0.1, noiseScale: 2.5, seed: 3, segL: 48, segR: 40, pitch: 20, roll: -6, zoom: 1.15, meridianA: -20, meridianFrom: 0.05, meridianTo: 0.95, eyeS: 0.68, eyeA: -15, eyeSize: 0.2, lid: 0.5, lidTilt: 0, cBody: '#9a8fc9', cBg: '#f0d9cf' } },
     { id: 'horn', name: 'Horn', p: { length: 3.0, rTop: 0.08, rBot: 0.66, waist: 0, capTop: 1.2, capBot: 0.4, bend: 0.72, bendPos: 0.6, bendWidth: 0.55, bendZ: 0.3, meridianA: -50, meridianFrom: 0.05, meridianTo: 0.85, eyeS: 0.3, eyeA: 20, eyeSize: 0.2, roll: 0, yaw: 15, cBody: '#d8664a', cBg: '#e9e4da' } },
@@ -453,6 +486,7 @@ class Component extends DCLogic {
   ];
 
   static defs() { return Component.GROUPS.flatMap(g => g.params); }
+  fromSaved(model, params) { return { ...Component.defaults(), ...(model === 'kokon' ? { fit: false } : {}), ...params }; }
   static defaults() { const d = {}; for (const p of Component.defs()) d[p.id] = p.def; return d; }
   static preset(id) { const m = Component.MODELS.find(x => x.id === id) || Component.MODELS[0]; return { ...Component.defaults(), ...m.p }; }
 
@@ -463,9 +497,9 @@ class Component extends DCLogic {
     try { liked = JSON.parse(localStorage.getItem('formgen.liked.v1') || '[]') || []; } catch (e) {}
     let ui = {};
     try { ui = JSON.parse(localStorage.getItem('formgen.ui.v1') || '{}') || {}; } catch (e) {}
-    const exSaved = { eye: true, eyeCount: 1, mouth: false, hat: false, arms: false, pattern: true, ...(ui.extras || {}) };
+    const exSaved = { eye: true, eyeCount: 1, mouth: false, hat: false, arms: false, pattern: true, form: 'sorte', sorte: 'zufall', pins: {}, ...(ui.extras || {}) };
     exSaved.eyeCount = exSaved.eyeCount === 2 ? 2 : 1;
-    const base = { extras: exSaved, view: ui.view || 'create', name: ui.name || '', gSort: 'new', gItems: [], gLoading: false, gError: '', shareMsg: '', liked, model: 'raupe', target: 'kokon', morph: 0, params: Component.preset('raupe'), wire: false, lines3d: true, collapsed: {}, copied: false, ready: false, error: '', basicOnly: true, snaps, snapsCopied: false };
+    const base = { hist: Array.isArray(ui.hist) ? ui.hist.slice(-10) : [], extras: exSaved, view: ui.view || 'create', name: ui.name || '', gSort: 'new', gItems: [], gLoading: false, gError: '', shareMsg: '', liked, model: 'raupe', target: 'kokon', morph: 0, params: Component.preset('raupe'), wire: false, lines3d: true, collapsed: {}, copied: false, ready: false, error: '', basicOnly: true, snaps, snapsCopied: false };
     try {
       const s = JSON.parse(localStorage.getItem('formgen.v1') || 'null');
       if (s && s.params) return { ...base, model: s.model || 'bohne', target: s.target || 'kokon', morph: s.morph || 0, params: { ...Component.defaults(), ...s.params }, wire: !!s.wire, lines3d: s.lines3d !== false, collapsed: s.collapsed || {}, basicOnly: s.basicOnly !== false };
@@ -516,7 +550,7 @@ class Component extends DCLogic {
     while (!this.engine) { await new Promise(r => setTimeout(r, 200)); if (this.dead) return; }
     for (const it of items) {
       if (token !== this.thumbToken || this.dead) return;
-      try { it.svg = this.engine.update({ ...Component.defaults(), ...it.params }, {}).svg; } catch (e) {}
+      try { it.svg = this.engine.update(this.fromSaved(it.model, it.params), {}).svg; } catch (e) {}
       await new Promise(r => setTimeout(r, 0));
     }
     this.setState({ gItems: [...items] });
@@ -565,7 +599,7 @@ class Component extends DCLogic {
     if (!prev || prev[0] !== key[0] || prev[1] !== key[1] || prev[2] !== key[2]) { this.lastKey = key; this.schedule(); }
     clearTimeout(this.saveT);
     this.saveT = setTimeout(() => {
-      try { localStorage.setItem('formgen.ui.v1', JSON.stringify({ view: s.view, name: s.name, extras: s.extras })); } catch (e) {}
+      try { localStorage.setItem('formgen.ui.v1', JSON.stringify({ view: s.view, name: s.name, extras: s.extras, hist: s.hist || [] })); } catch (e) {}
       try { localStorage.setItem('formgen.v1', JSON.stringify({ model: s.model, target: s.target, morph: s.morph, params: s.params, wire: s.wire, lines3d: s.lines3d, collapsed: s.collapsed, basicOnly: s.basicOnly })); } catch (e) {}
     }, 300);
   }
@@ -619,28 +653,82 @@ class Component extends DCLogic {
     const first = pick(Component.NAME_A) + pick(Component.NAME_B);
     return Math.random() < 0.65 ? `${first} ${pick(Component.NAME_C)}` : first;
   }
+  static FORMS = [
+    { id: 'sorte', name: 'Zufällig' },
+    { id: 'langduenn', name: 'Lang & dünn', r: { length: [3.1, 3.5], rTop: [0.2, 0.3], rBot: [0.24, 0.32], waist: [-0.05, 0.1], bend: [0, 0.2, 1], sCurve: [0, 0.1, 1], capTop: [0.4, 0.7], capBot: [0.4, 0.6] } },
+    { id: 'langdick', name: 'Lang & dick', r: { length: [3.0, 3.4], rTop: [0.5, 0.62], rBot: [0.55, 0.7], waist: [-0.05, 0.15], bend: [0, 0.25, 1], sCurve: [0, 0.1, 1] } },
+    { id: 'rund', name: 'Rund', r: { length: [1.3, 1.7], rTop: [0.72, 0.85], rBot: [0.76, 0.9], waist: [-0.1, 0.05], bend: [0, 0.1, 1], sCurve: [0, 0.05, 1], capTop: [0.35, 0.5], capBot: [0.35, 0.5] } },
+    { id: 'gebogen', name: 'Gebogen', r: { length: [2.6, 3.1], rTop: [0.35, 0.5], rBot: [0.45, 0.6], waist: [0, 0.2], bend: [0.45, 0.65, 1], bendWidth: [0.4, 0.6], bendPos: [0.4, 0.6], sCurve: [0, 0.08, 1] } },
+    { id: 'skurve', name: 'S-Kurve', r: { length: [2.8, 3.3], rTop: [0.35, 0.45], rBot: [0.38, 0.48], waist: [0, 0.1], bend: [0, 0.1, 1], sCurve: [0.35, 0.5, 1] } },
+    { id: 'tropfen', name: 'Tropfen', r: { length: [1.9, 2.3], rTop: [0.15, 0.25], rBot: [0.75, 0.85], waist: [-0.05, 0.05], capTop: [1.1, 1.3], capBot: [0.4, 0.5], capLen: [1.3, 1.6], bend: [0.05, 0.2, 1], sCurve: [0, 0.05, 1] } },
+    { id: 'spitz', name: 'Spitz', r: { length: [2.6, 3.1], rTop: [0.06, 0.1], rBot: [0.55, 0.7], waist: [-0.05, 0.05], capTop: [1.1, 1.3], capBot: [0.4, 0.5], bend: [0.4, 0.6, 1], bendWidth: [0.45, 0.6], sCurve: [0, 0.05, 1] } },
+    { id: 'bauchig', name: 'Bauchig', r: { length: [2.2, 2.6], rTop: [0.35, 0.45], rBot: [0.45, 0.55], waist: [-0.38, -0.25], waistPos: [0.35, 0.5], bend: [0, 0.2, 1], sCurve: [0, 0.05, 1] } },
+  ];
+  static SHAPE_KEYS = ['A', 'B'].flatMap(g => Component.GROUPS.find(x => x.key === g).params.map(d => d.id));
+  static PART_KEYS = (() => { const ids = g => Component.GROUPS.find(x => x.key === g).params.map(d => d.id); return { eye: ids('F'), mouth: ids('I'), hat: ids('J'), arms: ids('K'), pattern: ids('G'), form: Component.SHAPE_KEYS, sorte: ['C', 'D', 'E', 'H'].flatMap(ids) }; })();
+  static SORTE_KEYS = [...['C', 'D', 'E', 'H'].flatMap(g => Component.GROUPS.find(x => x.key === g).params.map(d => d.id))];
+  pickModel(s) {
+    const ex = s.extras, M = Component.MODELS;
+    if (ex.pins && ex.pins.sorte) return s.model;
+    if (ex.sorte && ex.sorte !== 'zufall' && M.some(m => m.id === ex.sorte)) return ex.sorte;
+    return M[Math.floor(Math.random() * M.length)].id;
+  }
+  applySorte(p, model) { const q = this.randomParams(Component.preset(model)); for (const k of Component.SORTE_KEYS) p[k] = q[k]; return p; }
+  keepPinned(p, old, pins) { for (const k in Component.PART_KEYS) if (pins && pins[k]) for (const id of Component.PART_KEYS[k]) if (old[id] !== undefined) p[id] = old[id]; return p; }
+  rollForm(p, formId, model) {
+    let f = Component.FORMS.find(x => x.id === formId) || Component.FORMS[0];
+    if (!f.r) f = Component.FORMS[Math.floor(Math.random() * Component.FORMS.length)];
+    if (!f.r) { if (model) { const q = this.randomParams(Component.preset(model)); for (const k of Component.SHAPE_KEYS) p[k] = q[k]; } return p; }
+    for (const [k, [a, b, signed]] of Object.entries(f.r)) { let v = a + Math.random() * (b - a); if (signed && Math.random() < 0.5) v = -v; p[k] = +v.toFixed(3); }
+    return p;
+  }
   static HAT_COLORS = ['#e4572e', '#f2c14e', '#4d97d1', '#ffffff', '#9a8fc9', '#3fb3a6', '#2f2d2c'];
   rollPart(key, p) {
     const R = (a, b) => a + Math.random() * (b - a), I = n => Math.floor(Math.random() * n);
+    const fromGroup = g => { for (const d of Component.GROUPS.find(x => x.key === g).params) if (d.rnd) { let v = R(d.rnd[0], d.rnd[1]); v = Math.round(v / d.step) * d.step; p[d.id] = d.t === 'int' ? Math.round(v) : +v.toFixed(4); } };
+    if (key === 'eye') { fromGroup('F'); if (p.hat) p.eyeS = Math.min(p.eyeS, p.hatType === 3 ? 0.66 : 0.74); }
+    if (key === 'pattern') { fromGroup('G'); p.patSeed = I(1000); }
     if (key === 'mouth') Object.assign(p, { mouthType: I(5), mouthCurve: +R(-0.5, 1).toFixed(2), mouthW: +R(0.12, 0.24).toFixed(3), mouthH: +R(0.5, 0.9).toFixed(2), mouthDist: +R(0.1, 0.22).toFixed(2), mouthA: Math.round(R(-12, 12)) });
-    if (key === 'hat') { const t = I(4); Object.assign(p, { hatType: t, hatSize: +R(0.95, 1.3).toFixed(2), hatTilt: Math.round(R(-18, 18)), hatSink: +R(0.07, 0.14).toFixed(3), hatColor: t === 2 ? '#f2c14e' : Component.HAT_COLORS[I(Component.HAT_COLORS.length)] }); p.eyeS = Math.min(p.eyeS, 0.74); }
+    if (key === 'hat') { const t = I(4); Object.assign(p, { hatType: t, hatSize: +R(0.9, 1.15).toFixed(2), hatTilt: Math.round(R(-10, 10)), hatSink: +R(0.07, 0.14).toFixed(3), hatColor: t === 2 ? '#f2c14e' : Component.HAT_COLORS[I(Component.HAT_COLORS.length)] }); p.eyeS = Math.min(p.eyeS, t === 3 ? 0.66 : 0.74); }
     if (key === 'arms') Object.assign(p, { armMode: Math.random() < 0.35 ? 1 : 0, armSide: Math.random() < 0.5 ? -1 : 1, armS: +R(0.35, 0.6).toFixed(2), armLen: +R(0.35, 0.65).toFixed(2), armThick: +R(0.05, 0.085).toFixed(3), armPose: +R(-0.7, 0.9).toFixed(2), armBend: +R(-0.2, 0.6).toFixed(2), handType: I(3), handSize: +R(0.1, 0.15).toFixed(3), handGlove: Math.random() < 0.35 });
     return p;
   }
   applyExtras(p, ex, rollParts) {
     p.eye = !!ex.eye; p.eyeCount = ex.eyeCount; p.mouth = !!ex.mouth; p.hat = !!ex.hat; p.arms = !!ex.arms; p.pattern = !!ex.pattern;
-    if (rollParts) for (const k of ['mouth', 'hat', 'arms']) if (ex[k]) this.rollPart(k, p);
+    if (rollParts) { this.rollForm(p, ex.form || 'sorte'); for (const k of ['mouth', 'hat', 'arms']) if (ex[k]) this.rollPart(k, p); }
     return p;
+  }
+  pushHist(s) { return [...(s.hist || []), { model: s.model, params: s.params, name: s.name }].slice(-10); }
+  undo = () => this.setState(s => {
+    const h = s.hist || []; if (!h.length) return null;
+    const last = h[h.length - 1];
+    return { hist: h.slice(0, -1), model: last.model, params: last.params, name: last.name, morph: 0, shareMsg: '' };
+  });
+  reroll(key) {
+    if (key === 'sorte') {
+      this.setState(s => {
+        const others = Component.MODELS.filter(m => m.id !== s.model), model = others[Math.floor(Math.random() * others.length)].id;
+        const sorte = s.extras.sorte && s.extras.sorte !== 'zufall' ? model : s.extras.sorte || 'zufall';
+        return { hist: this.pushHist(s), model, extras: { ...s.extras, sorte }, params: this.applySorte({ ...s.params }, model), shareMsg: '' };
+      });
+      return;
+    }
+    if (key === 'form') { this.setState(s => ({ hist: this.pushHist(s), params: this.rollForm({ ...s.params }, s.extras.form || 'sorte', s.model), shareMsg: '' })); return; }
+    this.setState(s => {
+      if (key !== 'eye' && !s.params[key === 'arms' ? 'arms' : key]) return null;
+      if (key === 'eye' && !s.params.eye) return null;
+      return { hist: this.pushHist(s), params: this.rollPart(key, { ...s.params }), shareMsg: '' };
+    });
   }
   setExtra(key, val) {
     this.setState(s => {
       const extras = { ...s.extras, [key]: val }, p = { ...s.params };
       p[key] = val;
       if (val && ['mouth', 'hat', 'arms'].includes(key)) this.rollPart(key, p);
-      return { extras, params: p };
+      return { extras, params: p, hist: this.pushHist(s) };
     });
   }
-  roll = () => this.setState(s => ({ params: this.applyExtras(this.randomParams(Component.preset(s.model)), s.extras, true), morph: 0, name: this.randomName(), shareMsg: '' }));
+  roll = () => this.setState(s => { const model = this.pickModel(s); return { model, hist: this.pushHist(s), params: this.keepPinned(this.applyExtras(this.randomParams(Component.preset(model)), s.extras, true), s.params, s.extras.pins), morph: 0, name: this.randomName(), shareMsg: '' }; });
   randomize = () => this.setState(s => ({ params: this.randomParams(s.params), morph: 0 }));
   randomParams(src) {
     const p = { ...src };
@@ -717,6 +805,7 @@ class Component extends DCLogic {
 
   renderVals() {
     this.afterRender();
+    const segStyle = on => ({ width: '28px', height: '26px', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px', fontWeight: 700, padding: 0, background: on ? 'var(--color-accent)' : 'transparent', color: on ? 'var(--color-bg)' : 'var(--color-text)' });
     const s = this.state, p = s.params, M = Component.MODELS;
     const ref = s.morph > 0 ? this.blend(Component.preset(s.model), Component.preset(s.target), s.morph) : Component.preset(s.model);
     const changed = (d, v) => d.t === 'bool' || d.t === 'color' ? v !== ref[d.id] : Math.abs(v - ref[d.id]) > d.step / 2;
@@ -743,15 +832,28 @@ class Component extends DCLogic {
     return {
       models: M.map(m => ({ id: m.id, name: m.name, cls: m.id === s.model ? 'btn btn-primary' : 'btn btn-secondary', pick: () => this.setState({ model: m.id, morph: 0, params: Component.preset(m.id) }),
         pickRoll: () => this.setState(st => ({ model: m.id, morph: 0, params: this.applyExtras(this.randomParams(Component.preset(m.id)), st.extras, true), name: this.randomName(), shareMsg: '' })) })),
-      onSorte: e => { const id = e.target.value; this.setState(st => ({ model: id, morph: 0, params: this.applyExtras(this.randomParams(Component.preset(id)), st.extras, true), name: this.randomName(), shareMsg: '' })); },
+      onSorte: e => { const id = e.target.value; this.setState(st => ({ hist: this.pushHist(st), model: id, morph: 0, params: this.keepPinned(this.applyExtras(this.randomParams(Component.preset(id)), st.extras, true), st.params, st.extras.pins), name: this.randomName(), shareMsg: '' })); },
       exEye: !!s.extras.eye, exMouth: !!s.extras.mouth, exHat: !!s.extras.hat, exArms: !!s.extras.arms, exPattern: !!s.extras.pattern,
       exEyeCount: s.extras.eyeCount, exEyeLabel: s.extras.eyeCount === 1 ? '1 Auge' : s.extras.eyeCount + ' Augen',
       onExEye: e => this.setExtra('eye', e.target.checked), onExMouth: e => this.setExtra('mouth', e.target.checked),
       onExHat: e => this.setExtra('hat', e.target.checked), onExArms: e => this.setExtra('arms', e.target.checked),
       onExPattern: e => this.setExtra('pattern', e.target.checked),
       onExEyeCount: e => this.setExtra('eyeCount', parseInt(e.target.value)),
-      eye1Cls: s.extras.eyeCount === 2 ? 'btn btn-secondary' : 'btn btn-primary',
-      eye2Cls: s.extras.eyeCount === 2 ? 'btn btn-primary' : 'btn btn-secondary',
+      eye1Style: segStyle(s.extras.eyeCount !== 2), eye2Style: segStyle(s.extras.eyeCount === 2),
+      reEye: () => this.reroll('eye'), reMouth: () => this.reroll('mouth'), reHat: () => this.reroll('hat'), reArms: () => this.reroll('arms'), rePattern: () => this.reroll('pattern'),
+      eyeOff: !s.extras.eye, mouthOff: !s.extras.mouth, hatOff: !s.extras.hat, armsOff: !s.extras.arms, patternOff: !s.extras.pattern,
+      forms: Component.FORMS.map(f => ({ id: f.id, name: f.name })), formVal: s.extras.form || 'sorte',
+      onForm: e => { const id = e.target.value; this.setState(st => ({ hist: this.pushHist(st), extras: { ...st.extras, form: id }, params: this.rollForm({ ...st.params }, id, st.model), shareMsg: '' })); },
+      reForm: () => this.reroll('form'), reSorte: () => this.reroll('sorte'),
+      sorten: [{ id: 'zufall', name: 'Zufällig' }, ...M.map(m => ({ id: m.id, name: m.name }))], sorteVal: s.extras.sorte || 'zufall',
+      onSorteSel: e => { const id = e.target.value; this.setState(st => id === 'zufall' ? { extras: { ...st.extras, sorte: id } } : { hist: this.pushHist(st), model: id, extras: { ...st.extras, sorte: id }, params: this.applySorte({ ...st.params }, id), shareMsg: '' }); },
+      ...Object.fromEntries(['eye', 'mouth', 'hat', 'arms', 'pattern', 'form', 'sorte'].flatMap(k => {
+        const on = !!(s.extras.pins && s.extras.pins[k]);
+        return [['pin_' + k, () => this.setState(st => ({ extras: { ...st.extras, pins: { ...(st.extras.pins || {}), [k]: !on } } }))],
+          ['pinColor_' + k, on ? 'var(--color-accent)' : 'var(--color-neutral-400)'], ['pinFill_' + k, on ? 'currentColor' : 'none'],
+          ['pinTitle_' + k, on ? 'Angeheftet – bleibt beim Würfeln' : 'Anheften – bleibt beim Würfeln gleich']];
+      })),
+      undo: this.undo, undoOff: !(s.hist && s.hist.length), undoLabel: s.hist && s.hist.length ? `Zurück (${s.hist.length})` : 'Zurück',
       setEye1: () => this.setExtra('eyeCount', 1), setEye2: () => this.setExtra('eyeCount', 2),
       isSimple: s.view !== 'dev', isCreate: s.view === 'create', isGallery: s.view === 'gallery',
       devDisplay: s.view === 'dev' ? 'flex' : 'none',
@@ -794,11 +896,11 @@ class Component extends DCLogic {
           bg: it.svg ? `url("data:image/svg+xml,${encodeURIComponent(it.svg)}")` : 'none',
           title: it.name || `Namenlos #${it.id}`,
           sub: `${nameOf(it.model)} · #${it.id}`,
-          open: () => this.setState({ view: s.view === 'dev' ? 'dev' : 'create', name: it.name || '', model: M.some(m => m.id === it.model) ? it.model : 'bohne', morph: 0, params: { ...Component.defaults(), ...it.params } }),
+          open: () => this.setState({ view: s.view === 'dev' ? 'dev' : 'create', name: it.name || '', model: M.some(m => m.id === it.model) ? it.model : 'bohne', morph: 0, params: this.fromSaved(it.model, it.params) }),
           likeCls: isLiked ? 'btn btn-primary' : 'btn btn-secondary',
           likeLabel: `${isLiked ? 'Gefällt dir' : 'Gefällt mir'} · ${it.likes}`,
           like: () => this.like(it.id),
-          load: () => this.setState({ model: M.some(m => m.id === it.model) ? it.model : 'bohne', morph: 0, params: { ...Component.defaults(), ...it.params } }),
+          load: () => this.setState({ model: M.some(m => m.id === it.model) ? it.model : 'bohne', morph: 0, params: this.fromSaved(it.model, it.params) }),
         };
       }),
       basicCls: s.basicOnly ? 'btn btn-primary' : 'btn btn-secondary',
@@ -819,7 +921,7 @@ class Component extends DCLogic {
         title: `#${x.n} · ${nameOf(x.model)}`,
         note: x.note || '',
         onNote: e => { const v = e.target.value; this.saveSnaps(this.state.snaps.map(y => y.id === x.id ? { ...y, note: v } : y)); },
-        load: () => this.setState({ model: x.model, morph: 0, params: { ...Component.defaults(), ...x.params } }),
+        load: () => this.setState({ model: x.model, morph: 0, params: this.fromSaved(x.model, x.params) }),
         remove: () => this.saveSnaps(this.state.snaps.filter(y => y.id !== x.id)),
       })),
     };
