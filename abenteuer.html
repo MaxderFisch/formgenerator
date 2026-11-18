@@ -283,16 +283,31 @@
           </div>
         </div>
         <sc-if value="{{ wHasPrize }}" hint-placeholder-val="{{ false }}">
-          <div style="position:absolute;inset:0;z-index:6;display:flex;overflow:auto;padding:16px;box-sizing:border-box;background:rgba(32,30,29,.72)">
+          <div style="position:absolute;inset:0;z-index:6;display:flex;overflow:auto;padding:16px;box-sizing:border-box;background:{{ wPrizeDim }}">
             <div ref="{{ prizeRef }}" style="margin:auto;width:min(360px,100%);display:flex;flex-direction:column;gap:10px">
-              <span style="font-family:var(--font-heading);font-weight:800;font-size:40px;line-height:1;color:#f2cf5b">{{ wPrizeHead }}</span>
-              <div style="background:{{ wPrizeBg }};border:3px solid #fbfaf8;box-shadow:0 0 0 3px #201e1d,0 0 70px rgba(242,207,91,.6);padding:12px;display:flex;flex-direction:column;gap:10px;color:#201e1d">
-                <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
-                  <strong style="font-family:var(--font-heading);font-size:22px;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ wPrizeName }}</strong>
-                  <span style="flex:none;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:2px solid #201e1d;padding:1px 6px;background:#fbfaf8">{{ wPrizeTier }}</span>
+              <span style="font-family:var(--font-heading);font-weight:800;font-size:40px;line-height:1;color:{{ wPrizeHeadCol }}">{{ wPrizeHead }}</span>
+              <div style="perspective:1200px">
+                <div ref="{{ pFlipRef }}" style="position:relative;transform-style:preserve-3d">
+                  <div style="backface-visibility:hidden;-webkit-backface-visibility:hidden;background:{{ wPrizeBg }};border:3px solid #fbfaf8;box-shadow:0 0 0 3px #201e1d,0 0 70px {{ wPrizeGlow }};padding:12px;display:flex;flex-direction:column;gap:10px;color:{{ wPrizeInk }}">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;background:{{ wPrizePanel }};padding:4px 6px">
+                      <strong style="font-family:var(--font-heading);font-size:22px;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ wPrizeName }}</strong>
+                      <span style="flex:none;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:2px solid #201e1d;padding:1px 6px;background:#fbfaf8;color:#201e1d">{{ wPrizeTier }}</span>
+                    </div>
+                    <div style="height:min(300px,calc(100cqh - 300px));min-height:140px;box-sizing:border-box;border:2px solid #201e1d;padding:4%;background-color:{{ wPrizeColor }};background-image:{{ wPrizeRing }};display:flex">
+                      <div style="flex:1;background-image:{{ wPrizeArt }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;filter:{{ wPrizeFilter }}"></div>
+                    </div>
+                    <span style="font-size:13px;font-weight:700;line-height:1.4;background:{{ wPrizePanel }};padding:4px 6px">{{ wPrizeInfo }}</span>
+                  </div>
+                  <div style="position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:{{ wBackBg }};border:3px solid #fbfaf8;box-shadow:0 0 0 3px #201e1d;padding:10px;box-sizing:border-box;display:flex">
+                    <div style="flex:1;border:2px solid #fbfaf8;padding:16px;display:flex;flex-direction:column;justify-content:space-between;color:#fbfaf8">
+                      <span style="font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase">Sammelkarte</span>
+                      <div style="display:flex;flex-direction:column;font-family:var(--font-heading);font-weight:800;font-size:40px;line-height:.95;letter-spacing:-.02em">
+                        <span>Glücks-</span>
+                        <span>rad</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div style="height:min(300px,calc(100cqh - 300px));min-height:140px;box-sizing:border-box;border:2px solid #201e1d;padding:4%;background-color:{{ wPrizeColor }};background-image:{{ wPrizeArt }};background-origin:content-box;background-size:contain;background-repeat:no-repeat;background-position:center bottom"></div>
-                <span style="font-size:13px;font-weight:700;line-height:1.4">{{ wPrizeInfo }}</span>
               </div>
               <button class="btn btn-primary" onClick="{{ wPrizeOk }}" style="justify-content:flex-start;font-size:18px;padding:14px 18px;border:2px solid #fbfaf8">Weiter drehen</button>
             </div>
@@ -650,7 +665,7 @@ class Component extends DCLogic {
     splitter: { name: 'Splitterregen', typ: 'kristall', kraft: 36, fx: 'rain', shape: 'shard', color: '#bfe9ff', n: 13, text: 'Scharfe Kristalle fallen vom Himmel.' },
   };
   static LINE = { raupe: ['schleim', 'kitzel', 'seide'], bohne: ['ruelps', 'pups', 'bohnen'], kokon: ['wickel', 'schlaf', 'schluepf'], tropfen: ['spucke', 'piss', 'platsch'], kiesel: ['kopfnuss', 'stein', 'lawine'], horn: ['pieks', 'troete', 'bohrer'], kristall: ['glitzer', 'blend', 'splitter'] };
-  static TIERS = [['Papier', '#fbfaf8'], ['Bronze', '#e0b48a'], ['Silber', '#d3d7db'], ['Gold', '#f2cf5b'], ['Holo', 'linear-gradient(90deg,#ff9ab8,#ffe09a,#b8ffa6,#9aeeff,#bfa6ff)'], ['Ikone', '#f3ead2']];
+  static TIERS = [['Papier', '#fbfaf8'], ['Bronze', '#e0b48a'], ['Silber', '#d3d7db'], ['Gold', '#f2cf5b'], ['Holo', 'linear-gradient(90deg,#ff9ab8,#ffe09a,#b8ffa6,#9aeeff,#bfa6ff)'], ['Ikone', '#f3ead2'], ['Godlike', 'linear-gradient(90deg,#ec3013 0 10%,#fbfaf8 10% 90%,#ec3013 90%)']];
   static ITEMS = {
     heiltrank: { name: 'Heiltrank', text: 'Heilt 30 KP.', heal: 30 },
     supertrank: { name: 'Supertrank', text: 'Heilt 80 KP.', heal: 80 },
@@ -731,7 +746,7 @@ class Component extends DCLogic {
     ],
   };
   static WHEEL = [
-    ['heil', 18], ['l2', 15], ['niete', 22], ['gold', 8], ['riech', 16], ['heil', 18], ['frei', 11], ['niete', 22], ['holo', 5], ['super', 14], ['l10', 7], ['niete', 22], ['heil', 18],
+    ['heil', 18], ['l2', 15], ['niete', 22], ['gold', 8], ['riech', 16], ['heil', 18], ['frei', 11], ['niete', 22], ['holo', 5], ['super', 14], ['l10', 7], ['niete', 21], ['god', 1], ['heil', 18],
     ['l5', 10], ['niete', 22], ['gold', 8], ['riech', 16], ['frei', 11], ['super', 14], ['niete', 22], ['ikone', 3], ['heil', 18], ['l25', 3], ['l2', 15], ['niete', 22],
   ];
   static WK = {
@@ -747,10 +762,14 @@ class Component extends DCLogic {
     gold: { label: 'Gold', bg: '#f2cf5b', fg: '#201e1d', tier: 3, big: true },
     holo: { label: 'Holo', bg: '#9aeeff', fg: '#201e1d', tier: 4, holo: true, big: true },
     ikone: { label: 'Ikone', bg: '#201e1d', fg: '#f2cf5b', tier: 5, big: true },
+    god: { label: 'Godlike', bg: '#050505', fg: '#fbfaf8', tier: 6, big: true, god: true },
   };
   static HOLO = ['#ff9ab8', '#ffe09a', '#b8ffa6', '#9aeeff', '#bfa6ff'];
   static BULB = ['#5a514d', '#f2cf5b', '#ff9ab8', '#9aeeff', '#b8ffa6', '#fbfaf8', '#8f7a4a'];
   static RAYS = 'repeating-conic-gradient(from 0deg,rgba(236,48,19,.22) 0deg 7.5deg,rgba(32,30,29,0) 7.5deg 15deg)';
+  static RAYS_GOD = 'repeating-conic-gradient(from 0deg,rgba(251,250,248,.5) 0deg 4deg,rgba(5,5,5,0) 4deg 12deg,rgba(236,48,19,.6) 12deg 14deg,rgba(5,5,5,0) 14deg 24deg)';
+  static GOD_FRAME = 'repeating-linear-gradient(135deg,#050505 0 14px,#fbfaf8 14px 18px,#050505 18px 32px,#ec3013 32px 36px)';
+  static GOD_RING = 'radial-gradient(circle at 50% 55%, rgba(0,0,0,0) 0 31%, #ec3013 31% 35%, rgba(0,0,0,0) 35%), repeating-conic-gradient(from 0deg at 50% 55%, rgba(251,250,248,.14) 0deg 5deg, rgba(251,250,248,0) 5deg 14deg)';
   static RAYS_GOLD = 'repeating-conic-gradient(from 0deg,rgba(242,207,91,.45) 0deg 7.5deg,rgba(236,48,19,.28) 7.5deg 15deg)';
   static QUESTS = [
     { id: 'udo', isle: 'heim', title: 'Erster Kampf', text: 'Besiege Wanderer Udo gleich hinter dem Start.', tr: 'udo', likes: 2 },
@@ -865,7 +884,7 @@ class Component extends DCLogic {
   arenaRef = React.createRef(); stageRef = React.createRef(); playerRef = React.createRef(); bioRef = React.createRef();
   dialRef = React.createRef(); needleRef = React.createRef(); arcRef = React.createRef();
   wRootRef = React.createRef(); raysRef = React.createRef(); wBoxRef = React.createRef(); bulbsRef = React.createRef(); wheelRef = React.createRef(); pointerRef = React.createRef();
-  decoRef = React.createRef(); glowRef = React.createRef(); wResRef = React.createRef(); wLikesRef = React.createRef(); prizeRef = React.createRef(); wFxRef = React.createRef(); flashRef = React.createRef();
+  decoRef = React.createRef(); glowRef = React.createRef(); pFlipRef = React.createRef(); wResRef = React.createRef(); wLikesRef = React.createRef(); prizeRef = React.createRef(); wFxRef = React.createRef(); flashRef = React.createRef();
   vpRef = el => {
     if (this._vp === el) return;
     if (this.ro) this.ro.disconnect();
@@ -1107,7 +1126,7 @@ class Component extends DCLogic {
     return db.users.find(u => (auth.token && u.token === auth.token) || (u.name && u.name.toLowerCase() === un)) || null;
   }
   async loadCards() {
-    const map = c => ({ uid: 'c' + c.card_id, name: c.name, model: c.model, params: c.params, likes: c.likes, icon: !!c.icon });
+    const map = c => ({ uid: 'c' + c.card_id, name: c.name, model: c.model, params: c.params, likes: c.likes, icon: !!c.icon, god: !!c.god });
     if (!this.testMode()) {
       if (!this.auth().token) return { list: [], block: 'Bitte melde dich zuerst im Formgenerator an. Dein Team besteht aus deinen Sammelkarten.' };
       try {
@@ -1128,10 +1147,10 @@ class Component extends DCLogic {
     try {
       if (!this.testMode()) { const j = await this.apiCall('/api/wild?models=' + models.join(',')); return j.item ? { ...j.item, ticket: j.ticket } : null; }
       const db = this.testDb(); if (!db || !db.items) return null;
-      const icons = db.items.filter(i => i.icon), fit = db.items.filter(i => !i.hidden && models.includes(i.model));
-      const pool = icons.length && Math.random() < 0.02 ? icons : fit.length ? fit : db.items.filter(i => !i.hidden);
+      const gods = db.items.filter(i => i.god), icons = db.items.filter(i => i.icon && !i.god), fit = db.items.filter(i => !i.hidden && !i.god && models.includes(i.model)), r0 = Math.random();
+      const pool = gods.length && r0 < 0.01 ? gods : icons.length && r0 < 0.03 ? icons : fit.length ? fit : db.items.filter(i => !i.hidden && !i.god);
       const i = pool[Math.floor(Math.random() * pool.length)];
-      return i ? { id: i.id, name: i.name, model: i.model, params: i.params, likes: i.likes, icon: !!i.icon } : null;
+      return i ? { id: i.id, name: i.name, model: i.model, params: i.params, likes: i.likes, icon: !!i.icon, god: !!i.god } : null;
     } catch (e) { console.warn(e); return null; }
   }
   foeFromItem(it, lv) {
@@ -1139,18 +1158,19 @@ class Component extends DCLogic {
     if (typeof params === 'string') { try { params = JSON.parse(params); } catch (e) { params = {}; } }
     params = params || {};
     const model = Component.TYPES.includes(it.model) ? it.model : 'bohne', L = Component.LINE[model], rnd = Math.random;
-    const tier = this.rarity(this.full(model, params), model, it.likes, it.icon), lvl = it.icon ? lv + 2 : lv;
+    const tier = this.rarity(this.full(model, params), model, it.likes, it.icon, it.god), lvl = it.god ? lv + 5 : it.icon ? lv + 2 : lv;
     const attacks = lvl <= 2 ? [L[0], 'rempler'] : lvl <= 4 ? [L[0], L[1]] : [L[1], L[2]];
     const maxKp = 26 + lvl * 7 + Math.floor(rnd() * 8);
-    return { itemId: it.id, ticket: it.ticket || '', params, tier, name: String(it.name || '').trim() || this.wildName(model, rnd), typ: model, lv: lvl, maxKp, kp: maxKp, a: 34 + lvl * 4 + Math.floor(rnd() * 16), c: 34 + lvl * 4 + Math.floor(rnd() * 16), g: 30 + Math.floor(rnd() * 40), attacks, art: this.draw(this.full(model, params)) };
+    return this.godUp({ itemId: it.id, ticket: it.ticket || '', params, tier, name: String(it.name || '').trim() || this.wildName(model, rnd), typ: model, lv: lvl, maxKp, kp: maxKp, a: 34 + lvl * 4 + Math.floor(rnd() * 16), c: 34 + lvl * 4 + Math.floor(rnd() * 16), g: 30 + Math.floor(rnd() * 40), attacks, art: this.draw(this.full(model, params)) });
   }
+  godUp(o) { if (o.tier !== 6) return o; o.maxKp = Math.round(o.maxKp * 1.8); o.kp = o.maxKp; o.a = Math.round(o.a * 1.6); o.c = Math.round(o.c * 1.6); o.g = Math.max(o.g, 90); return o; }
   cardFrom(r) {
     let params = r.params;
     if (typeof params === 'string') { try { params = JSON.parse(params); } catch (e) { params = {}; } }
     params = params || {};
     const model = Component.TYPES.includes(r.model) ? r.model : 'bohne';
     const p = this.full(model, params);
-    const tier = this.rarity(p, model, r.likes, r.icon);
+    const tier = this.rarity(p, model, r.likes, r.icon, r.god);
     const st = this.cardStats(p, model, tier, this.cardCode(params));
     const P = Component.PAT[model];
     const pat = `<svg xmlns='http://www.w3.org/2000/svg' width='${P[0]}' height='${P[1]}'><g opacity='.17'>${P[2]}</g></svg>`;
@@ -1190,7 +1210,8 @@ class Component extends DCLogic {
     return { h: (h * 60 + 360) % 360, s: d ? d / (1 - Math.abs(mx + mn - 1)) : 0 };
   }
   ton(a, b) { const x = this.hsl(a), y = this.hsl(b); if (!x || !y || x.s < 0.15 || y.s < 0.15) return false; const dh = Math.abs(x.h - y.h); return Math.min(dh, 360 - dh) < 24; }
-  rarity(p, model, likes, icon) {
+  rarity(p, model, likes, icon, god) {
+    if (god) return 6;
     if (icon) return 5;
     let n = 0;
     if (p.hat && p.hatType === 2) n += 3;
@@ -1215,7 +1236,7 @@ class Component extends DCLogic {
     let h = 2166136261;
     for (let i = 0; i < seed.length; i++) h = Math.imul(h ^ seed.charCodeAt(i), 16777619) >>> 0;
     const rnd = () => { h = (h + 0x6D2B79F5) >>> 0; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-    const band = [[41, 58], [54, 66], [63, 74], [72, 82], [81, 90], [89, 98]][tier] || [41, 58];
+    const band = [[41, 58], [54, 66], [63, 74], [72, 82], [81, 90], [89, 98], [99, 99]][tier] || [41, 58];
     const ovr = Math.round(band[0] + (band[1] - band[0]) * rnd());
     let a = (rnd() - 0.5) * 22, c = (rnd() - 0.5) * 22, g = (rnd() - 0.5) * 36;
     if (p.arms) { a += 7; c -= 2; }
@@ -1232,15 +1253,16 @@ class Component extends DCLogic {
     const mean = (a + c + g) / 3, head = Math.max(1, 99 - ovr);
     const cl = v => Math.max(1, Math.min(99, Math.round(v)));
     const val = off => { off -= mean; return cl(ovr + (off > 0 ? off * Math.min(1, head / 25) : off)); };
-    return { ovr, vals: [val(a), val(c), val(g)] };
+    const vals = [val(a), val(c), val(g)];
+    return { ovr, vals: tier === 6 ? vals.map(v => Math.max(v, 96)) : vals };
   }
-  maxKp(c, lv) { return 40 + Math.round(c.st.ovr / 2) + (lv - 1) * 4; }
+  maxKp(c, lv) { const b = 40 + Math.round(c.st.ovr / 2) + (lv - 1) * 4; return c.tier === 6 ? Math.round(b * 1.8) : b; }
   need(lv) { return 20 * lv; }
   meStats(uid) {
     const s = this.state, c = s.cards.find(x => x.uid === uid), p = s.prog[uid];
     if (!c || !p) return null;
     const mx = this.maxKp(c, p.lv);
-    return { uid, name: c.name, typ: c.model, lv: p.lv, ep: p.ep, maxKp: mx, kp: p.kp == null ? mx : Math.max(0, Math.min(mx, p.kp)), a: c.st.vals[0], c: c.st.vals[1], g: c.st.vals[2], attacks: p.attacks, art: s.arts[uid] || 'none' };
+    return { uid, name: c.name, typ: c.model, lv: p.lv, ep: p.ep, maxKp: mx, kp: p.kp == null ? mx : Math.max(0, Math.min(mx, p.kp)), a: c.tier === 6 ? Math.round(c.st.vals[0] * 1.6) : c.st.vals[0], c: c.tier === 6 ? Math.round(c.st.vals[1] * 1.6) : c.st.vals[1], g: c.st.vals[2], attacks: p.attacks, art: s.arts[uid] || 'none' };
   }
   makeFoe(model, lv, rnd, name) {
     const params = this.genParams(model, rnd), L = Component.LINE[model];
@@ -1721,7 +1743,7 @@ class Component extends DCLogic {
   async claimItem(id, ticket) {
     if (!this.testMode()) {
       const j = await this.apiCall('/api/catch', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, ticket }) });
-      const c = j.card; return { uid: 'c' + c.card_id, name: c.name, model: c.model, params: c.params, likes: c.likes, icon: !!c.icon };
+      const c = j.card; return { uid: 'c' + c.card_id, name: c.name, model: c.model, params: c.params, likes: c.likes, icon: !!c.icon, god: !!c.god };
     }
     const db = this.testDb(), me = this.testMe(db), i = db && (db.items || []).find(x => x.id === id);
     if (!me || !i) throw new Error('im Testmodus bitte zuerst im Formgenerator anmelden');
@@ -1730,7 +1752,7 @@ class Component extends DCLogic {
     const c = { id: ++db.seq.card, user_id: me.id, item_id: i.id, drawn: Date.now(), likes: i.likes, icon: !!i.icon, caught: true };
     db.cards.push(c);
     localStorage.setItem('formgen.testdb.v1', JSON.stringify(db));
-    return { uid: 'c' + c.id, name: i.name, model: i.model, params: i.params, likes: c.likes, icon: c.icon };
+    return { uid: 'c' + c.id, name: i.name, model: i.model, params: i.params, likes: c.likes, icon: c.icon, god: !!i.god };
   }
   async addCard(raw, f, place, fang) {
     raw.caught = place;
@@ -1795,14 +1817,16 @@ class Component extends DCLogic {
       const K = C.WK[k], a0 = a, a1 = a + w; a = a1;
       segs.push({ k, a0, a1, mid: (a0 + a1) / 2 });
       stops.push(`#201e1d ${a0}deg ${a0 + 0.5}deg`);
-      if (K.holo) { const cs = C.HOLO, st = (w - 0.5) / cs.length; cs.forEach((c, i) => stops.push(`${c} ${(a0 + 0.5 + i * st).toFixed(2)}deg ${(a0 + 0.5 + (i + 1) * st).toFixed(2)}deg`)); }
+      if (K.god) { stops.pop(); stops.push(`#ec3013 ${a0}deg ${a0 + 0.25}deg`, `#fbfaf8 ${a0 + 0.25}deg ${a1 - 0.25}deg`, `#ec3013 ${a1 - 0.25}deg ${a1}deg`); }
+      else if (K.holo) { const cs = C.HOLO, st = (w - 0.5) / cs.length; cs.forEach((c, i) => stops.push(`${c} ${(a0 + 0.5 + i * st).toFixed(2)}deg ${(a0 + 0.5 + (i + 1) * st).toFixed(2)}deg`)); }
       else stops.push(`${K.bg} ${a0 + 0.5}deg ${a1}deg`);
     }
-    const labels = segs.map(g => { const K = C.WK[g.k], w = g.a1 - g.a0; return { rot: `rotate(${g.mid}deg)`, label: K.label, fg: K.fg, fs: w >= 14 ? '2.5cqw' : w >= 7 ? '2.1cqw' : '1.6cqw' }; });
+    const labels = segs.map(g => { const K = C.WK[g.k], w = g.a1 - g.a0; return { rot: `rotate(${g.mid}deg)`, label: w < 2 ? '' : K.label, fg: K.fg, fs: w >= 14 ? '2.5cqw' : w >= 7 ? '2.1cqw' : '1.6cqw' }; });
     const bulbs = Array.from({ length: 24 }, (_, i) => { const r = i / 24 * Math.PI * 2; return { l: (50 + 46.4 * Math.sin(r)).toFixed(2) + '%', t: (50 - 46.4 * Math.cos(r)).toFixed(2) + '%' }; });
     const lin = 'linear-gradient(135deg,' + C.HOLO.join(',') + ')';
     const big = segs.filter(g => C.WK[g.k].tier).map(g => {
       const K = C.WK[g.k], a0 = g.a0 + 0.5, a1 = g.a1;
+      if (K.god) return { rot: `rotate(${g.mid}deg)`, holo: '2', bg: 'linear-gradient(135deg,#050505 50%,#fbfaf8 50%)', star: '#ec3013', glow: 'rgba(251,250,248,.95)', wedge: `conic-gradient(rgba(0,0,0,0) 0deg ${g.a0 - 0.6}deg, #fbfaf8 ${g.a0 - 0.6}deg ${g.a1 + 0.6}deg, rgba(0,0,0,0) ${g.a1 + 0.6}deg 360deg)` };
       const mid = K.holo ? C.HOLO.map((c, i) => `${c} ${(a0 + 0.4 + (a1 - a0 - 0.8) * i / (C.HOLO.length - 1)).toFixed(2)}deg`).join(',') : `${K.tier === 5 ? '#f2cf5b' : '#fff3b0'} ${a0 + 0.4}deg ${a1 - 0.4}deg`;
       return { rot: `rotate(${g.mid}deg)`, holo: K.holo ? '1' : '0', bg: K.holo ? lin : K.bg, star: K.tier === 5 ? '#f2cf5b' : '#201e1d', glow: K.holo ? 'rgba(154,238,255,.95)' : 'rgba(242,207,91,.95)',
         wedge: `conic-gradient(rgba(0,0,0,0) 0deg ${a0}deg, #ffffff ${a0}deg ${a0 + 0.4}deg, ${mid}, #ffffff ${a1 - 0.4}deg ${a1}deg, rgba(0,0,0,0) ${a1}deg 360deg)` };
@@ -1822,15 +1846,15 @@ class Component extends DCLogic {
     }, 380);
   }
   async loadPrizes() {
-    const C = Component, pool = { 3: [], 4: [], 5: [] };
+    const C = Component, pool = { 3: [], 4: [], 5: [], 6: [] };
     let items = [];
     try {
       if (!this.testMode()) { const j = await this.apiCall('/api/prizes'); items = j.items || []; }
-      else { const db = this.testDb(); items = ((db && db.items) || []).filter(i => !i.hidden || i.icon).map(i => ({ id: i.id, name: i.name, model: i.model, params: i.params, likes: i.likes, icon: !!i.icon, ticket: '' })); }
+      else { const db = this.testDb(); items = ((db && db.items) || []).filter(i => !i.hidden || i.icon || i.god).map(i => ({ id: i.id, name: i.name, model: i.model, params: i.params, likes: i.likes, icon: !!i.icon, god: !!i.god, ticket: '' })); }
     } catch (e) { console.warn(e); }
     for (const it of items) {
       let p = it.params; if (typeof p === 'string') { try { p = JSON.parse(p); } catch (e) { p = {}; } }
-      const model = C.TYPES.includes(it.model) ? it.model : 'bohne', t = this.rarity(this.full(model, p || {}), model, it.likes, it.icon);
+      const model = C.TYPES.includes(it.model) ? it.model : 'bohne', t = this.rarity(this.full(model, p || {}), model, it.likes, it.icon, it.god);
       if (pool[t]) pool[t].push(it);
     }
     this._pool = pool;
@@ -1913,7 +1937,7 @@ class Component extends DCLogic {
     const dc = this.decoRef.current, gl = this.glowRef.current, hue = ((t / 5) % 360).toFixed(0);
     if (dc) dc.style.transform = `rotate(${this.wR.toFixed(2)}deg)`;
     if (gl) for (let i = 0; i < gl.children.length; i++) { const el = gl.children[i], p = 0.5 + 0.5 * Math.sin(t / 240 + i * 1.3); el.style.opacity = (0.3 + 0.65 * p).toFixed(3); if (el.dataset.holo === '1') el.style.filter = `hue-rotate(${hue}deg) saturate(1.6)`; }
-    if (dc) for (let i = 0; i < dc.children.length; i++) { const el = dc.children[i].firstElementChild; if (!el) continue; const p = 0.5 + 0.5 * Math.sin(t / 240 + i * 1.3); el.style.transform = `rotate(45deg) scale(${(1 + 0.16 * p).toFixed(3)})`; el.style.filter = `brightness(${(1 + 0.5 * p).toFixed(2)})` + (el.dataset.holo === '1' ? ` hue-rotate(${hue}deg) saturate(1.6)` : ''); }
+    if (dc) for (let i = 0; i < dc.children.length; i++) { const el = dc.children[i].firstElementChild; if (!el) continue; const p = 0.5 + 0.5 * Math.sin(t / 240 + i * 1.3); el.style.transform = `rotate(45deg) scale(${(1 + 0.16 * p).toFixed(3)})`; el.style.filter = `brightness(${(1 + 0.5 * p).toFixed(2)})` + (el.dataset.holo === '1' ? ` hue-rotate(${hue}deg) saturate(1.6)` : '') + (el.dataset.holo === '2' ? ` invert(${Math.floor(t / 190) % 2})` : ''); }
     this.wRaf = requestAnimationFrame(this.wLoop);
   };
   wDone(ws) {
@@ -1949,14 +1973,15 @@ class Component extends DCLogic {
     this.setState(st => ({ ...(patch ? patch(st) : {}), wheel: st.wheel && { ...st.wheel, busy: false, res, line, hist: [res.k, ...st.wheel.hist].slice(0, 12) } }), () => { this.save(); this.popRes(); });
   }
   async wJackpot(ws) {
-    const C = Component, K = ws.K, list = (this._pool || {})[K.tier] || [], it = list[Math.floor(Math.random() * list.length)], cols = ['#f2cf5b', '#ec3013', '#fbfaf8', ...C.HOLO];
+    const C = Component, K = ws.K, list = (this._pool || {})[K.tier] || [], it = list[Math.floor(Math.random() * list.length)], cols = K.tier === 6 ? ['#fbfaf8', '#050505', '#ec3013'] : ['#f2cf5b', '#ec3013', '#fbfaf8', ...C.HOLO];
     this.wMode = 'jackpot'; this.wModeT = performance.now(); this.wModeEnd = this.wModeT + 5200;
-    const rays = this.raysRef.current; if (rays) rays.style.background = C.RAYS_GOLD;
-    this.wSfx('jackpot'); this.wFlash(0.9);
+    const rays = this.raysRef.current, god = K.tier === 6; if (rays) rays.style.background = god ? C.RAYS_GOD : C.RAYS_GOLD;
+    this.wSfx(god ? 'god' : 'jackpot'); this.wFlash(0.9);
     const root = this.wRootRef.current;
     if (root) root.animate([{ transform: 'translate(0,0)' }, { transform: 'translate(-8px,4px)' }, { transform: 'translate(7px,-5px)' }, { transform: 'translate(-5px,-3px)' }, { transform: 'translate(4px,5px)' }, { transform: 'translate(0,0)' }], { duration: 520 });
     this.wConfetti(130, cols); setTimeout(() => this.wConfetti(90, cols), 380); this.wRain(140, cols);
-    this.setState(st => ({ wheel: st.wheel && { ...st.wheel, res: { k: ws.seg.k, title: 'JACKPOT!', bg: '#f2cf5b', fg: '#201e1d' }, line: 'WAHNSINN! Sowas hab ich seit Jahren nicht gesehen!' } }), () => this.popRes());
+    this.setState(st => ({ wheel: st.wheel && { ...st.wheel, res: god ? { k: ws.seg.k, title: 'GODLIKE', bg: '#050505', fg: '#fbfaf8' } : { k: ws.seg.k, title: 'JACKPOT!', bg: '#f2cf5b', fg: '#201e1d' }, line: god ? 'Bei allen Göttern … GODLIKE! Davon hab ich nur in Legenden gehört!' : 'WAHNSINN! Sowas hab ich seit Jahren nicht gesehen!' } }), () => this.popRes());
+    if (god) this.wGodFx();
     let raw = null, f = null;
     try { if (!it) throw new Error('kein Wesen gefunden'); raw = await this.claimItem(it.id, it.ticket); f = this.foeFromItem(it, K.tier >= 4 ? 8 : 7); }
     catch (e) {
@@ -1964,18 +1989,50 @@ class Component extends DCLogic {
       return this.wFinish({ k: 'niete', title: 'FEHLER', bg: '#5a514d', fg: '#fbfaf8' }, 'Mist, da klemmt was (' + e.message + '). Dein Like bekommst du zurück.', st => ({ likes: ws.free ? st.likes : st.likes + 1 }));
     }
     const inTeam = await this.addCard(raw, f, 'Glücksrad', false), card = this.cardFrom(raw);
-    await this.sleep(1300);
+    await this.sleep(god ? 2700 : 1300);
     if (this.dead || !this.state.wheel) return;
     this.setState(st => ({ wheel: st.wheel && { ...st.wheel, busy: false, hist: [ws.seg.k, ...st.wheel.hist].slice(0, 12), prize: { name: f.name, tier: f.tier, art: f.art, color: card.color, info: inTeam ? 'Neu in deiner Sammlung und gleich in deinem Team.' : 'Neu in deiner Sammlung. Im Team-Reiter kannst du es aufstellen.' } } }), () => {
       this.save();
-      const el = this.prizeRef.current;
-      if (el) el.animate([{ transform: 'scale(.2) rotate(-14deg)', opacity: 0 }, { transform: 'scale(1.08) rotate(2deg)', opacity: 1, offset: 0.7 }, { transform: 'none', opacity: 1 }], { duration: 650, easing: 'cubic-bezier(.2,.8,.3,1.2)' });
-      this.wConfetti(80, cols); this.wSfx('win');
+      const el = this.prizeRef.current, fp = this.pFlipRef.current;
+      if (el) el.animate([{ transform: 'scale(.3)', opacity: 0 }, { transform: 'scale(1.06)', opacity: 1, offset: 0.5 }, { transform: 'none', opacity: 1 }], { duration: god ? 900 : 600, easing: 'cubic-bezier(.2,.8,.3,1.2)' });
+      if (fp) fp.animate([{ transform: 'rotateY(180deg)' }, { transform: 'rotateY(180deg)', offset: god ? 0.3 : 0.15 }, { transform: `rotateY(${god ? 2160 : 1080}deg)` }], { duration: god ? 2600 : 1600, easing: 'cubic-bezier(.3,.1,.15,1)' });
+      this.wSfx('tick');
+      setTimeout(() => { if (this.dead || !this.state.wheel) return; this.wFlash(god ? 1 : 0.6); this.wConfetti(god ? 130 : 80, cols); this.wSfx(god ? 'jackpot' : 'win'); if (god) { this.wRing('#ec3013'); this.wRing('#fbfaf8'); } }, god ? 2550 : 1550);
     });
   }
   popRes() {
     const el = this.wResRef.current; if (!el) return;
     el.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.3) rotate(-8deg)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.2) rotate(2deg)', offset: 0.12 }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1) rotate(0deg)', offset: 0.22 }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1)', offset: 0.82 }, { opacity: 0, transform: 'translate(-50%,-50%) scale(1.05)' }], { duration: 2200, fill: 'forwards', easing: 'ease-out' });
+  }
+  wGodFx() {
+    const root = this.wRootRef.current;
+    if (root) {
+      const seq = [0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0], kf = seq.map((v, i) => ({ offset: i / seq.length, filter: v ? 'grayscale(1) contrast(1.6) invert(1)' : 'grayscale(1) contrast(1.6)', easing: 'steps(1, end)' }));
+      kf.push({ offset: 1, filter: 'grayscale(1) contrast(1.6)' });
+      root.animate(kf, { duration: 1500 });
+      setTimeout(() => { const r = this.wRootRef.current; if (r) r.animate([{ filter: 'grayscale(1) contrast(1.6)' }, { filter: 'grayscale(1) contrast(1.6)', offset: 0.5 }, { filter: 'none' }], { duration: 1600 }); }, 1500);
+    }
+    for (let k = 0; k < 5; k++) setTimeout(() => this.wRing(k % 2 ? '#ec3013' : '#fbfaf8'), 150 + k * 230);
+    setTimeout(() => this.wWord('GODLIKE'), 300);
+  }
+  wRing(col) {
+    const L = this.wFxRef.current, box = this.wBoxRef.current; if (!L) return;
+    const r = L.getBoundingClientRect(); let cx = r.width / 2, cy = r.height / 2;
+    if (box) { const b = box.getBoundingClientRect(); cx = b.left - r.left + b.width / 2; cy = b.top - r.top + b.height / 2; }
+    const d = document.createElement('div');
+    Object.assign(d.style, { position: 'absolute', left: (cx - 60) + 'px', top: (cy - 60) + 'px', width: '120px', height: '120px', borderRadius: '50%', border: '7px solid ' + col, boxSizing: 'border-box' });
+    L.appendChild(d);
+    const a = d.animate([{ transform: 'scale(.2)', opacity: 1 }, { transform: 'scale(10)', opacity: 0 }], { duration: 1200, easing: 'cubic-bezier(.2,.7,.3,1)' });
+    a.onfinish = () => d.remove();
+  }
+  wWord(t) {
+    const L = this.wFxRef.current; if (!L) return;
+    const d = document.createElement('div');
+    d.textContent = t;
+    Object.assign(d.style, { position: 'absolute', left: '0', right: '0', top: '50%', textAlign: 'center', fontFamily: 'var(--font-heading)', fontWeight: '800', fontSize: Math.min(L.clientWidth / 5.2, 220).toFixed(0) + 'px', lineHeight: '1', letterSpacing: '-.04em', color: '#fbfaf8', whiteSpace: 'nowrap', textShadow: '6px 6px 0 #ec3013' });
+    L.appendChild(d);
+    const a = d.animate([{ opacity: 0, transform: 'translateY(-50%) scale(2)' }, { opacity: 1, transform: 'translateY(-50%) scale(1)', offset: 0.18 }, { opacity: 1, transform: 'translateY(-50%) scale(.97)', offset: 0.8 }, { opacity: 0, transform: 'translateY(-50%) scale(.9)' }], { duration: 2300, easing: 'ease-out' });
+    a.onfinish = () => d.remove();
   }
   pulseLikes(sc) { const el = this.wLikesRef.current; if (el) el.animate([{ transform: 'scale(1)' }, { transform: `scale(${sc})` }, { transform: 'scale(1)' }], { duration: 420, easing: 'ease-out' }); }
   wFlash(op) { const el = this.flashRef.current; if (el) el.animate([{ opacity: 0 }, { opacity: op, offset: 0.15 }, { opacity: 0 }], { duration: op > 0.6 ? 700 : 420 }); }
@@ -2031,6 +2088,11 @@ class Component extends DCLogic {
     else if (k === 'bigcoins') { for (let i = 0; i < 14; i++) T([1319, 1760, 2093, 2637][i % 4], i * 0.055, 0.12, 'square', 0.05); [523, 659, 784].forEach(f => T(f, 0.8, 0.9, 'triangle', 0.06)); }
     else if (k === 'free') [392, 523, 659, 784, 1047, 1319].forEach((f, i) => T(f, i * 0.06, 0.16, 'triangle', 0.09));
     else if (k === 'nope') T(160, 0, 0.25, 'square', 0.06);
+    else if (k === 'god') {
+      T(110, 0, 1.3, 'sine', 0.3, 38); T(55, 0, 1.8, 'triangle', 0.22, 30);
+      [131, 165, 196, 262].forEach((f, i) => T(f, 0.55 + i * 0.12, 1.8, 'sawtooth', 0.035));
+      [1047, 1319, 1568, 2093, 2637, 3136].forEach((f, i) => T(f, 1.2 + i * 0.09, 0.5, 'sine', 0.05));
+    }
     else if (k === 'jackpot') {
       [523, 659, 784, 1047, 784, 1047, 1319, 1568].forEach((f, i) => T(f, i * 0.09, 0.25, 'square', 0.07));
       [523, 659, 784, 1047].forEach(f => T(f, 0.8, 1.5, 'triangle', 0.06));
@@ -2045,7 +2107,7 @@ class Component extends DCLogic {
     const chip = k => { const K = WK[k]; return { label: K.label, bg: K.holo ? lin : K.bg, fg: K.fg }; };
     const deg = k => G.segs.filter(g => g.k === k).reduce((a, g) => a + g.a1 - g.a0, 0);
     const pc = d => (d / 3.6).toFixed(1).replace('.', ',') + ' %';
-    const odds = [['ikone', 'Ikone'], ['holo', 'Holo-Wesen'], ['gold', 'Gold-Wesen'], ['l25', '+25 Likes'], ['l10', '+10 Likes']].map(([k, name]) => {
+    const odds = [['god', 'Godlike'], ['ikone', 'Ikone'], ['holo', 'Holo-Wesen'], ['gold', 'Gold-Wesen'], ['l25', '+25 Likes'], ['l10', '+10 Likes']].map(([k, name]) => {
       const K = WK[k], has = !K.tier || (pool && pool[K.tier] && pool[K.tier].length);
       return { name, bg: K.holo ? lin : K.bg, odds: K.tier && loading ? 'lädt …' : has ? pc(deg(k)) : 'gerade keins da' };
     });
@@ -2057,8 +2119,10 @@ class Component extends DCLogic {
       wSpinOff: !!W.busy || loading || !!P || (free < 1 && s.likes < 1), wBusy: !!W.busy,
       wHist: W.hist.map(chip), wOdds: odds,
       wResTitle: res.title, wResBg: res.bg, wResFg: res.fg,
-      wHasPrize: !!P, wPrizeHead: P ? (P.tier >= 5 ? 'IKONE!!!' : P.tier === 4 ? 'HOLO-WESEN!' : 'GOLD-WESEN!') : '', wPrizeName: P ? P.name : '', wPrizeTier: P ? C.TIERS[P.tier][0] : '',
-      wPrizeBg: P ? C.TIERS[P.tier][1] : 'transparent', wPrizeArt: P ? P.art : 'none', wPrizeColor: P ? P.color : '#fbfaf8', wPrizeInfo: P ? P.info : '',
+      wHasPrize: !!P, wPrizeHead: P ? (P.tier >= 6 ? 'GODLIKE!!!' : P.tier === 5 ? 'IKONE!!!' : P.tier === 4 ? 'HOLO-WESEN!' : 'GOLD-WESEN!') : '', wPrizeName: P ? P.name : '', wPrizeTier: P ? C.TIERS[P.tier][0] : '',
+      wPrizeBg: P ? (P.tier === 6 ? C.GOD_FRAME : C.TIERS[P.tier][1]) : 'transparent', wPrizeArt: P ? P.art : 'none', wPrizeColor: P ? (P.tier === 6 ? '#050505' : P.color) : '#fbfaf8', wPrizeInfo: P ? P.info : '',
+      wPrizeRing: P && P.tier === 6 ? C.GOD_RING : 'none', wPrizeFilter: P && P.tier === 6 ? 'grayscale(1) contrast(1.35)' : 'none', wPrizePanel: P && P.tier === 6 ? '#050505' : 'transparent', wPrizeInk: P && P.tier === 6 ? '#fbfaf8' : '#201e1d',
+      wPrizeGlow: P && P.tier === 6 ? 'rgba(236,48,19,.7)' : 'rgba(242,207,91,.6)', wPrizeHeadCol: P && P.tier === 6 ? '#fbfaf8' : '#f2cf5b', wPrizeDim: P && P.tier === 6 ? 'rgba(5,5,5,.92)' : 'rgba(32,30,29,.72)', wBackBg: P && P.tier === 6 ? '#050505' : '#ec3013', pFlipRef: this.pFlipRef,
       wMuteLabel: W.mute ? 'Ton an' : 'Ton aus',
       wSpin: this.wSpin, wClose: this.wClose, wMute: this.wMute, wPrizeOk: this.wPrizeOk,
       wRootRef: this.wRootRef, raysRef: this.raysRef, wBoxRef: this.wBoxRef, bulbsRef: this.bulbsRef, wheelRef: this.wheelRef, pointerRef: this.pointerRef, wResRef: this.wResRef, wLikesRef: this.wLikesRef, prizeRef: this.prizeRef, wFxRef: this.wFxRef, flashRef: this.flashRef,

@@ -312,7 +312,7 @@
                         <span style="font-size:11px;font-weight:700;flex:none">{{ t.nr }}</span>
                       </div>
                       <div style="position:relative;aspect-ratio:3/4;overflow:hidden;background-color:{{ t.color }};background-image:{{ t.pattern }};background-size:{{ t.patSize }};border:2px solid {{ t.edge }}">
-                        <div style="position:absolute;inset:0;background-image:{{ t.art }};background-size:cover;background-position:center"></div>
+                        <div style="position:absolute;inset:0;background-image:{{ t.art }};background-size:cover;background-position:center;filter:{{ t.artFilter }}"></div>
                         <div style="position:absolute;inset:0;background-image:{{ t.foil }};background-size:300% 300%;background-position:var(--mx,30%) var(--my,30%);mix-blend-mode:overlay;opacity:{{ t.foilOp }};pointer-events:none"></div>
                         <div style="position:absolute;inset:0;background-image:{{ cNoise }};mix-blend-mode:multiply;opacity:.55;pointer-events:none"></div>
                         <div style="position:absolute;left:6px;top:6px;min-width:36px;padding:3px 5px;background:{{ t.panel }};border:2px solid {{ t.edge }};display:flex;justify-content:center;line-height:1">
@@ -343,6 +343,17 @@
                   <button onClick="{{ t.openOwner }}" style="background:none;border:none;padding:0;font:inherit;color:var(--color-neutral-800);cursor:pointer;text-decoration:underline;text-underline-offset:2px" style-hover="color:var(--color-accent)">von {{ t.owner }}</button>
                 </sc-if>
               </div>
+              <sc-if value="{{ t.canDel }}" hint-placeholder-val="{{ false }}">
+                <sc-if value="{{ t.delAsk }}" hint-placeholder-val="{{ true }}">
+                  <button class="btn btn-secondary" onClick="{{ t.del }}" style="align-self:flex-start;padding:4px 10px;font-size:12px;justify-content:flex-start">{{ t.delLabel }}</button>
+                </sc-if>
+                <sc-if value="{{ t.delConfirm }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:var(--space-1)">
+                    <button class="btn btn-primary" onClick="{{ t.delYes }}" style="padding:4px 10px;font-size:12px;justify-content:flex-start">Wirklich löschen</button>
+                    <button class="btn btn-ghost" onClick="{{ t.delNo }}" style="padding:4px 8px;font-size:12px">Nein</button>
+                  </div>
+                </sc-if>
+              </sc-if>
             </div>
           </sc-for>
         </div>
@@ -363,7 +374,7 @@
                         <span style="font-size:12px;font-weight:700;flex:none">{{ rv.nr }}</span>
                       </div>
                       <div style="position:relative;aspect-ratio:3/4;overflow:hidden;background-color:{{ rv.color }};background-image:{{ rv.pattern }};background-size:{{ rv.patSize }};border:2px solid {{ rv.edge }}">
-                        <div style="position:absolute;inset:0;background-image:{{ rv.art }};background-size:cover;background-position:center"></div>
+                        <div style="position:absolute;inset:0;background-image:{{ rv.art }};background-size:cover;background-position:center;filter:{{ rv.artFilter }}"></div>
                         <div style="position:absolute;inset:0;background-image:{{ rv.foil }};background-size:300% 300%;background-position:var(--mx,30%) var(--my,30%);mix-blend-mode:overlay;opacity:{{ rv.foilOp }};pointer-events:none"></div>
                         <div style="position:absolute;inset:0;background-image:{{ cNoise }};mix-blend-mode:multiply;opacity:.55;pointer-events:none"></div>
                         <div style="position:absolute;left:8px;top:8px;min-width:44px;padding:4px 6px;background:{{ rv.panel }};border:2px solid {{ rv.edge }};display:flex;justify-content:center;line-height:1">
@@ -448,12 +459,12 @@
         <div style="display:flex;flex-direction:column;gap:var(--space-3)">
         <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-bottom:2px solid var(--color-text);padding-bottom:var(--space-2)">Spieler</div>
           <div style="overflow-x:auto">
-            <div style="min-width:1040px;display:flex;flex-direction:column">
-              <div style="display:grid;grid-template-columns:minmax(140px,1.4fr) repeat(6,minmax(96px,.7fr)) minmax(230px,1.6fr);gap:var(--space-3);padding:var(--space-2) 0;font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--color-neutral-700);border-bottom:1px solid var(--color-divider)">
-                <span>Name</span><span>Likes bekommen</span><span>Bonus</span><span>Ausgegeben</span><span>Verfügbar</span><span>Karten</span><span>Wesen</span><span>Likes gutschreiben</span>
+            <div style="min-width:1120px;display:flex;flex-direction:column">
+              <div style="display:grid;grid-template-columns:minmax(140px,1.4fr) repeat(6,minmax(96px,.7fr)) minmax(310px,1.6fr);gap:var(--space-3);padding:var(--space-2) 0;font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--color-neutral-700);border-bottom:1px solid var(--color-divider)">
+                <span>Name</span><span>Likes bekommen</span><span>Bonus</span><span>Ausgegeben</span><span>Verfügbar</span><span>Karten</span><span>Wesen</span><span>Likes gutschreiben · Karten</span>
               </div>
               <sc-for list="{{ amUsers }}" as="u" hint-placeholder-count="3">
-                <div style="display:grid;grid-template-columns:minmax(140px,1.4fr) repeat(6,minmax(96px,.7fr)) minmax(230px,1.6fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;font-size:14px;border-bottom:1px solid var(--color-divider)">
+                <div style="display:grid;grid-template-columns:minmax(140px,1.4fr) repeat(6,minmax(96px,.7fr)) minmax(310px,1.6fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;font-size:14px;border-bottom:1px solid var(--color-divider)">
                   <span style="font-weight:700">{{ u.name }}</span>
                   <span>{{ u.liked }}</span>
                   <span>{{ u.bonus }}</span>
@@ -464,6 +475,7 @@
                   <div style="display:flex;gap:var(--space-2);align-items:center">
                     <input class="input" type="number" value="{{ u.amt }}" onChange="{{ u.onAmt }}" style="width:84px;min-height:32px;padding:4px 8px;font-size:13px">
                     <button class="btn btn-primary" onClick="{{ u.give }}" style="padding:6px 10px;font-size:12px;justify-content:flex-start">Gutschreiben</button>
+                    <button class="btn btn-secondary" onClick="{{ u.view }}" style="padding:6px 10px;font-size:12px;justify-content:flex-start">Karten</button>
                   </div>
                 </div>
               </sc-for>
@@ -485,6 +497,7 @@
               <div style="font-size:13px;font-weight:700;line-height:1.25">{{ i.title }}</div>
               <div style="font-size:11px;line-height:1.35;color:var(--color-neutral-700)">{{ i.sub }}</div>
               <div style="font-size:11px;color:var(--color-neutral-700)">{{ i.meta }}</div>
+              <button class="btn btn-secondary" onClick="{{ i.makeGod }}" style="padding:4px 10px;font-size:12px;justify-content:flex-start;background:#050505;color:#fbfaf8;border-color:#050505">Zu Godlike machen</button>
               <sc-if value="{{ i.notConfirm }}" hint-placeholder-val="{{ true }}">
                 <button class="btn btn-secondary" onClick="{{ i.ask }}" style="padding:4px 10px;font-size:12px;justify-content:flex-start">Löschen</button>
               </sc-if>
@@ -511,6 +524,7 @@
               <div style="font-size:13px;font-weight:700;line-height:1.25">{{ i.title }}</div>
               <div style="font-size:11px;line-height:1.35;color:var(--color-neutral-700)">{{ i.sub }}</div>
               <div style="font-size:11px;color:var(--color-neutral-700)">{{ i.meta }}</div>
+              <button class="btn btn-secondary" onClick="{{ i.makeGod }}" style="padding:4px 10px;font-size:12px;justify-content:flex-start;background:#050505;color:#fbfaf8;border-color:#050505">Zu Godlike machen</button>
               <sc-if value="{{ i.notConfirm }}" hint-placeholder-val="{{ true }}">
                 <button class="btn btn-secondary" onClick="{{ i.ask }}" style="padding:4px 10px;font-size:12px;justify-content:flex-start">Löschen</button>
               </sc-if>
@@ -520,6 +534,25 @@
                   <button class="btn btn-ghost" onClick="{{ i.cancel }}" style="padding:4px 8px;font-size:12px">Nein</button>
                 </div>
               </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-bottom:2px solid var(--color-text);padding-bottom:var(--space-2)">Godlike-Pool ({{ amGodsN }})</div>
+          <div style="font-size:12px;color:var(--color-neutral-700)">Godlike-Wesen kommen beim Ziehen und im Abenteuer mit 1 % Chance und sind dann aus dem normalen Pool und dem Ikonen-Pool raus. Schon gezogene Karten dieses Wesens werden auch Godlike.</div>
+          <sc-if value="{{ amGodsEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13px;color:var(--color-neutral-700)">Noch keine Godlike-Wesen. Wähl oben in der Galerie oder bei den Ikonen „Zu Godlike machen“.</div>
+          </sc-if>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--space-3)">
+          <sc-for list="{{ amGods }}" as="i" hint-placeholder-count="0">
+            <div style="display:flex;flex-direction:column;gap:var(--space-2);background:#050505;color:#fbfaf8;padding:var(--space-2);outline:2px solid #ec3013;outline-offset:-2px">
+              <div style="width:100%;aspect-ratio:3/4;background-image:{{ i.bg }};background-size:cover;background-position:center;background-color:#2a2827;filter:grayscale(1) contrast(1.3)"></div>
+              <div style="font-size:13px;font-weight:700;line-height:1.25">{{ i.title }}</div>
+              <div style="font-size:11px;line-height:1.35;color:#d3cfc8">{{ i.sub }}</div>
+              <div style="font-size:11px;color:#d3cfc8">{{ i.meta }}</div>
+              <button class="btn btn-secondary" onClick="{{ i.unGod }}" style="padding:4px 10px;font-size:12px;justify-content:flex-start">Godlike aufheben</button>
             </div>
           </sc-for>
         </div>
@@ -1252,6 +1285,10 @@ class Component extends DCLogic {
   static CARD_COST = 3;
   static ADMIN_NAME = 'maxking';
   static ICON_CHANCE = 0.02;
+  static GOD_CHANCE = 0.01;
+  static GOD_RAYS = 'radial-gradient(circle at 50% 46%, rgba(0,0,0,0) 0 33%, #ec3013 33% 36%, rgba(0,0,0,0) 36%), repeating-conic-gradient(from 0deg at 50% 46%, rgba(251,250,248,.16) 0deg 4deg, rgba(251,250,248,0) 4deg 12deg), radial-gradient(circle at 50% 46%, #2a2827 0%, #050505 72%)';
+  static GOD_FOIL = 'repeating-linear-gradient(125deg, rgba(255,255,255,0) 0 18px, rgba(255,255,255,.9) 18px 20px, rgba(255,255,255,0) 20px 40px)';
+  static GOD_RAYS_BG = 'repeating-conic-gradient(from 0deg, rgba(251,250,248,.5) 0deg 4deg, rgba(251,250,248,0) 4deg 14deg, rgba(236,48,19,.6) 14deg 16deg, rgba(251,250,248,0) 16deg 30deg)';
   static TEST_ADMIN_KEY = 'test';
   static CARD_TIERS = [
     { name: 'Papier', img: 'linear-gradient(#fbfaf8,#fbfaf8)' },
@@ -1260,6 +1297,7 @@ class Component extends DCLogic {
     { name: 'Gold', img: 'linear-gradient(135deg,#7a560c 0%,#c99528 30%,#fbe39a 50%,#c99528 70%,#7a560c 100%)', shine: true },
     { name: 'Holo', img: 'linear-gradient(125deg,#ff9ab8,#ffe09a,#b8ffa6,#9aeeff,#bfa6ff,#ff9ae8,#ff9ab8)', shine: true, foil: true },
     { name: 'Ikone', img: 'linear-gradient(135deg,#7a5a1c 0%,#c9a356 18%,#f6e7bf 34%,#fffaf0 50%,#f6e7bf 66%,#c9a356 82%,#7a5a1c 100%)', shine: true, icon: true },
+    { name: 'Godlike', img: 'linear-gradient(135deg,#050505 0%,#050505 30%,#fbfaf8 30%,#fbfaf8 36%,#050505 36%,#050505 46%,#ec3013 46%,#ec3013 54%,#050505 54%,#050505 64%,#fbfaf8 64%,#fbfaf8 70%,#050505 70%)', shine: true, god: true },
   ];
   static CARD_PAT = {
     raupe: [28, 20, "<path d='M2 14q5-8 10 0M16 4q5-8 10 0' fill='none' stroke='#201e1d' stroke-width='1.6' stroke-linecap='round'/>"],
@@ -1297,7 +1335,8 @@ class Component extends DCLogic {
   }
   // Punkte: Krone 3 · Kristall 2 · Handschuh 2 · Hut+Hand+Mund 2 · Ton in Ton 2 · großes Einzelauge 1 · Likes (1–2: 1, 3–5: 2, ab 6: 3)
   // Stufen: 0 Papier · 1–2 Bronze · 3–4 Silber · 5–6 Gold · ab 7 Holo · Ikone = Wesen aus der Testphase
-  cardRarity(p, model, likes, icon) {
+  cardRarity(p, model, likes, icon, god) {
+    if (god) return 6;
     if (icon) return 5;
     let n = 0;
     if (p.hat && p.hatType === 2) n += 3;
@@ -1333,7 +1372,7 @@ class Component extends DCLogic {
     let m = this.cardMetaCache.get(c.uid);
     if (!m) {
       const p = this.fromSaved(c.model, c.params), code = this.cardCode(c.params);
-      const tier = this.cardRarity(p, c.model, c.likes, c.icon);
+      const tier = this.cardRarity(p, c.model, c.likes, c.icon, c.god);
       m = { p, code, tier, barcode: this.cardBarcode(code), st: this.cardStats(p, c.model, tier, code) };
       this.cardMetaCache.set(c.uid, m);
     }
@@ -1376,7 +1415,7 @@ class Component extends DCLogic {
     const isAdm = u => !!u && String(u.name).toLowerCase() === Component.ADMIN_NAME;
     const pub = u => ({ id: u.id, name: u.name, admin: isAdm(u) });
     const likedCount = uid => db.likes.filter(l => { const i = db.items.find(x => x.id === l.item_id); return l.user_id !== uid && i && i.user_id === uid; }).length;
-    const out = i => ({ id: i.id, created: i.created, name: i.name, model: i.model, version: 1, params: i.params, likes: i.likes, user_id: i.user_id, user_name: uname(i.user_id), icon: i.icon ? 1 : 0 });
+    const out = i => ({ id: i.id, created: i.created, name: i.name, model: i.model, version: 1, params: i.params, likes: i.likes, user_id: i.user_id, user_name: uname(i.user_id), icon: i.icon ? 1 : 0, god: i.god ? 1 : 0 });
     const stats = uid => ({
       earned: likedCount(uid) + ((db.users.find(u => u.id === uid) || {}).bonus || 0),
       spent: db.cards.filter(c => c.user_id === uid && !c.caught).length * Component.CARD_COST,
@@ -1428,9 +1467,9 @@ class Component extends DCLogic {
       if (!me) err('Bitte anmelden');
       const st = stats(me.id);
       if (st.earned - st.spent < Component.CARD_COST) err('Nicht genug Likes');
-      const normal = db.items.filter(i => !i.hidden), icons = db.items.filter(i => i.icon);
-      const chance = db.iconBoost ? 0.5 : Component.ICON_CHANCE;
-      const from = icons.length && Math.random() < chance ? icons : normal;
+      const normal = db.items.filter(i => !i.hidden && !i.god), icons = db.items.filter(i => i.icon && !i.god), gods = db.items.filter(i => i.god);
+      const chance = db.iconBoost ? 0.5 : Component.ICON_CHANCE, r0 = Math.random();
+      const from = gods.length && r0 < Component.GOD_CHANCE ? gods : icons.length && r0 < Component.GOD_CHANCE + chance ? icons : normal;
       if (!from.length) err('Der Pool ist leer');
       const i = from[Math.floor(Math.random() * from.length)];
       const c = { id: ++db.seq.card, user_id: me.id, item_id: i.id, drawn: Date.now(), likes: i.likes, icon: !!i.icon };
@@ -1452,7 +1491,7 @@ class Component extends DCLogic {
       if (!u) err('Spieler nicht gefunden.');
       const cards = db.cards.filter(c => c.user_id === u.id).sort((a, b) => b.id - a.id)
         .map(c => { const i = db.items.find(x => x.id === c.item_id); return i ? { ...out(i), owner_id: i.user_id, card_id: c.id, drawn: c.drawn, likes: c.likes, icon: c.icon ? 1 : 0 } : null; }).filter(Boolean);
-      return { user: pub(u), stats: { items: db.items.filter(i => i.user_id === u.id).length, liked: likedCount(u.id), cards: cards.length, icons: cards.filter(c => c.icon).length }, cards };
+      return { user: pub(u), stats: { items: db.items.filter(i => i.user_id === u.id).length, liked: likedCount(u.id), cards: cards.length, icons: cards.filter(c => c.icon).length, gods: cards.filter(c => c.god).length }, cards };
     }
     if (p.startsWith('/api/admin/') && p !== '/api/admin/icons') {
       if (!isAdm(me)) err('Nur für den Admin.');
@@ -1469,11 +1508,20 @@ class Component extends DCLogic {
         u.bonus = Math.max(0, (u.bonus || 0) + amount); this.testSave();
         return { bonus: u.bonus };
       }
+      if (p === '/api/admin/card' && method === 'POST') {
+        const n = db.cards.length;
+        db.cards = db.cards.filter(c => c.id !== body.id);
+        if (db.cards.length === n) err('Karte nicht gefunden');
+        this.testSave();
+        return { ok: true };
+      }
       if (p === '/api/admin/item' && method === 'POST') {
         const i = db.items.find(x => x.id === body.id);
         if (!i) err('Nicht gefunden');
-        if (body.action === 'remove') { i.hidden = true; i.icon = false; }
-        else if (body.action === 'restore') { i.hidden = false; i.icon = false; }
+        if (body.action === 'remove') { i.hidden = true; i.icon = false; i.god = false; }
+        else if (body.action === 'restore') { i.hidden = false; i.icon = false; i.god = false; }
+        else if (body.action === 'god') i.god = true;
+        else if (body.action === 'ungod') i.god = false;
         else err('Unbekannte Aktion');
         this.testSave();
         return { ok: true };
@@ -1612,7 +1660,7 @@ class Component extends DCLogic {
       this.setAuth(j.user, j.token);
     } catch (e) { this.setState({ lgBusy: false, lgErr: e.message || 'Fehler' }); }
   };
-  serverCard(c) { return { uid: 'c' + c.card_id, id: c.id, name: c.name || '', model: c.model, params: c.params, created: c.created, drawn: c.drawn, owner: c.user_name || '', ownerId: c.owner_id != null ? c.owner_id : (c.user_id || null), likes: c.likes || 0, icon: !!c.icon }; }
+  serverCard(c) { return { uid: 'c' + c.card_id, id: c.id, name: c.name || '', model: c.model, params: c.params, created: c.created, drawn: c.drawn, owner: c.user_name || '', ownerId: c.owner_id != null ? c.owner_id : (c.user_id || null), likes: c.likes || 0, icon: !!c.icon, god: !!c.god }; }
   loadPool = async () => {
     const s = this.state;
     if (s.srv === 'unknown') return;
@@ -1670,7 +1718,7 @@ class Component extends DCLogic {
     let h = 2166136261;
     for (let i = 0; i < seed.length; i++) h = Math.imul(h ^ seed.charCodeAt(i), 16777619) >>> 0;
     const rnd = () => { h = (h + 0x6D2B79F5) >>> 0; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-    const band = [[41, 58], [54, 66], [63, 74], [72, 82], [81, 90], [89, 98]][tier] || [41, 58];
+    const band = [[41, 58], [54, 66], [63, 74], [72, 82], [81, 90], [89, 98], [99, 99]][tier] || [41, 58];
     const ovr = Math.round(band[0] + (band[1] - band[0]) * rnd());
     let a = (rnd() - 0.5) * 22, c = (rnd() - 0.5) * 22, g = (rnd() - 0.5) * 36;
     if (p.arms) { a += 7; c -= 2; }
@@ -1687,13 +1735,14 @@ class Component extends DCLogic {
     const mean = (a + c + g) / 3, head = Math.max(1, 99 - ovr);
     const cl = v => Math.max(1, Math.min(99, Math.round(v)));
     const val = off => { off -= mean; return cl(ovr + (off > 0 ? off * Math.min(1, head / 25) : off)); };
-    return { ovr, vals: [val(a), val(c), val(g)] };
+    const vals = [val(a), val(c), val(g)];
+    return { ovr, vals: tier === 6 ? vals.map(v => Math.max(v, 96)) : vals };
   }
 
   // ---------- Karte groß ansehen & Spielerprofil ----------
   zoomCard(card) {
     this.setState({ reveal: { card, front: true, done: true, mode: 'view' } });
-    setTimeout(() => { this.resetFx(); if (this.cardMeta(card).tier === 5) this.iconRays(0.55); }, 30);
+    setTimeout(() => { this.resetFx(); const tr = this.cardMeta(card).tier; if (tr === 5) this.iconRays(0.55); else if (tr === 6) this.godRays(0.7); }, 30);
   }
   openPlayer = (id, name) => {
     if (!id) return;
@@ -1715,9 +1764,17 @@ class Component extends DCLogic {
   resetFx() {
     for (const r of [this.fxRef, this.raysRef, this.boxRef, this.flipRef, this.flashRef]) { const el = r.current; if (el && el.getAnimations) el.getAnimations().forEach(a => a.cancel()); }
     const fx = this.fxRef.current, rays = this.raysRef.current, box = this.boxRef.current;
-    if (fx) { fx.style.opacity = '0'; fx.style.background = 'none'; }
-    if (rays) rays.style.opacity = '0';
-    if (box) box.style.opacity = '';
+    if (fx) { fx.style.opacity = '0'; fx.style.background = 'none'; fx.innerHTML = ''; }
+    if (rays) { rays.style.opacity = '0'; if (this._raysBg != null) { rays.style.background = this._raysBg; this._raysBg = null; } }
+    if (box) { box.style.opacity = ''; box.style.filter = ''; }
+  }
+  godRays(op) {
+    const rays = this.raysRef.current;
+    if (!rays || !rays.animate) return;
+    if (this._raysBg == null) this._raysBg = rays.style.background;
+    rays.style.background = Component.GOD_RAYS_BG;
+    rays.style.opacity = String(op);
+    rays.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(-360deg)' }], { duration: 26000, iterations: Infinity });
   }
   iconRays(op) {
     const rays = this.raysRef.current;
@@ -1787,6 +1844,62 @@ class Component extends DCLogic {
         A(box, [{ transform: 'scale(.7)' }, { transform: 'scale(1.1)', offset: 0.7 }, { transform: 'scale(1)' }], { duration: 1500, easing: 'ease-out' }),
         A(fx, [{ opacity: 0.9 }, { opacity: 0 }], { duration: 1700, easing: 'ease-out' }),
       ]);
+    } else if (tier === 6) {
+      // Godlike: Herzschläge, Schwarz-Weiß-Gewitter, roter Riss, Enthüllung
+      fx.style.background = '#050505';
+      await A(fx, [{ opacity: 0 }, { opacity: 1 }], { duration: 500 });
+      if (!alive()) return;
+      fx.style.opacity = '1';
+      for (let k = 0; k < 3; k++) {
+        const amp = 1.06 + k * 0.05;
+        if (flash) flash.style.background = '#ec3013';
+        flashIt(0.35 + k * 0.15, 380);
+        await A(box, [{ transform: 'scale(1)' }, { transform: 'scale(' + amp + ')', offset: 0.18 }, { transform: 'scale(1)', offset: 0.4 }, { transform: 'scale(' + (amp - 0.02) + ')', offset: 0.55 }, { transform: 'scale(1)' }], { duration: 760 - k * 120, easing: 'ease-out' });
+        if (!alive()) return;
+      }
+      if (flash) flash.style.background = '#fff';
+      const seq = [70, 50, 90, 40, 60, 40, 110, 40, 50, 40, 80, 40, 60, 160], total = seq.reduce((x, y) => x + y, 0), fk = [], gk = [];
+      let tt = 0;
+      seq.forEach((d, i) => {
+        fk.push({ offset: tt / total, backgroundColor: i % 2 ? '#fbfaf8' : '#050505', easing: 'steps(1, end)' });
+        gk.push({ offset: tt / total, filter: i % 2 ? 'invert(1) grayscale(1)' : 'grayscale(1)', transform: 'translate(' + ((i * 29) % 15 - 7) + 'px,' + ((i * 13) % 9 - 4) + 'px) rotate(' + ((i * 7) % 5 - 2) + 'deg)', easing: 'steps(1, end)' });
+        tt += d;
+      });
+      fk.push({ offset: 1, backgroundColor: '#050505' }); gk.push({ offset: 1, filter: 'none', transform: 'none' });
+      await Promise.all([A(fx, fk, { duration: total }), A(box, gk, { duration: total })]);
+      if (!alive()) return;
+      fx.style.background = '#050505';
+      box.style.opacity = '0';
+      const crack = document.createElement('div');
+      Object.assign(crack.style, { position: 'absolute', left: '0', right: '0', top: '50%', height: '4px', marginTop: '-2px', background: '#ec3013' });
+      fx.appendChild(crack);
+      await A(crack, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 520, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'forwards' });
+      if (!alive()) return;
+      await wait(380); if (!alive()) return;
+      A(crack, [{ transform: 'scaleX(1) scaleY(1)', opacity: 1 }, { transform: 'scaleX(1) scaleY(260)', opacity: 0 }], { duration: 700, easing: 'ease-in', fill: 'forwards' });
+      flashIt(1, 800);
+      const word = document.createElement('div');
+      word.textContent = 'GODLIKE';
+      Object.assign(word.style, { position: 'absolute', left: '0', right: '0', top: '50%', textAlign: 'center', fontFamily: 'var(--font-heading)', fontWeight: '800', fontSize: 'min(21vw, 260px)', lineHeight: '1', letterSpacing: '-.04em', color: '#fbfaf8', opacity: '0', whiteSpace: 'nowrap', overflow: 'hidden', textShadow: '8px 8px 0 #ec3013' });
+      fx.appendChild(word);
+      A(word, [{ opacity: 0, transform: 'translateY(-50%) scale(1.6)' }, { opacity: 0.95, transform: 'translateY(-50%) scale(1)', offset: 0.25 }, { opacity: 0.9, transform: 'translateY(-50%) scale(.96)', offset: 0.75 }, { opacity: 0.14, transform: 'translateY(-50%) scale(.94)' }], { duration: 2600, easing: 'ease-out', fill: 'forwards' });
+      for (let k = 0; k < 4; k++) setTimeout(() => {
+        if (!alive()) return;
+        const r = document.createElement('div');
+        Object.assign(r.style, { position: 'absolute', left: '50%', top: '42%', width: '120px', height: '120px', margin: '-60px 0 0 -60px', borderRadius: '50%', border: '6px solid ' + (k % 2 ? '#ec3013' : '#fbfaf8'), boxSizing: 'border-box' });
+        fx.appendChild(r);
+        A(r, [{ transform: 'scale(.2)', opacity: 1 }, { transform: 'scale(9)', opacity: 0 }], { duration: 1100, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' });
+      }, 350 + k * 220);
+      front();
+      this.godRays(1);
+      if (rays) A(rays, [{ opacity: 0 }, { opacity: 1 }], { duration: 900, easing: 'ease-out' });
+      box.style.opacity = '';
+      await Promise.all([
+        A(flip, [{ transform: 'rotateY(180deg)' }, { transform: 'rotateY(2160deg)' }], { duration: 1900, easing: 'cubic-bezier(.15,.85,.2,1)' }),
+        A(box, [{ opacity: 0, transform: 'scale(.2) rotate(-20deg)' }, { opacity: 1, transform: 'scale(1.18) rotate(3deg)', offset: 0.6 }, { opacity: 1, transform: 'scale(1) rotate(0deg)' }], { duration: 1900, easing: 'cubic-bezier(.2,.8,.2,1)' }),
+      ]);
+      if (!alive()) return;
+      A(fx, [{ opacity: 1 }, { opacity: 0.82 }], { duration: 900, fill: 'forwards' });
     } else {
       // Ikone: Schwarz-Weiß-Flackern, Standbild, dann Enthüllung
       const seq = [90, 60, 140, 50, 90, 220, 40, 70, 130, 60, 320, 50, 80, 40, 170, 60, 90, 240];
@@ -1859,11 +1972,20 @@ class Component extends DCLogic {
       this.loadAdmin();
     } catch (e) { this.flashAdmin('Fehler: ' + e.message); }
   };
+  adminCard = async (cid) => {
+    try {
+      await this.apiCall('/api/admin/card', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: cid }) });
+      this.setState({ amCardAsk: null, pMsg: 'Karte gelöscht.' });
+      clearTimeout(this.pMsgT); this.pMsgT = setTimeout(() => this.setState({ pMsg: '' }), 4000);
+      const p = this.state.player; if (p) this.loadPlayer(p.id);
+      if (this.state.user && p && p.id === this.state.user.id) this.loadPool();
+    } catch (e) { this.setState({ amCardAsk: null, pMsg: 'Fehler: ' + e.message }); }
+  };
   adminItem = async (id, action) => {
     try {
       await this.apiCall('/api/admin/item', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, action }) });
       this.setState({ amConfirm: null });
-      this.flashAdmin(action === 'remove' ? 'Gelöscht.' : 'Zurück in der Galerie.');
+      this.flashAdmin({ remove: 'Gelöscht.', restore: 'Zurück in der Galerie.', god: 'Ist jetzt Godlike.', ungod: 'Kein Godlike mehr.' }[action] || 'Erledigt.');
       this.loadAdmin(); this.loadGallery();
     } catch (e) { this.flashAdmin('Fehler: ' + e.message); }
   };
@@ -1897,20 +2019,20 @@ class Component extends DCLogic {
     const T = Component.CARD_TIERS, cost = Component.CARD_COST, info = this.likeInfo();
     const fmtDate = ms => { const d = new Date(ms || Date.now()); return String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear(); };
     const cardView = c => {
-      const m = this.cardMeta(c), t = T[m.tier], ic = !!t.icon, pt = ic ? null : this.cardPattern(c.model);
+      const m = this.cardMeta(c), t = T[m.tier], ic = !!t.icon, gd = !!t.god, pt = ic || gd ? null : this.cardPattern(c.model);
       return {
         title: String(c.name || '').trim() || 'Namenlos', nr: 'Nr. ' + String(c.id).padStart(3, '0'), sorte: nameOf(c.model), code: m.code, barcode: m.barcode,
-        color: ic ? '#f1e2bf' : m.p.cBg, art: (this.cardArt && this.cardArt.get(c.uid)) || 'none',
-        pattern: ic ? Component.ICON_RAYS : pt.img, patSize: ic ? '100% 100%' : pt.size,
-        frame: t.img, panel: ic ? '#fffaf0' : '#fbfaf8', edge: ic ? '#7a5a1c' : 'var(--color-text)',
-        shadow: ic ? '0 10px 24px rgba(122,90,28,.32)' : t.foil ? '0 6px 14px rgba(32,30,29,.16)' : 'none',
+        color: gd ? '#050505' : ic ? '#f1e2bf' : m.p.cBg, art: (this.cardArt && this.cardArt.get(c.uid)) || 'none',
+        pattern: gd ? Component.GOD_RAYS : ic ? Component.ICON_RAYS : pt.img, patSize: ic || gd ? '100% 100%' : pt.size,
+        frame: t.img, panel: gd ? '#050505' : ic ? '#fffaf0' : '#fbfaf8', edge: gd ? '#fbfaf8' : ic ? '#7a5a1c' : 'var(--color-text)',
+        shadow: gd ? '0 0 0 2px #050505, 0 12px 28px rgba(236,48,19,.4)' : ic ? '0 10px 24px rgba(122,90,28,.32)' : t.foil ? '0 6px 14px rgba(32,30,29,.16)' : 'none',
         shine: t.shine ? Component.CARD_SHINE : 'none',
-        foil: t.foil ? Component.CARD_FOIL : ic ? Component.ICON_PEARL : 'none', foilOp: t.foil ? 0.55 : ic ? 0.35 : 0,
-        move: t.shine ? this.cardTilt : undefined, leave: t.shine ? this.cardUntilt : undefined, tier: m.tier, tierName: t.name, icon: ic,
-        ink: ic ? '#4a3510' : 'var(--color-text)', sub: ic ? '#7a5a1c' : 'var(--color-neutral-700)',
+        foil: gd ? Component.GOD_FOIL : t.foil ? Component.CARD_FOIL : ic ? Component.ICON_PEARL : 'none', foilOp: gd ? 0.5 : t.foil ? 0.55 : ic ? 0.35 : 0,
+        move: t.shine ? this.cardTilt : undefined, leave: t.shine ? this.cardUntilt : undefined, tier: m.tier, tierName: t.name, icon: ic, god: gd, artFilter: gd ? 'grayscale(1) contrast(1.35)' : 'none',
+        ink: gd ? '#fbfaf8' : ic ? '#4a3510' : 'var(--color-text)', sub: gd ? '#ec3013' : ic ? '#7a5a1c' : 'var(--color-neutral-700)',
         ovr: m.st.ovr, stats: m.st.vals.map((v, k) => ({ k: Component.STAT_NAMES[k][0], v })), statsLong: m.st.vals.map((v, k) => ({ name: Component.STAT_NAMES[k][1], v })),
         hasOwner: !!c.owner, owner: c.owner || '', openOwner: () => this.openPlayer(c.ownerId, c.owner),
-        metaLong: nameOf(c.model) + ' · gezogen am ' + fmtDate(c.drawn) + (c.icon ? '' : ' · ' + (c.likes || 0) + (c.likes === 1 ? ' Like' : ' Likes') + ' beim Ziehen'),
+        metaLong: nameOf(c.model) + ' · gezogen am ' + fmtDate(c.drawn) + (c.icon || c.god ? '' : ' · ' + (c.likes || 0) + (c.likes === 1 ? ' Like' : ' Likes') + ' beim Ziehen'),
         zoom: () => this.zoomCard(c),
       };
     };
@@ -1929,13 +2051,18 @@ class Component extends DCLogic {
       fxRef: this.fxRef, raysRef: this.raysRef, boxRef: this.boxRef, flipRef: this.flipRef, flashRef: this.flashRef,
       isCards: s.view === 'cards' || isPlayerView, isOwnCards: s.view === 'cards', isPlayer: isPlayerView,
       pName: (PD.user && PD.user.name) || (s.player && s.player.name) || '',
-      pStatus: s.pLoading ? 'lädt …' : PD.error || '',
-      pStats: [['Wesen geteilt', PD.stats.items], ['Likes bekommen', PD.stats.liked], ['Karten gezogen', PD.stats.cards], ['Ikonen', PD.stats.icons]].map(([k, v]) => ({ k, v: v == null ? '–' : String(v) })),
+      pStatus: s.pLoading ? 'lädt …' : PD.error || s.pMsg || '',
+      pStats: [['Wesen geteilt', PD.stats.items], ['Likes bekommen', PD.stats.liked], ['Karten gezogen', PD.stats.cards], ['Ikonen', PD.stats.icons], ['Godlike', PD.stats.gods]].map(([k, v]) => ({ k, v: v == null ? '–' : String(v) })),
       pEmpty: isPlayerView && !s.pLoading && !!s.pData && !(PD.cards || []).length,
       pBack: () => this.setState(st => ({ view: st.prevView && st.prevView !== 'player' ? st.prevView : 'gallery', reveal: null })),
       tabCardsCls: s.view === 'cards' ? 'btn btn-primary' : 'btn btn-secondary',
       goCards: () => { this.setState({ view: 'cards' }); this.loadPool(); },
-      cCards: showList.map(g => ({ ...cardView(g.c), meta: (g.n > 1 ? '×' + g.n + ' · ' : '') + 'gezogen am ' + fmtDate(g.c.drawn) })),
+      cCards: showList.map(g => {
+        const canDel = isPlayerView && s.srv === 'v2' && !!s.user && !!s.user.admin, cid = Number(String(g.c.uid).slice(1));
+        return { ...cardView(g.c), meta: (g.n > 1 ? '×' + g.n + ' · ' : '') + 'gezogen am ' + fmtDate(g.c.drawn),
+          canDel, delAsk: s.amCardAsk !== g.c.uid, delConfirm: s.amCardAsk === g.c.uid, delLabel: g.n > 1 ? '1 Karte löschen' : 'Karte löschen',
+          del: () => this.setState({ amCardAsk: g.c.uid }), delNo: () => this.setState({ amCardAsk: null }), delYes: () => this.adminCard(cid) };
+      }),
       cEmpty: ready && !s.cLoading && !s.cards.length,
       cStatus: s.cLoading ? 'lädt …' : s.cards.length + ' ' + (s.cards.length === 1 ? 'Karte' : 'Karten') + ' · ' + grpSize + ' verschieden · ' + s.cPoolN + ' Wesen im Pool' + (s.cIconN ? ' · ' + s.cIconN + ' Ikonen' : ''),
       cAvail: String(info.avail), cLikeSub: info.earned + ' erhalten · ' + info.spent + ' ausgegeben',
@@ -1947,7 +2074,7 @@ class Component extends DCLogic {
       cShowNew: () => this.setState({ cSort: 'new' }), cShowRare: () => this.setState({ cSort: 'rare' }),
       cNoise: Component.CARD_NOISE,
       revealOn: !!rv,
-      rv: rv ? { ...rv, flip: s.reveal.front ? 'rotateY(0deg)' : 'rotateY(180deg)', done: !!s.reveal.done, isDraw: s.reveal.mode === 'draw', isView: s.reveal.mode === 'view', label: rv.icon ? 'Ikone · aus der Testphase' : 'Stufe ' + (rv.tier + 1) + ' · ' + rv.tierName } : {},
+      rv: rv ? { ...rv, flip: s.reveal.front ? 'rotateY(0deg)' : 'rotateY(180deg)', done: !!s.reveal.done, isDraw: s.reveal.mode === 'draw', isView: s.reveal.mode === 'view', label: rv.god ? 'GODLIKE · gottgleich' : rv.icon ? 'Ikone · aus der Testphase' : 'Stufe ' + (rv.tier + 1) + ' · ' + rv.tierName } : {},
       revealClose: () => { if (this.state.reveal && this.state.reveal.done) this.setState({ reveal: null }); }, revealStop: e => e.stopPropagation(),
       again: this.drawCard, againOff: !ready || info.avail < cost,
     };
@@ -1971,23 +2098,25 @@ class Component extends DCLogic {
       confirm: s.amConfirm === i.id, notConfirm: s.amConfirm !== i.id,
       ask: () => this.setState({ amConfirm: i.id }), cancel: () => this.setState({ amConfirm: null }),
       remove: () => this.adminItem(i.id, 'remove'), restore: () => this.adminItem(i.id, 'restore'),
+      makeGod: () => this.adminItem(i.id, 'god'), unGod: () => this.adminItem(i.id, 'ungod'),
     });
-    const amG = A.items.filter(i => !i.hidden), amI = A.items.filter(i => i.icon), amR = A.items.filter(i => i.hidden && !i.icon);
+    const amG = A.items.filter(i => !i.hidden && !i.god), amI = A.items.filter(i => i.icon && !i.god), amGd = A.items.filter(i => i.god), amR = A.items.filter(i => i.hidden && !i.icon && !i.god);
     const adminVals = {
       isAdmin: isAdminUser, isAdminView: isAdminUser && s.view === 'admin',
       tabAdminCls: s.view === 'admin' ? 'btn btn-primary' : 'btn btn-secondary',
       goAdmin: () => { this.setState({ view: 'admin' }); setTimeout(() => this.loadAdmin(), 0); },
       amReload: this.loadAdmin, amMsg: s.amMsg,
-      amStatus: s.amLoading ? 'lädt …' : A.users.length + ' Spieler · ' + amG.length + ' in der Galerie · ' + amI.length + ' Ikonen',
+      amStatus: s.amLoading ? 'lädt …' : A.users.length + ' Spieler · ' + amG.length + ' in der Galerie · ' + amI.length + ' Ikonen · ' + amGd.length + ' Godlike',
       amUsers: A.users.map(u => ({
         name: u.name + (u.admin ? ' (Admin)' : ''), liked: u.liked, bonus: u.bonus, spent: u.cards * Component.CARD_COST,
         avail: Math.max(0, u.liked + u.bonus - u.cards * Component.CARD_COST), cards: u.cards, items: u.items,
         amt: s.amAmt[u.id] == null ? '3' : s.amAmt[u.id],
         onAmt: e => { const v = e.target.value; this.setState(st => ({ amAmt: { ...st.amAmt, [u.id]: v } })); },
-        give: () => this.adminBonus(u.id, u.name),
+        give: () => this.adminBonus(u.id, u.name), view: () => this.openPlayer(u.id, u.name),
       })),
       amGallery: amG.map(amItem), amGalleryN: amG.length, amGalleryEmpty: !amG.length,
       amIcons: amI.map(amItem), amIconsN: amI.length, amIconsEmpty: !amI.length,
+      amGods: amGd.map(amItem), amGodsN: amGd.length, amGodsEmpty: !amGd.length,
       amRemoved: amR.map(amItem), amRemovedN: amR.length, amHasRemoved: amR.length > 0,
     };
     const lgNewOpen = s.lgNew || (!s.lgLoading && !s.lgUsers.length && s.srv !== 'off');
