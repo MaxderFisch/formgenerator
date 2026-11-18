@@ -1501,7 +1501,7 @@ class Component extends DCLogic {
   runCatch() {
     const b = this.state.battle, f = b.foes[b.fi], tier = Math.min(5, f.tier || 0), low = 1 - f.kp / f.maxKp;
     const lives = [2, 2, 1, 1, 1, 1][tier];
-    const m = this.mg = { tier, need: [2, 3, 3, 4, 5, 6][tier], lives, maxLives: lives, hits: 0, slow: Math.round(65 * low), zone: [80, 62, 48, 36, 26, 20][tier] * (1 + 1.0 * low), speed: [656, 768, 880, 1000, 1120, 1240][tier] * (1 - 0.65 * low), dir: 1, angle: 0, drift: tier >= 3 ? (Math.random() < 0.5 ? -1 : 1) * (tier >= 4 ? 44 + (tier - 4) * 16 : 28) : 0, busy: false, raf: 0 };
+    const m = this.mg = { tier, need: [2, 3, 3, 4, 5, 6][tier], lives, maxLives: lives, hits: 0, slow: Math.round(65 * low), zone: [80, 62, 48, 36, 26, 20][tier] * (1 + 1.0 * low), speed: [525, 590, 640, 600, 630, 660][tier] * (1 - 0.65 * low), dir: 1, angle: 0, drift: tier >= 3 ? (Math.random() < 0.5 ? -1 : 1) * (tier >= 4 ? 18 + (tier - 4) * 4 : 14) : 0, busy: false, raf: 0 };
     this.newZone();
     return new Promise(async resolve => {
       m.resolve = resolve;
@@ -1526,14 +1526,14 @@ class Component extends DCLogic {
   catchTap = () => {
     const m = this.mg; if (!m || m.busy || !m.raf) return;
     const dial = this.dialRef.current, foe = this.foeRef.current;
-    const tol = Math.max(5, Math.min(12, m.speed * 0.01875)), rel = (m.angle - m.a1 + tol + 720) % 360;
+    const tol = Math.max(5, Math.min(12, m.speed * 0.0234)), rel = (m.angle - m.a1 + tol + 720) % 360;
     if (rel <= m.zc + 2 * tol) {
       m.hits++;
       this.flashArc('#2f7d3b');
       if (foe) this.go(foe, [{ transform: 'scale(1,1)' }, { transform: 'scale(1.12,.84)' }, { transform: 'scale(1,1)' }], { duration: 240 });
       if (dial) this.go(dial, [{ transform: 'scale(1)' }, { transform: 'scale(.92)' }, { transform: 'scale(1)' }], { duration: 200 });
       if (m.hits >= m.need) { m.busy = true; this.setState({ mgView: this.mgView() }); setTimeout(() => this.mgEnd(true), 260); return; }
-      m.zone *= 0.85; m.speed *= 1.18;
+      if (m.tier >= 3) { m.zone *= 0.93; m.speed = Math.min(720, m.speed * 1.04); } else { m.zone *= 0.85; m.speed *= 1.18; }
       if (m.tier >= 2) m.dir *= -1;
       this.newZone();
     } else {
