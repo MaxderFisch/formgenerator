@@ -1379,7 +1379,7 @@ class Component extends DCLogic {
     const out = i => ({ id: i.id, created: i.created, name: i.name, model: i.model, version: 1, params: i.params, likes: i.likes, user_id: i.user_id, user_name: uname(i.user_id), icon: i.icon ? 1 : 0 });
     const stats = uid => ({
       earned: likedCount(uid) + ((db.users.find(u => u.id === uid) || {}).bonus || 0),
-      spent: db.cards.filter(c => c.user_id === uid).length * Component.CARD_COST,
+      spent: db.cards.filter(c => c.user_id === uid && !c.caught).length * Component.CARD_COST,
     });
     if (p === '/api/users') return { users: db.users.map(pub).sort((a, b) => a.name.localeCompare(b.name)) };
     if (p === '/api/register' && method === 'POST') {
