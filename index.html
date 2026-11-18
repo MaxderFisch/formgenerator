@@ -108,6 +108,7 @@
           <button class="{{ tabCreateCls }}" onClick="{{ goCreate }}" style="padding:6px 14px">Erstellen</button>
           <button class="{{ tabGalleryCls }}" onClick="{{ goGallery }}" style="padding:6px 14px">Galerie</button>
           <button class="{{ tabCardsCls }}" onClick="{{ goCards }}" style="padding:6px 14px">Sammelkarten</button>
+          <a class="btn btn-secondary" href="abenteuer.html" style="padding:6px 14px;text-decoration:none">Abenteuer</a>
           <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
             <button class="{{ tabAdminCls }}" onClick="{{ goAdmin }}" style="padding:6px 14px">Admin</button>
           </sc-if>
@@ -1010,6 +1011,8 @@ class Component extends DCLogic {
 
   componentDidMount() {
     window.__formgen = this;
+    const hv = { '#erstellen': 'create', '#galerie': 'gallery', '#sammelkarten': 'cards' }[location.hash];
+    if (hv) { this.setState({ view: hv }); if (hv === 'cards') setTimeout(() => this.loadPool && this.loadPool(), 0); }
     this.loadGallery('new');
     this.checkServer();
     const url = new URL('./linegen.js', document.baseURI).href;

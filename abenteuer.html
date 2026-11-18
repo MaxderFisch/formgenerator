@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formgenerator · Abenteuer</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="ds/styles.css">
+  <script src="ds/_ds_bundle.js"></script>
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); }
+    a { color: var(--color-accent-700); }
+    a:hover { color: var(--color-accent); }
+  </style>
+</helmet>
+<div style="height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)">
+  <header style="flex:none;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding:8px 16px;border-bottom:2px solid var(--color-divider)">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px">
+      <div style="font-family:var(--font-heading);font-weight:800;font-size:20px;letter-spacing:-0.01em">Formgenerator</div>
+      <nav style="display:flex;flex-wrap:wrap;gap:6px">
+        <a class="btn btn-secondary" href="index.html#erstellen" style="padding:5px 12px;text-decoration:none">Erstellen</a>
+        <a class="btn btn-secondary" href="index.html#galerie" style="padding:5px 12px;text-decoration:none">Galerie</a>
+        <a class="btn btn-secondary" href="index.html#sammelkarten" style="padding:5px 12px;text-decoration:none">Sammelkarten</a>
+        <span class="btn btn-primary" style="padding:5px 12px">Abenteuer</span>
+      </nav>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px">
+      <nav style="display:flex;flex-wrap:wrap;gap:4px">
+        <button class="{{ tPfad }}" onClick="{{ goPfad }}" disabled="{{ tabsOff }}" style="padding:5px 12px">Pfad</button>
+        <button class="{{ tTeam }}" onClick="{{ goTeam }}" disabled="{{ tabsOff }}" style="padding:5px 12px">Team</button>
+        <button class="{{ tBag }}" onClick="{{ goBag }}" disabled="{{ tabsOff }}" style="padding:5px 12px">Beutel</button>
+        <button class="{{ tAtk }}" onClick="{{ goAtk }}" disabled="{{ tabsOff }}" style="padding:5px 12px">Attacken</button>
+      </nav>
+      <span style="font-size:13px;color:var(--color-neutral-800);white-space:nowrap">Likes <strong style="color:var(--color-text)">{{ likes }}</strong></span>
+    </div>
+  </header>
+
+  <main style="flex:1;min-height:0;position:relative">
+    <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--color-accent-700)">Wesen werden gezeichnet …</div>
+    </sc-if>
+
+    <sc-if value="{{ showMap }}" hint-placeholder-val="{{ false }}">
+      <div ref="{{ vpRef }}" onClick="{{ mapClick }}" style="cursor:{{ mapCursor }};position:absolute;inset:0;overflow:hidden;background:#5a6070">
+        <div style="position:absolute;left:0;top:0;width:{{ layerW }};height:{{ layerH }};transform:{{ layerT }};transition:transform .14s linear;background-image:{{ mapImg }};background-size:100% 100%;background-repeat:no-repeat">
+          <sc-for list="{{ chests }}" as="c" hint-placeholder-count="0">
+            <div style="position:absolute;left:{{ c.l }};top:{{ c.t }};width:1.5625%;height:2.2727%;background-image:{{ c.img }};background-size:100% 100%"></div>
+          </sc-for>
+          <sc-for list="{{ mapTrainers }}" as="m" hint-placeholder-count="0">
+            <div style="position:absolute;left:{{ m.l }};top:{{ m.t }};width:1.5625%;height:2.2727%;z-index:1">
+              <div style="position:absolute;left:4%;right:4%;bottom:-6%;height:26%;background:rgba(32,30,29,.25);border-radius:50%"></div>
+              <div style="position:absolute;left:-12%;right:-12%;bottom:2%;height:140%;background-image:{{ m.sprite }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;transform:{{ m.flip }};opacity:{{ m.op }}"></div>
+              <sc-if value="{{ m.bubble }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;left:50%;bottom:165%;transform:translateX(-50%);background:#fbfaf8;border:2px solid var(--color-text);color:var(--color-accent);font-family:var(--font-heading);font-weight:800;font-size:20px;line-height:1;padding:2px 8px">!</div>
+              </sc-if>
+            </div>
+          </sc-for>
+          <div ref="{{ playerRef }}" style="position:absolute;left:{{ plL }};top:{{ plT }};width:1.5625%;height:2.2727%;transition:left .14s linear, top .14s linear;z-index:2">
+            <div style="position:absolute;left:4%;right:4%;bottom:-6%;height:26%;background:rgba(32,30,29,.25);border-radius:50%"></div>
+            <div style="position:absolute;left:-12%;right:-12%;bottom:2%;height:140%;background-image:{{ plImg }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;transform:{{ plFlip }}"></div>
+          </div>
+        </div>
+
+        <div style="position:absolute;left:12px;top:12px;max-width:min(60%,380px);background:#fbfaf8;border:2px solid var(--color-text);padding:8px 12px;display:flex;flex-direction:column;gap:2px;z-index:3">
+          <span ref="{{ bioRef }}" style="font-family:var(--font-heading);font-weight:800;font-size:20px;line-height:1.1;transform-origin:0 50%">{{ bioName }}</span>
+          <span style="font-size:12px;line-height:1.4;color:var(--color-neutral-800)">{{ bioInfo }}</span>
+        </div>
+
+        <div style="position:absolute;right:12px;top:12px;width:min(24%,230px);aspect-ratio:64/44;border:2px solid var(--color-text);background-color:#5a6070;background-image:{{ mapImg }};background-size:100% 100%;z-index:3">
+          <div style="position:absolute;left:{{ mmVL }};top:{{ mmVT }};width:{{ mmVW }};height:{{ mmVH }};border:2px solid #fbfaf8;outline:1px solid var(--color-text);box-sizing:border-box"></div>
+          <div style="position:absolute;left:{{ mmBL }};top:{{ mmBT }};width:8px;height:8px;margin:-4px 0 0 -4px;background:var(--color-text);border:1.5px solid #fbfaf8"></div>
+          <div style="position:absolute;left:{{ mmPL }};top:{{ mmPT }};width:9px;height:9px;margin:-4.5px 0 0 -4.5px;background:var(--color-accent);border:1.5px solid #fbfaf8"></div>
+        </div>
+
+        <sc-if value="{{ noDialog }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute;left:12px;bottom:12px;z-index:4;display:flex;flex-direction:column;align-items:flex-start;gap:8px;max-width:calc(100% - 24px)">
+            <sc-if value="{{ popOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="width:min(340px,calc(100vw - 48px));max-height:55vh;overflow:auto;box-sizing:border-box;background:#fbfaf8;border:2px solid var(--color-text);box-shadow:var(--shadow-md);padding:10px 14px;display:flex;flex-direction:column">
+                <sc-if value="{{ popTeam }}" hint-placeholder-val="{{ false }}">
+                  <sc-for list="{{ sideTeam }}" as="m" hint-placeholder-count="3">
+                    <div style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--color-divider)">
+                      <div style="width:44px;height:44px;box-sizing:border-box;border:2px solid var(--color-text);background-color:{{ m.bg }};background-image:{{ m.art }};background-size:contain;background-repeat:no-repeat;background-position:center bottom"></div>
+                      <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+                        <div style="display:flex;justify-content:space-between;gap:8px;font-size:13px">
+                          <strong style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.name }}</strong>
+                          <span style="flex:none;color:var(--color-neutral-700)">{{ m.info }}</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px">
+                          <div style="flex:1;height:8px;border:2px solid var(--color-text);background:#fff"><div style="height:100%;width:{{ m.kpPct }};background:{{ m.kpCol }}"></div></div>
+                          <span style="font-size:11px;font-weight:700;flex:none;min-width:54px;text-align:right;white-space:nowrap">{{ m.kpTxt }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </sc-if>
+                <sc-if value="{{ popSteuer }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:10px">
+                    <span style="font-size:13px;line-height:1.5">Pfeiltasten oder WASD. Gegen Truhen, Quellen und Trainer laufen. Enter oder Klick schließt Texte.</span>
+                    <div style="display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px);gap:4px">
+                      <span></span>
+                      <button class="btn btn-secondary btn-icon" onClick="{{ mvUp }}" style="width:44px;height:44px;padding:0;justify-content:center">↑</button>
+                      <span></span>
+                      <button class="btn btn-secondary btn-icon" onClick="{{ mvLeft }}" style="width:44px;height:44px;padding:0;justify-content:center">←</button>
+                      <button class="btn btn-secondary btn-icon" onClick="{{ mvDown }}" style="width:44px;height:44px;padding:0;justify-content:center">↓</button>
+                      <button class="btn btn-secondary btn-icon" onClick="{{ mvRight }}" style="width:44px;height:44px;padding:0;justify-content:center">→</button>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ popGebiete }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) 56px 56px;gap:8px;padding-bottom:6px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase"><span>Gebiet</span><span>Trainer</span><span>Truhen</span></div>
+                  <sc-for list="{{ areas }}" as="a" hint-placeholder-count="6">
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) 56px 56px;gap:8px;padding:5px 0;border-top:1px solid var(--color-divider);font-size:13px;font-weight:{{ a.weight }};color:{{ a.color }}">
+                      <span>{{ a.name }}</span><span>{{ a.tr }}</span><span>{{ a.ch }}</span>
+                    </div>
+                  </sc-for>
+                </sc-if>
+                <sc-if value="{{ popLegende }}" hint-placeholder-val="{{ false }}">
+                  <sc-for list="{{ legend }}" as="l" hint-placeholder-count="4">
+                    <div style="display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:center;padding:4px 0;font-size:13px">
+                      <div style="width:24px;height:24px;box-sizing:border-box;border:1px solid var(--color-text);background:{{ l.bg }}"></div>
+                      <span>{{ l.label }}</span>
+                    </div>
+                  </sc-for>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:8px;margin-top:6px;border-top:1px solid var(--color-divider)">
+                    <sc-if value="{{ noAskReset }}" hint-placeholder-val="{{ true }}">
+                      <button class="btn btn-ghost" onClick="{{ askReset }}" style="justify-content:flex-start;padding:5px 10px;font-size:13px">Pfad neu starten</button>
+                    </sc-if>
+                    <sc-if value="{{ isAskReset }}" hint-placeholder-val="{{ false }}">
+                      <button class="btn btn-primary" onClick="{{ resetAll }}" style="justify-content:flex-start;padding:5px 10px;font-size:13px">Ja, alles zurücksetzen</button>
+                      <button class="btn btn-ghost" onClick="{{ cancelReset }}" style="justify-content:flex-start;padding:5px 10px;font-size:13px">Abbrechen</button>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              <sc-for list="{{ popBtns }}" as="p" hint-placeholder-count="4">
+                <button class="{{ p.cls }}" onClick="{{ p.go }}" style="padding:5px 12px;font-size:13px;background:{{ p.bg }}">{{ p.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasDialog }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:12px;right:12px;bottom:12px;z-index:5;background:#fbfaf8;border:2px solid var(--color-text);box-shadow:var(--shadow-md);padding:14px 16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px">
+            <div style="flex:1 1 300px;display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ dlgWho }}</span>
+              <span style="font-size:18px;line-height:1.4;font-weight:600;text-wrap:pretty">{{ dlgText }}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:12px;color:var(--color-neutral-700)">Enter oder irgendwo klicken</span>
+              <button class="btn btn-primary" style="justify-content:flex-start">{{ dlgBtn }}</button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+
+    </sc-if>
+
+    <sc-if value="{{ showArena }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;display:flex;gap:16px;padding:12px 16px;box-sizing:border-box">
+        <div style="flex:1;min-width:0;container-type:size;display:flex;align-items:center;justify-content:center">
+        <div ref="{{ stageRef }}" style="width:{{ stageW }};border:2px solid var(--color-text);background:#fbfaf8;box-sizing:border-box">
+          <div ref="{{ arenaRef }}" style="position:relative;aspect-ratio:16/9;overflow:hidden;background-color:#eceae2;background-image:{{ arenaBg }};background-size:cover;background-position:center">
+            <div ref="{{ foeRef }}" style="position:absolute;left:62.4%;bottom:38%;width:19%;opacity:{{ foeOp }}">
+              <div style="aspect-ratio:3/4;background-image:{{ foeArt }};background-size:contain;background-repeat:no-repeat;background-position:center bottom"></div>
+            </div>
+            <div ref="{{ meRef }}" style="position:absolute;left:12.75%;bottom:-3%;width:27%;opacity:{{ meOp }}">
+              <div style="aspect-ratio:3/4;background-image:{{ meArt }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;transform:scaleX(-1)"></div>
+            </div>
+            <div style="position:absolute;left:3%;top:5%;width:min(36%,300px);background:#fbfaf8;border:2px solid var(--color-text);padding:8px 10px;display:flex;flex-direction:column;gap:6px;box-sizing:border-box">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                <span style="font-family:var(--font-heading);font-weight:800;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ foeName }}</span>
+                <span style="font-size:13px;font-weight:800;flex:none">{{ foeLv }}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--color-text);padding:1px 5px;flex:none">{{ foeTyp }}</span>
+                <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--color-text);padding:1px 5px;flex:none;background:{{ foeTierBg }}">{{ foeTier }}</span>
+                <div style="flex:1;height:10px;border:2px solid var(--color-text);background:#fff"><div style="height:100%;width:{{ foeKpPct }};background:{{ foeKpCol }};transition:width .5s ease"></div></div>
+              </div>
+            </div>
+            <div style="position:absolute;right:3%;top:56%;width:min(38%,320px);background:#fbfaf8;border:2px solid var(--color-text);padding:8px 10px;display:flex;flex-direction:column;gap:6px;box-sizing:border-box">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                <span style="font-family:var(--font-heading);font-weight:800;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ meName }}</span>
+                <span style="font-size:13px;font-weight:800;flex:none">{{ meLv }}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--color-text);padding:1px 5px;flex:none">{{ meTyp }}</span>
+                <div style="flex:1;height:10px;border:2px solid var(--color-text);background:#fff"><div style="height:100%;width:{{ meKpPct }};background:{{ meKpCol }};transition:width .5s ease"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+                <span style="font-size:12px;font-weight:700;white-space:nowrap">{{ meKpTxt }}</span>
+                <div style="width:45%;height:4px;background:var(--color-neutral-300)"><div style="height:100%;width:{{ meEpPct }};background:var(--color-accent-700);transition:width .5s ease"></div></div>
+              </div>
+            </div>
+            <sc-if value="{{ mgOn }}" hint-placeholder-val="{{ false }}">
+              <div onPointerDown="{{ catchTap }}" style="position:absolute;inset:0;cursor:pointer;touch-action:manipulation;background:rgba(32,30,29,.22)">
+                <div ref="{{ dialRef }}" style="position:absolute;left:71.9%;top:40%;width:30%;aspect-ratio:1;margin-left:-15%;margin-top:-15%">
+                  <svg viewBox="0 0 200 200" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible">
+                    <circle cx="100" cy="100" r="90" fill="none" stroke="#fbfaf8" stroke-width="16"></circle>
+                    <circle cx="100" cy="100" r="99" fill="none" stroke="#201e1d" stroke-width="2.5"></circle>
+                    <circle cx="100" cy="100" r="81" fill="none" stroke="#201e1d" stroke-width="2.5"></circle>
+                    <path ref="{{ arcRef }}" fill="none" stroke="#ec3013" stroke-width="16"></path>
+                    <sc-for list="{{ mgRings }}" as="r" hint-placeholder-count="0">
+                      <circle cx="100" cy="100" r="{{ r.r }}" fill="none" stroke="#c99528" stroke-width="5" stroke-dasharray="10 6"></circle>
+                    </sc-for>
+                  </svg>
+                  <div ref="{{ needleRef }}" style="position:absolute;inset:0">
+                    <div style="position:absolute;left:50%;top:-3%;width:4%;height:24%;margin-left:-2%;background:#201e1d"></div>
+                    <div style="position:absolute;left:50%;top:-6%;width:10%;aspect-ratio:1;margin-left:-5%;background:#fbfaf8;border:3px solid #201e1d;box-sizing:border-box;border-radius:50%"></div>
+                  </div>
+                </div>
+                <div style="position:absolute;left:3%;top:5%;width:min(36%,300px);box-sizing:border-box;background:#fbfaf8;border:2px solid var(--color-text);padding:8px 12px;display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;align-items:baseline;gap:10px">
+                    <strong style="font-family:var(--font-heading);font-size:18px">Fangen</strong>
+                    <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--color-text);padding:1px 5px;background:{{ foeTierBg }}">{{ foeTier }}</span>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+                    <span style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;min-width:64px">Treffer</span>
+                    <sc-for list="{{ mgDots }}" as="d" hint-placeholder-count="3">
+                      <div style="width:14px;height:14px;border:2px solid var(--color-text);background:{{ d.bg }}"></div>
+                    </sc-for>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+                    <span style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;min-width:64px">Versuche</span>
+                    <sc-for list="{{ mgLives }}" as="d" hint-placeholder-count="2">
+                      <div style="width:14px;height:14px;border:2px solid var(--color-text);background:{{ d.bg }}"></div>
+                    </sc-for>
+                  </div>
+                  <span style="font-size:12px;line-height:1.4;font-weight:700;color:var(--color-accent-700);text-wrap:pretty">{{ mgSlow }}</span>
+                </div>
+              </div>
+            </sc-if>
+            <div ref="{{ fxRef }}" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+          </div>
+
+          <sc-if value="{{ inBattle }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:2px solid var(--color-text);background:#fbfaf8;height:162px">
+              <div style="padding:12px 14px;font-size:16px;line-height:1.4;font-weight:600;text-wrap:pretty;overflow:auto">{{ bMsg }}</div>
+              <div style="padding:10px;display:flex;flex-direction:column;gap:6px;border-left:2px solid var(--color-text);overflow:auto">
+                <sc-if value="{{ bMenu }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                    <button class="btn btn-primary" onClick="{{ bFight }}" style="justify-content:flex-start">Kämpfen</button>
+                    <button class="btn btn-secondary" onClick="{{ bCatch }}" disabled="{{ catchOff }}" style="justify-content:flex-start">Fangen</button>
+                    <button class="btn btn-secondary" onClick="{{ bBagOpen }}" style="justify-content:flex-start">Beutel</button>
+                    <button class="btn btn-secondary" onClick="{{ bTeamOpen }}" style="justify-content:flex-start">Team</button>
+                    <button class="btn btn-ghost" onClick="{{ bRun }}" style="justify-content:flex-start;grid-column:1 / -1">Fliehen</button>
+                  </div>
+                  <sc-if value="{{ catchOff }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:12px;color:var(--color-neutral-700)">Wesen von Trainern kann man nicht fangen.</span>
+                  </sc-if>
+                </sc-if>
+                <sc-if value="{{ bAtk }}" hint-placeholder-val="{{ false }}">
+                  <sc-for list="{{ atkBtns }}" as="x" hint-placeholder-count="2">
+                    <button class="btn btn-secondary" onClick="{{ x.go }}" style="justify-content:flex-start;flex-direction:column;align-items:flex-start;gap:1px;padding:5px 10px;flex:none">
+                      <span style="font-weight:800">{{ x.name }}</span>
+                      <span style="font-size:12px;font-weight:500">{{ x.sub }}</span>
+                    </button>
+                  </sc-for>
+                  <button class="btn btn-ghost" onClick="{{ bBack }}" style="justify-content:flex-start">Zurück</button>
+                </sc-if>
+                <sc-if value="{{ bBag }}" hint-placeholder-val="{{ false }}">
+                  <sc-for list="{{ bagBtns }}" as="x" hint-placeholder-count="3">
+                    <button class="btn btn-secondary" onClick="{{ x.go }}" disabled="{{ x.off }}" style="justify-content:flex-start;flex-direction:column;align-items:flex-start;gap:1px;padding:5px 10px;flex:none">
+                      <span style="font-weight:800">{{ x.name }}</span>
+                      <span style="font-size:12px;font-weight:500">{{ x.sub }}</span>
+                    </button>
+                  </sc-for>
+                  <button class="btn btn-ghost" onClick="{{ bBack }}" style="justify-content:flex-start">Zurück</button>
+                </sc-if>
+                <sc-if value="{{ bTeam }}" hint-placeholder-val="{{ false }}">
+                  <sc-for list="{{ teamBtns }}" as="x" hint-placeholder-count="3">
+                    <button class="btn btn-secondary" onClick="{{ x.go }}" disabled="{{ x.off }}" style="justify-content:flex-start;flex-direction:column;align-items:flex-start;gap:1px;padding:5px 10px;flex:none">
+                      <span style="font-weight:800">{{ x.name }}</span>
+                      <span style="font-size:12px;font-weight:500">{{ x.sub }}</span>
+                    </button>
+                  </sc-for>
+                  <sc-if value="{{ bCanBack }}" hint-placeholder-val="{{ true }}">
+                    <button class="btn btn-ghost" onClick="{{ bBack }}" style="justify-content:flex-start">Zurück</button>
+                  </sc-if>
+                </sc-if>
+                <sc-if value="{{ bBusy }}" hint-placeholder-val="{{ true }}">
+                  <span style="font-size:13px;color:var(--color-neutral-700)">…</span>
+                </sc-if>
+                <sc-if value="{{ bCatchPh }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size:14px;line-height:1.5;font-weight:600">Leertaste, Enter oder Klick, wenn der Zeiger im roten Feld steht.</span>
+                  <span style="font-size:12px;line-height:1.5;color:var(--color-neutral-700)">Weniger KP: langsamerer Zeiger, größeres Feld.</span>
+                </sc-if>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+        </div>
+
+        <sc-if value="{{ isAtk }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:none;width:min(320px,40%);display:flex;flex-direction:column;gap:10px;min-height:0">
+            <div style="display:flex;flex-direction:column;gap:8px;border-top:2px solid var(--color-text);padding-top:8px">
+              <span style="font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase">Wer greift an?</span>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <sc-for list="{{ pvBtns }}" as="p" hint-placeholder-count="3">
+                  <button class="{{ p.cls }}" onClick="{{ p.go }}" style="padding:4px 10px;font-size:13px">{{ p.name }}</button>
+                </sc-for>
+              </div>
+              <span style="font-size:12px;color:var(--color-neutral-700)">Klick spielt die Animation ab.</span>
+            </div>
+            <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:auto;border-top:2px solid var(--color-text)">
+              <sc-for list="{{ dex }}" as="g" hint-placeholder-count="8">
+                <div style="display:flex;flex-direction:column">
+                  <span style="font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:12px 0 4px">{{ g.typ }}</span>
+                  <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+                    <button onClick="{{ r.go }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;text-align:left;padding:8px 6px;border:none;border-top:1px solid var(--color-divider);background:transparent;cursor:pointer;font:inherit;color:inherit" style-hover="background:var(--color-accent-100)">
+                      <strong style="font-size:14px">{{ r.name }}</strong>
+                      <span style="font-size:12px;font-weight:700">{{ r.kraft }}</span>
+                      <span style="font-size:12px;color:var(--color-neutral-700);grid-column:1 / -1">{{ r.text }}</span>
+                      <span style="font-size:11px;font-weight:700;color:var(--color-accent-700);grid-column:1 / -1">{{ r.src }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isTeam }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;overflow:auto;padding:16px 20px;box-sizing:border-box;display:flex;flex-direction:column;gap:var(--space-4)">
+        <p style="margin:0;font-size:13px;color:var(--color-neutral-700)">Bis zu 3 Karten im Team · Arschfix = Angriff · Chill = Abwehr · Gurke = Tempo</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--space-4)">
+          <sc-for list="{{ teamCards }}" as="c" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;background:#fbfaf8;border:2px solid {{ c.border }}">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:8px 10px;border-bottom:2px solid var(--color-text)">
+                <span style="font-family:var(--font-heading);font-weight:800;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ c.name }}</span>
+                <span style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent-700);flex:none">{{ c.slot }}</span>
+              </div>
+              <div style="position:relative;aspect-ratio:4/3;background-color:{{ c.bg }};background-image:{{ c.patImg }};background-size:{{ c.patSize }};border-bottom:2px solid var(--color-text)">
+                <div style="position:absolute;inset:6% 0 0;background-image:{{ c.art }};background-size:contain;background-repeat:no-repeat;background-position:center bottom"></div>
+              </div>
+              <div style="padding:10px;display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                  <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--color-text);padding:1px 5px">{{ c.typ }}</span>
+                  <span style="font-size:13px;font-weight:800">{{ c.lv }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <div style="height:10px;border:2px solid var(--color-text);background:#fff"><div style="height:100%;width:{{ c.kpPct }};background:{{ c.kpCol }}"></div></div>
+                  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 8px;font-size:11px;font-weight:700"><span style="white-space:nowrap">{{ c.kpTxt }}</span><span style="white-space:nowrap;color:var(--color-neutral-700)">{{ c.epTxt }}</span></div>
+                  <div style="height:4px;background:var(--color-neutral-300)"><div style="height:100%;width:{{ c.epPct }};background:var(--color-accent-700)"></div></div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--color-text);border-bottom:1px solid var(--color-divider)">
+                  <div style="display:flex;flex-direction:column;padding:6px 0"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--color-neutral-700)">Arschfix</span><strong style="font-size:18px">{{ c.a }}</strong></div>
+                  <div style="display:flex;flex-direction:column;padding:6px 0"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--color-neutral-700)">Chill</span><strong style="font-size:18px">{{ c.c }}</strong></div>
+                  <div style="display:flex;flex-direction:column;padding:6px 0"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--color-neutral-700)">Gurke</span><strong style="font-size:18px">{{ c.g }}</strong></div>
+                </div>
+                <div style="display:flex;flex-direction:column">
+                  <sc-for list="{{ c.attacks }}" as="x" hint-placeholder-count="2">
+                    <div style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--color-divider);font-size:13px">
+                      <strong>{{ x.name }}</strong>
+                      <span style="font-size:12px;color:var(--color-neutral-700)">{{ x.sub }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px">
+                  <button class="btn btn-secondary" onClick="{{ c.toggle }}" disabled="{{ c.toggleOff }}" style="justify-content:flex-start;padding:5px 10px;font-size:13px">{{ c.toggleLabel }}</button>
+                  <sc-if value="{{ c.notLead }}" hint-placeholder-val="{{ false }}">
+                    <button class="btn btn-ghost" onClick="{{ c.lead }}" style="justify-content:flex-start;padding:5px 10px;font-size:13px">Als Erste</button>
+                  </sc-if>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isBag }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;overflow:auto;padding:16px 20px;box-sizing:border-box;display:flex;flex-direction:column;gap:var(--space-4)">
+        <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:10px 14px;background:var(--color-accent-100);border-top:2px solid var(--color-accent);font-size:14px;font-weight:700;color:var(--color-accent-800)">{{ toast }}</div>
+        </sc-if>
+        <sc-if value="{{ hasPick }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px;padding:16px;background:#fbfaf8;border:2px solid var(--color-text);border-top:4px solid var(--color-accent)">
+            <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px">
+              <span style="font-family:var(--font-heading);font-weight:800;font-size:20px">{{ pickTitle }}</span>
+              <button class="btn btn-ghost" onClick="{{ cancelPick }}" style="justify-content:flex-start;padding:4px 10px;font-size:13px">Abbrechen</button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">
+              <sc-for list="{{ pickList }}" as="p" hint-placeholder-count="0">
+                <button class="btn btn-secondary" onClick="{{ p.go }}" style="justify-content:flex-start;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 12px;text-align:left">
+                  <span style="font-weight:800">{{ p.name }}</span>
+                  <span style="font-size:12px;font-weight:500">{{ p.sub }}</span>
+                </button>
+              </sc-for>
+              <sc-for list="{{ forgetList }}" as="p" hint-placeholder-count="0">
+                <button class="btn btn-secondary" onClick="{{ p.go }}" style="justify-content:flex-start;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 12px;text-align:left">
+                  <span style="font-weight:800">{{ p.label }}</span>
+                  <span style="font-size:12px;font-weight:500">{{ p.sub }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:var(--space-6)">
+          <div style="display:flex;flex-direction:column">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding-bottom:8px;border-bottom:2px solid var(--color-text)">Items</span>
+            <sc-for list="{{ itemRows }}" as="r" hint-placeholder-count="3">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--color-divider)">
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:15px"><strong>{{ r.name }}</strong> <span style="font-weight:800;color:var(--color-accent-700)">{{ r.n }}</span></span>
+                  <span style="font-size:13px;color:var(--color-neutral-700)">{{ r.text }}</span>
+                </div>
+                <button class="btn btn-secondary" onClick="{{ r.use }}" disabled="{{ r.off }}" style="justify-content:flex-start;padding:6px 12px;font-size:13px">Benutzen</button>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding-bottom:8px;border-bottom:2px solid var(--color-text)">Attacken-Rollen</span>
+            <sc-if value="{{ noScrolls }}" hint-placeholder-val="{{ true }}">
+              <p style="margin:0;padding:12px 0;font-size:13px;line-height:1.5;color:var(--color-neutral-700)">Noch keine. Attacken-Rollen liegen in Truhen auf dem Pfad. Wer eine neue Attacke lernt, verlernt dafür eine alte.</p>
+            </sc-if>
+            <sc-for list="{{ scrollRows }}" as="r" hint-placeholder-count="0">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--color-divider)">
+                <div style="display:flex;flex-direction:column;gap:3px">
+                  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                    <strong style="font-size:15px">{{ r.name }}</strong>
+                    <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--color-text);padding:1px 5px">{{ r.typ }}</span>
+                    <span style="font-size:12px;font-weight:700">{{ r.kraft }}</span>
+                  </div>
+                  <span style="font-size:13px;color:var(--color-neutral-700)">{{ r.text }}</span>
+                </div>
+                <button class="btn btn-primary" onClick="{{ r.teach }}" style="justify-content:flex-start;padding:6px 12px;font-size:13px">Lehren</button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static KEY = 'formgen.abenteuer.v2';
+  static TYPES = ['raupe', 'bohne', 'kokon', 'tropfen', 'kiesel', 'horn', 'kristall'];
+  static TN = { raupe: 'Raupe', bohne: 'Bohne', kokon: 'Kokon', tropfen: 'Tropfen', kiesel: 'Kiesel', horn: 'Horn', kristall: 'Kristall', neutral: 'Neutral' };
+  static ATT = {
+    rempler: { name: 'Rempler', typ: 'neutral', kraft: 12, fx: 'lunge', text: 'Einfach mal dagegenlaufen.' },
+    schleim: { name: 'Schleimspur', typ: 'raupe', kraft: 16, fx: 'proj', shape: 'circle', color: '#a6d45e', n: 3, text: 'Wirft klebrige Schleimbatzen.' },
+    kitzel: { name: 'Krabbelkitzel', typ: 'raupe', kraft: 26, fx: 'tickle', color: '#ffffff', word: 'HIHIHI', text: 'Kitzelt, bis der Gegner nicht mehr kann.' },
+    seide: { name: 'Seidenschnur', typ: 'raupe', kraft: 36, fx: 'stream', color: '#f4efe2', then: 'wrap', text: 'Ein langer Faden, der fest zuschnürt.' },
+    ruelps: { name: 'Rülpser', typ: 'bohne', kraft: 16, fx: 'rings', color: '#d9c76a', word: 'BÖÖÖRP!', text: 'Ein Rülpser mit Druckwelle.' },
+    pups: { name: 'Pupswolke', typ: 'bohne', kraft: 26, fx: 'cloud', color: '#a3b55c', word: 'PFRRRT', text: 'Eine grüne Wolke. Man riecht sie noch lange.' },
+    bohnen: { name: 'Bohnenkanone', typ: 'bohne', kraft: 36, fx: 'proj', shape: 'bean', color: '#8a5532', n: 7, gap: 55, arc: 8, word: 'RATATAT', text: 'Feuert eine Salve harter Bohnen.' },
+    wickel: { name: 'Einwickeln', typ: 'kokon', kraft: 16, fx: 'wrap', color: '#efe6d2', text: 'Wickelt den Gegner in Seide ein.' },
+    schlaf: { name: 'Puppenschlaf', typ: 'kokon', kraft: 0, heal: 0.4, fx: 'heal', color: '#9fd3a6', text: 'Kurzes Nickerchen. Heilt 40 % der KP.' },
+    schluepf: { name: 'Schlüpfstoß', typ: 'kokon', kraft: 36, fx: 'lunge', burst: true, color: '#efe6d2', word: 'KNACKS!', text: 'Bricht mit voller Wucht aus dem Kokon.' },
+    spucke: { name: 'Spuckefontäne', typ: 'tropfen', kraft: 16, fx: 'proj', shape: 'drop', color: '#cfe8f6', n: 5, gap: 60, word: 'PTUI!', text: 'Spuckt in hohem Bogen.' },
+    piss: { name: 'Pissstrahl', typ: 'tropfen', kraft: 26, fx: 'stream', color: '#f2d43a', word: 'PSSSCHHT', text: 'Ein gelber Strahl. Treffsicher und peinlich.' },
+    platsch: { name: 'Platschwelle', typ: 'tropfen', kraft: 36, fx: 'wave', color: '#5aa0d0', word: 'PLATSCH!', text: 'Eine Welle, die alles umspült.' },
+    kopfnuss: { name: 'Kopfnuss', typ: 'kiesel', kraft: 16, fx: 'lunge', burst: true, color: '#bdb8ae', word: 'DONG!', text: 'Harter Schädel, harter Stoß.' },
+    stein: { name: 'Steinwurf', typ: 'kiesel', kraft: 26, fx: 'proj', shape: 'rock', color: '#9a958d', n: 1, size: 9, arc: 22, dur: 560, text: 'Ein großer Stein, gut gezielt.' },
+    lawine: { name: 'Geröll-Lawine', typ: 'kiesel', kraft: 36, fx: 'rain', shape: 'rock', color: '#9a958d', n: 11, word: 'RUMMS', text: 'Lässt Geröll von oben regnen.' },
+    pieks: { name: 'Pieks', typ: 'horn', kraft: 16, fx: 'lunge', burst: true, color: '#ffffff', word: 'PIEKS!', text: 'Ein kleiner, gemeiner Stich.' },
+    troete: { name: 'Tröte', typ: 'horn', kraft: 26, fx: 'rings', color: '#efe6d2', word: 'TÖÖÖT!', text: 'Bläst ins eigene Horn. Sehr laut.' },
+    bohrer: { name: 'Hornbohrer', typ: 'horn', kraft: 36, fx: 'lunge', spin: true, burst: true, color: '#ffffff', word: 'BRRRR', text: 'Dreht sich und bohrt sich hinein.' },
+    glitzer: { name: 'Glitzer', typ: 'kristall', kraft: 16, fx: 'sparkle', color: '#bfe9ff', text: 'Funkelnde Splitter blenden den Gegner.' },
+    blend: { name: 'Blendspiegel', typ: 'kristall', kraft: 26, fx: 'flash', color: '#bfe9ff', word: 'BLING!', text: 'Ein greller Lichtblitz.' },
+    splitter: { name: 'Splitterregen', typ: 'kristall', kraft: 36, fx: 'rain', shape: 'shard', color: '#bfe9ff', n: 13, text: 'Scharfe Kristalle fallen vom Himmel.' },
+  };
+  static LINE = { raupe: ['schleim', 'kitzel', 'seide'], bohne: ['ruelps', 'pups', 'bohnen'], kokon: ['wickel', 'schlaf', 'schluepf'], tropfen: ['spucke', 'piss', 'platsch'], kiesel: ['kopfnuss', 'stein', 'lawine'], horn: ['pieks', 'troete', 'bohrer'], kristall: ['glitzer', 'blend', 'splitter'] };
+  static TIERS = [['Papier', '#fbfaf8'], ['Bronze', '#e0b48a'], ['Silber', '#d3d7db'], ['Gold', '#f2cf5b'], ['Holo', 'linear-gradient(90deg,#ff9ab8,#ffe09a,#b8ffa6,#9aeeff,#bfa6ff)'], ['Ikone', '#f3ead2']];
+  static ITEMS = {
+    heiltrank: { name: 'Heiltrank', text: 'Heilt 30 KP.', heal: 30 },
+    supertrank: { name: 'Supertrank', text: 'Heilt 80 KP.', heal: 80 },
+    riechsalz: { name: 'Riechsalz', text: 'Weckt eine erschöpfte Karte mit halben KP.', revive: 0.5 },
+  };
+
+  // ---------- Welt ----------
+  static W = 64; static H = 44; static VH = 11;
+  static BIO = {
+    wiese: { name: 'Blumenwiese', c: [12, 24], types: ['raupe', 'bohne'], lv: [2, 3], enc: 'Gras' },
+    wald: { name: 'Dunkelwald', c: [14, 6], types: ['kokon', 'raupe', 'bohne'], lv: [3, 4], enc: 'Farn' },
+    see: { name: 'Schilfsee', c: [28, 39], types: ['tropfen', 'kokon'], lv: [3, 5], enc: 'Schilf' },
+    fels: { name: 'Felsengrat', c: [42, 7], types: ['kiesel', 'horn'], lv: [4, 6], enc: 'Geröll' },
+    kristall: { name: 'Kristallhöhle', c: [54, 23], types: ['kristall', 'kiesel', 'horn'], lv: [5, 6], enc: 'Kristallfeld' },
+    arena: { name: 'Steinarena', c: [58, 38], types: [], lv: [6, 6], enc: '' },
+  };
+  static NODES = { S: [5, 22], Sc: [7, 28], A: [15, 22], B: [13, 9], Bc: [4, 4], C: [26, 6], D: [39, 9], E: [50, 6], Ec: [58, 3], F: [27, 22], G: [22, 34], Gc: [11, 40], H: [38, 37], AW: [53, 38], I: [40, 22], Ic: [45, 30], J: [50, 20], K: [55, 27], Kc: [61, 17], AN: [58, 34] };
+  static EDGES = [['S', 'A'], ['S', 'Sc'], ['A', 'B'], ['B', 'Bc'], ['B', 'C'], ['C', 'D'], ['D', 'E'], ['E', 'Ec'], ['A', 'F'], ['F', 'I'], ['D', 'I'], ['F', 'G'], ['G', 'Gc'], ['G', 'H'], ['H', 'AW'], ['I', 'J'], ['I', 'Ic'], ['J', 'K'], ['K', 'Kc'], ['K', 'AN']];
+  static SPRINGS = [[17, 19], [40, 19], [38, 40], [52, 27]];
+  static CHESTS = [
+    { at: 'Sc', items: { heiltrank: 1 }, scrolls: ['piss'] },
+    { at: 'Bc', items: { heiltrank: 2 }, scrolls: ['kitzel'] },
+    { at: 'Gc', items: { heiltrank: 1 }, scrolls: ['platsch'] },
+    { at: 'Ic', items: { riechsalz: 1 }, scrolls: ['pups'] },
+    { at: 'Ec', items: { supertrank: 1 }, scrolls: ['lawine'] },
+    { at: 'Kc', items: { supertrank: 1 }, scrolls: ['splitter'] },
+    { pos: [62, 36], items: { supertrank: 1 }, scrolls: ['bohrer'] },
+    { pos: [62, 40], items: { riechsalz: 1 }, scrolls: ['troete'], likes: 5 },
+  ];
+  static TRAINERS = [
+    { id: 'udo', name: 'Wanderer Udo', edge: ['S', 'A'], at: 0.6, coat: '#6b7f5a', cap: '#b5753f', team: [['raupe', 2]], likes: 2, reward: { heiltrank: 1 }, intro: 'Halt! Wer hier durch will, muss erst an mir vorbei.', after: 'Im hohen Gras wohnen noch mehr Wesen. Pass auf dich auf.' },
+    { id: 'lotte', name: 'Picknick-Lotte', edge: ['A', 'F'], at: 0.5, coat: '#c98a3a', cap: '#f2e2ae', team: [['bohne', 3], ['raupe', 3]], likes: 3, reward: { heiltrank: 1 }, intro: 'Du trampelst über meine Decke! Das klären wir im Kampf.', after: 'Nimm dir ein Brot. Der Weg nach Süden führt zum See.' },
+    { id: 'gerda', name: 'Pilzsammlerin Gerda', edge: ['A', 'B'], at: 0.6, coat: '#8a5a7a', cap: '#d8c9a8', team: [['kokon', 3], ['raupe', 3]], likes: 3, reward: { heiltrank: 1 }, intro: 'Im Dunkelwald wachsen die besten Pilze. Die teile ich nicht!', after: 'Ganz hinten im Wald steht eine alte Truhe.' },
+    { id: 'hubert', name: 'Förster Hubert', edge: ['B', 'C'], at: 0.55, coat: '#4d6b3c', cap: '#2f4a28', team: [['kokon', 4], ['bohne', 4]], likes: 4, reward: { supertrank: 1 }, intro: 'Dieser Wald steht unter Schutz. Zeig mir, dass du ihn verdienst.', after: 'Hinter den Bäumen beginnt der Felsengrat. Da wird es steil.' },
+    { id: 'ben', name: 'Kletterer Ben', edge: ['C', 'D'], at: 0.6, coat: '#4f6f8f', cap: '#e4572e', team: [['kiesel', 4], ['horn', 5]], likes: 5, reward: { supertrank: 1 }, intro: 'Ich bin auf jeden Stein hier geklettert. Jetzt bist du dran!', after: 'Ganz oben im Osten liegt eine Truhe. Ich komme da nicht ran.' },
+    { id: 'ida', name: 'Bergführerin Ida', edge: ['D', 'I'], at: 0.5, coat: '#7a6a55', cap: '#c9c3b8', team: [['horn', 5], ['kiesel', 5]], likes: 5, reward: { riechsalz: 1 }, intro: 'Ohne Führung kommt hier keiner runter. Erst kämpfen, dann reden.', after: 'Unten im Tal geht es zur Kristallhöhle.' },
+    { id: 'mia', name: 'Taucherin Mia', edge: ['F', 'G'], at: 0.6, coat: '#3f7fa8', cap: '#f2d43a', team: [['tropfen', 4], ['kokon', 4]], likes: 4, reward: { heiltrank: 2 }, intro: 'Ich war gerade schwimmen. Jetzt bin ich nass und schlecht gelaunt.', after: 'Im Schilf verstecken sich ganz schön viele Wesen.' },
+    { id: 'kurt', name: 'Angler Kurt', edge: ['G', 'H'], at: 0.55, coat: '#5b6b3a', cap: '#94bfdc', team: [['tropfen', 5], ['tropfen', 5]], likes: 5, reward: { supertrank: 1 }, intro: 'Du verscheuchst mir die Fische. Dafür gibt es eine Abreibung.', after: 'Hinter dem Steg im Osten liegt die Steinarena.' },
+    { id: 'emil', name: 'Forscher Emil', edge: ['J', 'K'], at: 0.5, coat: '#e3d6b8', cap: '#5a6170', team: [['kristall', 6], ['kiesel', 5]], likes: 6, reward: { supertrank: 1 }, intro: 'Diese Kristalle gehören der Wissenschaft. Und meinen Wesen.', after: 'Südlich der Höhle wartet die Hüterin. Sie ist stark.' },
+    { id: 'marlene', name: 'Hüterin Marlene', pos: [58, 38], all: 3, boss: true, coat: '#3a3735', cap: '#ec3013', team: [['horn', 6], ['kiesel', 6], ['kristall', 7]], likes: 15, reward: {}, intro: 'Willkommen in der Steinarena. Zeig mir, was deine Karten können!', after: 'Stark gekämpft. Die Truhen hinter mir gehören dir.' },
+  ];
+  static PAL = {
+    wiese: { floor: '#c8dba8', path: '#eadfc4', enc: '#a9cc8c', wall: '#c8dba8' },
+    wald: { floor: '#a3bd8a', path: '#d2bf95', enc: '#8fb078', wall: '#7d9c66' },
+    see: { floor: '#e9ddb4', path: '#94bfdc', enc: '#a9cfe0', wall: '#94bfdc' },
+    fels: { floor: '#d8d1c3', path: '#e7e0d0', enc: '#cdc5b5', wall: '#c2bbad' },
+    kristall: { floor: '#848b9b', path: '#a2a9b8', enc: '#848b9b', wall: '#5a6070' },
+    arena: { floor: '#d9d3c7', path: '#d9d3c7', enc: '#d9d3c7', wall: '#c2bbad' },
+  };
+  static SYM = (() => {
+    const I = '#201e1d';
+    return {
+      gr1: "<path d='M9 27l2-4 2 4M27 15l2-4 2 4' fill='none' stroke='#93b47a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/>",
+      gr2: "<path d='M21 31l2-4 2 4' fill='none' stroke='#93b47a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/>",
+      flower: `<circle cx='12' cy='14' r='2.6' fill='#f2e2ae' stroke='${I}' stroke-width='1.2'/><circle cx='27' cy='27' r='2.6' fill='#ef9b8a' stroke='${I}' stroke-width='1.2'/>`,
+      tall: `<path d='M2 39L7 13L12 39ZM14 39L20 6L26 39ZM28 39L33 13L38 39Z' fill='#7fae66' stroke='${I}' stroke-width='1.6' stroke-linejoin='round'/>`,
+      tree: `<rect x='17' y='27' width='6' height='10' fill='#7a5638' stroke='${I}' stroke-width='2'/><circle cx='20' cy='17' r='14' fill='#5f8f50' stroke='${I}' stroke-width='2'/><path d='M12 15q4-6 10-4' fill='none' stroke='#86b474' stroke-width='2' stroke-linecap='round'/>`,
+      pine: `<rect x='17' y='29' width='6' height='9' fill='#5a3a20' stroke='${I}' stroke-width='2'/><path d='M20 2L33 22H7Z' fill='#3f6a3a' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='M20 9L35 31H5Z' fill='#4d7a44' stroke='${I}' stroke-width='2' stroke-linejoin='round'/>`,
+      fern: `<path d='M4 39Q8 22 15 14Q12 28 13 39ZM15 39Q20 18 28 8Q24 26 25 39ZM26 39Q31 24 37 18Q34 30 34 39Z' fill='#5b8048' stroke='${I}' stroke-width='1.6' stroke-linejoin='round'/>`,
+      twig: "<path d='M10 28l12-4M18 25l3-4' stroke='#6b5638' stroke-width='2' stroke-linecap='round'/>",
+      wave1: "<path d='M6 14q3-3 6 0t6 0M22 28q3-3 6 0t6 0' fill='none' stroke='#e6f1f7' stroke-width='2' stroke-linecap='round'/>",
+      wave2: "<path d='M14 22q3-3 6 0t6 0' fill='none' stroke='#e6f1f7' stroke-width='2' stroke-linecap='round'/>",
+      reed: `<path d='M10 39V16M19 39V10M28 39V18' stroke='#4d7a44' stroke-width='3' stroke-linecap='round'/><rect x='7.5' y='11' width='5' height='9' fill='#8a5532' stroke='${I}' stroke-width='1.5'/><rect x='16.5' y='5' width='5' height='9' fill='#8a5532' stroke='${I}' stroke-width='1.5'/><rect x='25.5' y='13' width='5' height='9' fill='#8a5532' stroke='${I}' stroke-width='1.5'/>`,
+      plank: "<rect width='40' height='40' fill='#c79a62'/><path d='M0 10h40M0 20h40M0 30h40' stroke='#a77a46' stroke-width='1.6'/>",
+      shell: `<circle cx='12' cy='26' r='1.8' fill='#fbfaf8' stroke='${I}' stroke-width='1'/><circle cx='29' cy='12' r='1.3' fill='#fbfaf8' stroke='${I}' stroke-width='1'/>`,
+      rock: `<path d='M4 35L8 14L20 6L33 12L37 35Z' fill='#b9b4ab' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='M20 6L17 21L4 35M17 21L37 35' fill='none' stroke='#8d887f' stroke-width='1.6'/>`,
+      scree: `<path d='M6 30l4-5 5 2 1 5zM20 20l5-4 5 3-1 5-7 0zM24 34l4-3 4 2v3z' fill='#a39d93' stroke='${I}' stroke-width='1.5' stroke-linejoin='round'/>`,
+      pebble: "<circle cx='11' cy='12' r='1.6' fill='#a39d93'/><circle cx='29' cy='28' r='2' fill='#a39d93'/>",
+      cryst: `<path d='M7 39L9 16L14 9L19 16L19 39Z' fill='#bfe9ff' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='M18 39L21 9L27 2L33 10L32 39Z' fill='#9fd6f2' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='M27 4L26 38' stroke='#e9f8ff' stroke-width='1.6'/>`,
+      cryst2: `<path d='M6 39L10 20L16 15L21 21L20 39Z' fill='#9fd6f2' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='M20 39L24 22L29 17L35 24L33 39Z' fill='#bfe9ff' stroke='${I}' stroke-width='2' stroke-linejoin='round'/>`,
+      shards: `<path d='M8 32L11 22L14 32ZM22 30L26 16L30 30ZM15 38L17 31L19 38Z' fill='#bfe9ff' stroke='${I}' stroke-width='1.5' stroke-linejoin='round'/>`,
+      spark: "<path d='M20 14L22 20L20 26L18 20Z' fill='#e9f8ff'/>",
+      tileA: "<path d='M0 20h40M20 0v20M10 20v20M30 20v20' stroke='#c3bbad' stroke-width='1.6'/>",
+      spring: `<circle cx='20' cy='21' r='15' fill='#b9b4ab' stroke='${I}' stroke-width='2'/><circle cx='20' cy='21' r='9.5' fill='#94bfdc' stroke='${I}' stroke-width='2'/><path d='M15 21q2.5-2.5 5 0t5 0' fill='none' stroke='#fff' stroke-width='1.8' stroke-linecap='round'/>`,
+      dots: "<g fill='rgba(32,30,29,.14)'><circle cx='10' cy='12' r='1.6'/><circle cx='28' cy='27' r='1.3'/></g>",
+      chest: `<rect x='8' y='15' width='24' height='17' fill='#b5753f' stroke='${I}' stroke-width='2'/><path d='M8 21h24' stroke='${I}' stroke-width='2'/><rect x='17' y='18' width='6' height='7' fill='#ec3013' stroke='${I}' stroke-width='2'/>`,
+      chestOpen: `<path d='M8 19l3-9h18l3 9z' fill='#5a3a20' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><rect x='8' y='19' width='24' height='13' fill='#b5753f' stroke='${I}' stroke-width='2'/>`,
+    };
+  })();
+  static ARENA = {
+    wiese: { sky: '#eceae2', hill: '#cbd5b8', ground: '#a8c389', floor: '#e3d6b8', ring: '#cbb990', stone: '#bdb8ae', line: '#9f998e', shape: 'stone', tuft: '#7fae66' },
+    wald: { sky: '#dde3d4', hill: '#7f9c6c', ground: '#8aa872', floor: '#d6caa8', ring: '#b9a67e', stone: '#4d7a44', line: '#3b5530', shape: 'pine', tuft: '#5b8048' },
+    see: { sky: '#e3ecef', hill: '#b9cdd6', ground: '#a9c9a0', floor: '#e9ddb4', ring: '#cdb98a', stone: '#bdb8ae', line: '#9f998e', shape: 'stone', water: true, tuft: '#4d7a44' },
+    fels: { sky: '#e6e3de', hill: '#b0a99c', ground: '#bdb5a5', floor: '#ddd5c5', ring: '#bfb49c', stone: '#9c968c', line: '#7e786e', shape: 'stone', peaks: true, tuft: '#8d887f' },
+    kristall: { sky: '#2f3542', hill: '#454c5c', ground: '#5f6676', floor: '#8a91a1', ring: '#6f7687', stone: '#bfe9ff', line: '#8fc6e6', shape: 'crystal', dark: true, tuft: '#9fd6f2' },
+    arena: { sky: '#eceae2', hill: '#cbd5b8', ground: '#a8c389', floor: '#e3d6b8', ring: '#cbb990', stone: '#bdb8ae', line: '#9f998e', shape: 'stone', flags: true, tuft: '#7fae66' },
+  };
+  static DEMO = [['Bohnito', 'bohne'], ['Tropfine', 'tropfen'], ['Kieselkurt', 'kiesel'], ['Hornhilde', 'horn']];
+  static PAT = {
+    raupe: [28, 20, "<path d='M2 14q5-8 10 0M16 4q5-8 10 0' fill='none' stroke='#201e1d' stroke-width='1.6' stroke-linecap='round'/>"],
+    bohne: [16, 16, "<g fill='#201e1d'><circle cx='4' cy='4' r='1.8'/><circle cx='12' cy='12' r='1.8'/></g>"],
+    kokon: [32, 14, "<path d='M0 7q8-7 16 0t16 0' fill='none' stroke='#201e1d' stroke-width='1.6'/>"],
+    tropfen: [24, 24, "<g fill='none' stroke='#201e1d' stroke-width='1.5'><circle cx='6' cy='6' r='3.5'/><circle cx='18' cy='18' r='3.5'/></g>"],
+    kiesel: [40, 40, "<g fill='#201e1d'><circle cx='6' cy='8' r='2.6'/><circle cx='27' cy='5' r='1.5'/><circle cx='18' cy='22' r='3.2'/><circle cx='35' cy='30' r='2'/><circle cx='8' cy='33' r='1.6'/></g>"],
+    horn: [12, 12, "<path d='M-3 3L3-3M0 12L12 0M9 15L15 9' stroke='#201e1d' stroke-width='1.4'/>"],
+    kristall: [24, 20, "<path d='M12 0L24 10L12 20L0 10Z' fill='none' stroke='#201e1d' stroke-width='1.4'/>"],
+  };
+
+  fxRef = React.createRef(); meRef = React.createRef(); foeRef = React.createRef();
+  arenaRef = React.createRef(); stageRef = React.createRef(); playerRef = React.createRef(); bioRef = React.createRef();
+  dialRef = React.createRef(); needleRef = React.createRef(); arcRef = React.createRef();
+  vpRef = el => {
+    if (this._vp === el) return;
+    if (this.ro) this.ro.disconnect();
+    this._vp = el;
+    if (el && window.ResizeObserver) {
+      this.ro = new ResizeObserver(es => { const r = es[0].contentRect; if (!this.dead && (Math.abs(r.width - (this.state.vpW || 0)) > 1 || Math.abs(r.height - (this.state.vpH || 0)) > 1)) this.setState({ vpW: r.width, vpH: r.height }); });
+      this.ro.observe(el);
+    }
+  };
+
+  state = (() => {
+    let sv = null, old = null;
+    try { sv = JSON.parse(localStorage.getItem(Component.KEY) || 'null'); } catch (e) {}
+    if (!sv) { try { old = JSON.parse(localStorage.getItem('formgen.abenteuer.v1') || 'null'); } catch (e) {} }
+    const o = sv || (old ? { team: old.team, prog: old.prog, bag: old.bag, scrolls: old.scrolls, likes: old.likes } : {});
+    return {
+      tab: 'pfad', loading: true, note: 'Karten werden geladen …', cards: [], arts: {},
+      pos: o.pos || Component.NODES.S, dir: o.dir || 'right', frame: 0, team: o.team || [], prog: o.prog || {},
+      bag: o.bag || { heiltrank: 2, riechsalz: 1 }, scrolls: o.scrolls || [], caught: o.caught || [], chests: o.chests || [], beaten: o.beaten || [], likes: o.likes || 0,
+      dialog: null, spot: null, battle: null, pick: null, toast: '', pvMe: 0, askReset: false, vpW: 0, vpH: 0, mgView: null, pop: null,
+    };
+  })();
+
+  async componentDidMount() {
+    window.addEventListener('keydown', this.onKey);
+    this.world();
+    if (!this.walk(this.state.pos[0], this.state.pos[1])) this.setState({ pos: Component.NODES.S });
+    this.canvas = document.createElement('canvas');
+    Object.assign(this.canvas.style, { position: 'fixed', left: '-9999px', top: '0', width: '300px', height: '400px', pointerEvents: 'none' });
+    document.body.appendChild(this.canvas);
+    try {
+      const [lg, df] = await Promise.all([
+        import(new URL('./linegen.js', document.baseURI).href),
+        import(new URL('./wesen-defaults.js', document.baseURI).href),
+      ]);
+      if (this.dead) return;
+      this.D = df.DEFAULTS; this.M = df.MODELS;
+      this.engine = lg.createEngine(this.canvas);
+      this.engine.resize(300, 400);
+    } catch (e) {
+      console.error(e);
+      this.setState({ loading: false, note: 'Zeichnen fehlgeschlagen: ' + (e && e.message || e) });
+      return;
+    }
+    const { list, note } = this.loadCards();
+    const cards = [], arts = {};
+    for (const raw of [...list, ...this.state.caught]) {
+      if (this.dead) return;
+      const c = this.cardFrom(raw);
+      cards.push(c); arts[c.uid] = this.draw(c.p);
+      await new Promise(r => setTimeout(r, 0));
+    }
+    const prog = { ...this.state.prog };
+    for (const c of cards) if (!prog[c.uid]) prog[c.uid] = { lv: 3, ep: 0, kp: null, attacks: [Component.LINE[c.model][0], 'rempler'] };
+    let team = this.state.team.filter(u => cards.some(c => c.uid === u));
+    if (!team.length) team = cards.slice(0, 3).map(c => c.uid);
+    this.pvFoe = this.makeFoe('kiesel', 3, this.rng('uebung'), 'Übungskiesel');
+    this.setState({ cards, arts, prog, team, loading: false, note }, () => this.save());
+  }
+  componentWillUnmount() {
+    this.dead = true;
+    window.removeEventListener('keydown', this.onKey);
+    clearTimeout(this.toastT); clearTimeout(this.idleT);
+    if (this.mg && this.mg.raf) cancelAnimationFrame(this.mg.raf);
+    if (this.ro) this.ro.disconnect();
+    try { this.engine && this.engine.dispose && this.engine.dispose(); } catch (e) {}
+    this.canvas && this.canvas.remove();
+  }
+
+  // ---------- Welt erzeugen ----------
+  world() {
+    if (this._w) return this._w;
+    const C = Component, W = C.W, H = C.H, rnd = this.rng('welt-1'), g = new Array(W * H);
+    const bios = Object.keys(C.BIO).filter(k => k !== 'arena');
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      let b = 'arena';
+      if (!(x >= 53 && y >= 34)) {
+        let bd = 1e9;
+        bios.forEach((k, i) => { const c = C.BIO[k].c; const d = Math.hypot(x - c[0], (y - c[1]) * 1.2) + Math.sin(x * 0.42 + i * 1.7) * 2.2 + Math.cos(y * 0.51 + i * 2.3) * 2.2; if (d < bd) { bd = d; b = k; } });
+      }
+      let t = 'wall';
+      if (b === 'wiese') t = rnd() < 0.06 || Math.sin(x * 0.8) * Math.sin(y * 0.9 + 1) > 0.82 ? 'wall' : 'floor';
+      if (x === 0 || y === 0 || x === W - 1 || y === H - 1) t = 'wall';
+      g[y * W + x] = { t, b, v: Math.floor(rnd() * 6) };
+    }
+    const at = (x, y) => (x >= 0 && y >= 0 && x < W && y < H ? g[y * W + x] : null);
+    const set = (x, y, t) => { if (x < 1 || y < 1 || x > W - 2 || y > H - 2) return; g[y * W + x].t = t; };
+    const disc = (cx, cy, r, t, ok) => { for (let y = Math.floor(cy - r); y <= cy + r; y++) for (let x = Math.floor(cx - r); x <= cx + r; x++) { const c = at(x, y); if (c && Math.hypot(x - cx, y - cy) <= r && ok(c)) set(x, y, t); } };
+    const N = C.NODES, pts = {};
+    for (const [a, b] of C.EDGES) {
+      const p = []; let [x, y] = N[a]; const [tx, ty] = N[b];
+      let axis = Math.abs(tx - x) >= Math.abs(ty - y) ? 'x' : 'y', guard = 0;
+      const paint = () => { set(x, y, 'path'); set(x + 1, y, 'path'); set(x, y + 1, 'path'); set(x + 1, y + 1, 'path'); p.push([x, y]); };
+      paint();
+      while ((x !== tx || y !== ty) && guard++ < 400) {
+        if (axis === 'x' && x === tx) axis = 'y';
+        else if (axis === 'y' && y === ty) axis = 'x';
+        else if (rnd() < 0.16) { const o = axis === 'x' ? 'y' : 'x'; if ((o === 'x' ? tx - x : ty - y) !== 0) axis = o; }
+        if (axis === 'x') x += Math.sign(tx - x); else y += Math.sign(ty - y);
+        paint();
+      }
+      pts[a + '-' + b] = p;
+    }
+    const paths = [];
+    for (let i = 0; i < W * H; i++) if (g[i].t === 'path') paths.push(i);
+    for (const i of paths) {
+      const x = i % W, y = (i / W) | 0;
+      if (g[i].b === 'wiese') continue;
+      if (rnd() < 0.35) { const dx = Math.floor(rnd() * 3) - 1, dy = Math.floor(rnd() * 3) - 1, c = at(x + dx, y + dy); if (c && c.t === 'wall') set(x + dx, y + dy, 'floor'); }
+      if (rnd() < 0.05) disc(x, y, 2, 'floor', c => c.t === 'wall');
+    }
+    const count = { wiese: 9, wald: 7, see: 7, fels: 6, kristall: 6 };
+    for (const [k, n] of Object.entries(count)) {
+      const pool = paths.filter(i => g[i].b === k);
+      for (let j = 0; j < n && pool.length; j++) {
+        const i = pool[Math.floor(rnd() * pool.length)], x = i % W, y = (i / W) | 0;
+        disc(x + Math.round((rnd() - 0.5) * 4), y + Math.round((rnd() - 0.5) * 4), 1.6 + rnd() * 1.2, 'enc', c => c.b !== 'arena');
+      }
+    }
+    for (const [x, y] of C.SPRINGS) { disc(x, y, 2, 'floor', c => c.t === 'wall'); set(x, y, 'spring'); }
+    for (let y = 34; y < H; y++) for (let x = 53; x < W; x++) g[y * W + x].t = x === 53 || x === W - 1 || y === 34 || y >= 42 ? 'wall' : 'floor';
+    for (const [x, y] of [[52, 38], [53, 38], [52, 39], [53, 39], [58, 33], [59, 33], [58, 34], [59, 34]]) set(x, y, 'path');
+    const chestList = C.CHESTS.map(ch => { const [x, y] = ch.pos || N[ch.at]; g[y * W + x].t = 'chest'; return { ...ch, x, y, key: x + ',' + y }; });
+    const chestMap = {}; for (const c of chestList) chestMap[c.key] = c;
+    const trainers = C.TRAINERS.map(t => {
+      if (t.pos) return { ...t, x: t.pos[0], y: t.pos[1], dir: [0, 1] };
+      const p = pts[t.edge[0] + '-' + t.edge[1]], i = Math.floor(p.length * t.at), [x, y] = p[i], [px, py] = p[Math.max(0, i - 3)];
+      const dx = px - x, dy = py - y;
+      if (g[y * W + x].t !== 'path' && g[y * W + x].t !== 'enc') g[y * W + x].t = 'path';
+      return { ...t, x, y, sight: 4, dir: Math.abs(dx) >= Math.abs(dy) ? [Math.sign(dx) || 1, 0] : [0, Math.sign(dy) || 1] };
+    });
+    this._w = { g, chestList, chestMap, trainers };
+    this._w.mapImg = this.mapSvg(g);
+    return this._w;
+  }
+  cell(x, y) { const C = Component; return x >= 0 && y >= 0 && x < C.W && y < C.H ? this.world().g[y * C.W + x] : null; }
+  walk(x, y) { const c = this.cell(x, y); return !!c && (c.t === 'floor' || c.t === 'path' || c.t === 'enc'); }
+  tileCol(c) { const P = Component.PAL[c.b]; return c.t === 'path' ? P.path : c.t === 'enc' ? P.enc : c.t === 'wall' ? P.wall : P.floor; }
+  tileSym(c) {
+    const b = c.b, v = c.v;
+    if (c.t === 'wall') return { wiese: 'tree', wald: 'pine', see: v < 2 ? 'wave1' : v < 4 ? 'wave2' : '', fels: 'rock', kristall: v < 3 ? 'cryst' : 'cryst2', arena: 'rock' }[b];
+    if (c.t === 'enc') return { wiese: 'tall', wald: 'fern', see: 'reed', fels: 'scree', kristall: 'shards', arena: '' }[b];
+    if (c.t === 'path') return b === 'see' ? 'plank' : v === 0 ? 'dots' : '';
+    if (c.t === 'spring') return 'spring';
+    if (c.t === 'floor') return b === 'wiese' ? ['gr1', 'gr2', 'flower', '', '', ''][v] : b === 'wald' ? (v === 0 ? 'twig' : '') : b === 'fels' ? (v < 2 ? 'pebble' : '') : b === 'kristall' ? (v === 0 ? 'spark' : '') : b === 'see' ? (v === 0 ? 'shell' : '') : b === 'arena' ? 'tileA' : '';
+    return '';
+  }
+  mapSvg(g) {
+    const C = Component, W = C.W, H = C.H, used = new Set();
+    let rects = '', uses = '';
+    for (let y = 0; y < H; y++) {
+      let run = null, rx = 0;
+      for (let x = 0; x <= W; x++) {
+        const col = x < W ? this.tileCol(g[y * W + x]) : null;
+        if (col !== run) { if (run) rects += `<rect x='${rx}' y='${y}' width='${x - rx}' height='1.04' fill='${run}'/>`; run = col; rx = x; }
+      }
+      for (let x = 0; x < W; x++) { const s = this.tileSym(g[y * W + x]); if (s) { used.add(s); uses += `<use href='#${s}' x='${x}' y='${y}' width='1' height='1'/>`; } }
+    }
+    const defs = [...used].map(k => `<symbol id='${k}' viewBox='0 0 40 40'>${C.SYM[k]}</symbol>`).join('');
+    const s = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${W} ${H}' preserveAspectRatio='none'><defs>${defs}</defs>${rects}${uses}</svg>`;
+    return `url("data:image/svg+xml,${encodeURIComponent(s)}")`;
+  }
+  symUrl(k, bg) {
+    this._su = this._su || {};
+    const key = k + bg;
+    if (!this._su[key]) this._su[key] = `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'>${bg ? `<rect width='40' height='40' fill='${bg}'/>` : ''}${Component.SYM[k]}</svg>`)}")`;
+    return this._su[key];
+  }
+  human(o) {
+    this._hs = this._hs || {};
+    const key = JSON.stringify(o);
+    if (this._hs[key]) return this._hs[key];
+    const I = '#201e1d', d = o.dir, fr = o.frame;
+    const legs = d === 'side'
+      ? (fr ? `<path d='M15 38L11 50H16L20 40Z' fill='${I}'/><path d='M21 38L26 50H31L25 38Z' fill='${I}'/>` : `<rect x='15' y='38' width='5' height='12' fill='${I}'/><rect x='20' y='38' width='5' height='12' fill='${I}'/>`)
+      : `<rect x='13' y='38' width='5' height='${fr === 2 ? 9 : 12}' fill='${I}'/><rect x='22' y='38' width='5' height='${fr === 1 ? 9 : 12}' fill='${I}'/>`;
+    const cape = o.boss ? `<path d='M11 24L5 50H35L29 24Z' fill='#ec3013' stroke='${I}' stroke-width='2' stroke-linejoin='round'/>` : '';
+    const packSide = o.pack && d === 'side' ? `<rect x='8' y='25' width='7' height='12' fill='#8a5532' stroke='${I}' stroke-width='2'/>` : '';
+    const packBack = o.pack && d === 'up' ? `<rect x='13' y='25' width='14' height='12' fill='#8a5532' stroke='${I}' stroke-width='2'/><path d='M13 30h14' stroke='${I}' stroke-width='1.6'/>` : '';
+    const body = `<path d='M10 41L13 24H27L30 41Z' fill='${o.coat}' stroke='${I}' stroke-width='2' stroke-linejoin='round'/>`;
+    const head = `<circle cx='20' cy='16' r='8' fill='${d === 'up' ? '#5a3a20' : '#f0d2b4'}' stroke='${I}' stroke-width='2'/>`;
+    const eyes = d === 'down' ? `<circle cx='17' cy='17.5' r='1.6' fill='${I}'/><circle cx='23' cy='17.5' r='1.6' fill='${I}'/>` : d === 'side' ? `<circle cx='24.5' cy='17.5' r='1.6' fill='${I}'/>` : '';
+    const cap = `<path d='M11.5 13.5Q20 3 28.5 13.5Z' fill='${o.cap}' stroke='${I}' stroke-width='2' stroke-linejoin='round'/>` + (d === 'side' ? `<path d='M27 13.5h7' stroke='${I}' stroke-width='3' stroke-linecap='round'/>` : d === 'down' ? `<path d='M12 13.5h16' stroke='${I}' stroke-width='3' stroke-linecap='round'/>` : '');
+    const s = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 52'>${cape}${legs}${packSide}${body}${packBack}${head}${eyes}${cap}</svg>`;
+    return (this._hs[key] = `url("data:image/svg+xml,${encodeURIComponent(s)}")`);
+  }
+  trainerSprite(t) { const [dx, dy] = t.dir; return this.human({ dir: dy > 0 ? 'down' : dy < 0 ? 'up' : 'side', frame: 0, coat: t.coat, cap: t.cap, boss: !!t.boss }); }
+
+  // ---------- Karten ----------
+  loadCards() {
+    let list = [], note = '';
+    try {
+      const db = JSON.parse(localStorage.getItem('formgen.testdb.v1') || 'null');
+      const auth = JSON.parse(localStorage.getItem('formgen.auth.v1') || 'null');
+      if (db && db.users && auth && auth.user) {
+        const un = String(typeof auth.user === 'string' ? auth.user : auth.user.name || '').toLowerCase();
+        const me = db.users.find(u => (auth.token && u.token === auth.token) || (u.name && u.name.toLowerCase() === un));
+        if (me) list = (db.cards || []).filter(c => c.user_id === me.id).sort((a, b) => b.id - a.id).slice(0, 24)
+          .map(c => { const i = (db.items || []).find(x => x.id === c.item_id); return i ? { uid: 'c' + c.id, name: i.name, model: i.model, params: i.params, likes: c.likes, icon: !!c.icon } : null; }).filter(Boolean);
+        if (list.length) note = `Deine Sammelkarten aus dem Testmodus (${me.name}, ${list.length} Karten). Laufen mit Pfeiltasten oder WASD.`;
+      }
+    } catch (e) {}
+    if (!list.length) {
+      const rnd = this.rng('demo');
+      list = Component.DEMO.map(([name, model], i) => ({ uid: 'demo' + i, name, model, params: this.genParams(model, rnd), likes: 2 }));
+      note = 'Demo-Karten, weil in diesem Browser keine Sammlung gefunden wurde. Im fertigen Spiel kämpfen hier deine Sammelkarten. Laufen mit Pfeiltasten oder WASD.';
+    }
+    return { list, note };
+  }
+  cardFrom(r) {
+    let params = r.params;
+    if (typeof params === 'string') { try { params = JSON.parse(params); } catch (e) { params = {}; } }
+    params = params || {};
+    const model = Component.TYPES.includes(r.model) ? r.model : 'bohne';
+    const p = this.full(model, params);
+    const tier = this.rarity(p, model, r.likes, r.icon);
+    const st = this.cardStats(p, model, tier, this.cardCode(params));
+    const P = Component.PAT[model];
+    const pat = `<svg xmlns='http://www.w3.org/2000/svg' width='${P[0]}' height='${P[1]}'><g opacity='.17'>${P[2]}</g></svg>`;
+    return { uid: r.uid, caught: r.caught || '', name: String(r.name || '').trim() || 'Ohne Namen', model, p, st, tier, color: p.cBg || '#e8e4dc', patImg: `url("data:image/svg+xml,${encodeURIComponent(pat)}")`, patSize: `${P[0]}px ${P[1]}px` };
+  }
+  full(model, params) { return { ...this.D, ...(model === 'kokon' ? { fit: false } : {}), ...(params || {}) }; }
+  draw(p) {
+    let svg = '';
+    try { svg = this.engine.update({ ...p, cBg: 'none' }, {}).svg; } catch (e) { console.error(e); }
+    return svg ? `url("data:image/svg+xml,${encodeURIComponent(svg)}")` : 'none';
+  }
+  rng(str) {
+    let h = 2166136261;
+    for (const ch of String(str)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+    return () => { h = (h + 0x6D2B79F5) >>> 0; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  hex(h, s, l) {
+    const a = s * Math.min(l, 1 - l);
+    const f = n => { const k = (n + h / 30) % 12; const c = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(255 * c).toString(16).padStart(2, '0'); };
+    return '#' + f(0) + f(8) + f(4);
+  }
+  genParams(model, rnd) {
+    const m = this.M.find(x => x.id === model) || this.M[0];
+    const two = rnd() < 0.5, hue = Math.floor(rnd() * 360), base = { ...this.D, ...m.p };
+    return {
+      ...m.p, eye: true, eyeCount: two ? 2 : 1, ...(two ? { eyeS: Math.min(base.eyeS ?? 0.8, 0.72) } : {}),
+      mouth: rnd() < 0.75, mouthType: Math.floor(rnd() * 5), hat: rnd() < 0.35, hatType: Math.floor(rnd() * 4),
+      arms: rnd() < 0.5, armMode: Math.floor(rnd() * 2), handGlove: rnd() < 0.2, pattern: true, patSeed: 1 + Math.floor(rnd() * 8),
+      cBody: this.hex(hue, 0.5, 0.6), cBg: this.hex((hue + 150 + rnd() * 60) % 360, 0.3, 0.84),
+    };
+  }
+  hsl(hex) {
+    const m = /^#?([0-9a-f]{6})$/i.exec(hex || ''); if (!m) return null;
+    const v = parseInt(m[1], 16), r = (v >> 16 & 255) / 255, g = (v >> 8 & 255) / 255, b = (v & 255) / 255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    let h = 0; if (d) h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return { h: (h * 60 + 360) % 360, s: d ? d / (1 - Math.abs(mx + mn - 1)) : 0 };
+  }
+  ton(a, b) { const x = this.hsl(a), y = this.hsl(b); if (!x || !y || x.s < 0.15 || y.s < 0.15) return false; const dh = Math.abs(x.h - y.h); return Math.min(dh, 360 - dh) < 24; }
+  rarity(p, model, likes, icon) {
+    if (icon) return 5;
+    let n = 0;
+    if (p.hat && p.hatType === 2) n += 3;
+    if (model === 'kristall') n += 2;
+    if (p.arms && p.handGlove) n += 2;
+    if (p.hat && p.arms && p.mouth) n += 2;
+    if (p.eye && (p.eyeCount || 1) === 1 && p.eyeSize >= 0.2) n += 1;
+    if (this.ton(p.cBody, p.cBg)) n += 2;
+    const l = likes || 0; n += l >= 6 ? 3 : l >= 3 ? 2 : l >= 1 ? 1 : 0;
+    return n >= 7 ? 4 : n >= 5 ? 3 : n >= 3 ? 2 : n >= 1 ? 1 : 0;
+  }
+  cardCode(obj) {
+    const s = JSON.stringify(obj || {});
+    let h1 = 0x811c9dc5, h2 = 0x01234567;
+    for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 16777619) >>> 0; h2 = Math.imul(h2 ^ c, 2246822519) >>> 0; }
+    const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    for (let i = 0; i < 6; i++) out += A[((i < 3 ? h1 : h2) >>> ((i % 3) * 5 + 2)) & 31];
+    return out.slice(0, 3) + '·' + out.slice(3);
+  }
+  cardStats(p, model, tier, seed) {
+    let h = 2166136261;
+    for (let i = 0; i < seed.length; i++) h = Math.imul(h ^ seed.charCodeAt(i), 16777619) >>> 0;
+    const rnd = () => { h = (h + 0x6D2B79F5) >>> 0; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    const band = [[41, 58], [54, 66], [63, 74], [72, 82], [81, 90], [89, 98]][tier] || [41, 58];
+    const ovr = Math.round(band[0] + (band[1] - band[0]) * rnd());
+    let a = (rnd() - 0.5) * 22, c = (rnd() - 0.5) * 22, g = (rnd() - 0.5) * 36;
+    if (p.arms) { a += 7; c -= 2; }
+    if (p.hat && p.hatType === 2) a += 4;
+    if (model === 'horn' || model === 'kristall') a += 6;
+    if (p.mouth && p.mouthType === 2) a += 5;
+    if (model === 'kiesel' || model === 'bohne' || model === 'kokon') c += 7;
+    c += ((p.lid || 0) - 0.3) * 16;
+    if ((p.rTop || 0) + (p.rBot || 0) > 1.1) c += 4;
+    g += p.eyeCount === 2 ? 4 : -2;
+    g += Math.min(12, Math.abs(p.twist || 0) / 4) + Math.abs(p.sCurve || 0) * 10;
+    if (p.hat && p.hatType === 1) g += 8;
+    if (p.mouth && p.mouthType === 3) g += 6;
+    const mean = (a + c + g) / 3, head = Math.max(1, 99 - ovr);
+    const cl = v => Math.max(1, Math.min(99, Math.round(v)));
+    const val = off => { off -= mean; return cl(ovr + (off > 0 ? off * Math.min(1, head / 25) : off)); };
+    return { ovr, vals: [val(a), val(c), val(g)] };
+  }
+  maxKp(c, lv) { return 40 + Math.round(c.st.ovr / 2) + (lv - 1) * 4; }
+  need(lv) { return 20 * lv; }
+  meStats(uid) {
+    const s = this.state, c = s.cards.find(x => x.uid === uid), p = s.prog[uid];
+    if (!c || !p) return null;
+    const mx = this.maxKp(c, p.lv);
+    return { uid, name: c.name, typ: c.model, lv: p.lv, ep: p.ep, maxKp: mx, kp: p.kp == null ? mx : Math.max(0, Math.min(mx, p.kp)), a: c.st.vals[0], c: c.st.vals[1], g: c.st.vals[2], attacks: p.attacks, art: s.arts[uid] || 'none' };
+  }
+  makeFoe(model, lv, rnd, name) {
+    const params = this.genParams(model, rnd), L = Component.LINE[model];
+    const attacks = lv <= 2 ? [L[0], 'rempler'] : lv <= 4 ? [L[0], L[1]] : [L[1], L[2]];
+    const maxKp = 26 + lv * 7 + Math.floor(rnd() * 8);
+    const tier = this.rarity(this.full(model, params), model, 0, false);
+    return { params, tier, name: name || this.wildName(model, rnd), typ: model, lv, maxKp, kp: maxKp, a: 34 + lv * 4 + Math.floor(rnd() * 16), c: 34 + lv * 4 + Math.floor(rnd() * 16), g: 30 + Math.floor(rnd() * 40), attacks, art: this.draw(this.full(model, params)) };
+  }
+  wildName(model, rnd) {
+    const P = { raupe: 'Raup', bohne: 'Bohn', kokon: 'Kok', tropfen: 'Tropf', kiesel: 'Kies', horn: 'Horn', kristall: 'Krist' };
+    const S = ['ix', 'olf', 'ilda', 'erich', 'ina', 'bert', 'uschka', 'o', 'ette', 'ulus'];
+    return P[model] + S[Math.floor(rnd() * S.length)];
+  }
+  eff(at, dt) {
+    if (at === 'neutral') return 1;
+    const T = Component.TYPES, d = (T.indexOf(dt) - T.indexOf(at) + 7) % 7;
+    return d === 1 || d === 2 ? 1.5 : d === 5 || d === 6 ? 0.67 : 1;
+  }
+  dmg(A, att, def) {
+    const eff = this.eff(A.typ, def.typ), stab = A.typ === att.typ ? 1.25 : 1, crit = Math.random() < (att.g || 40) / 450;
+    const d = A.kraft * (0.6 + att.a / 120) * (1.15 - def.c / 250) * eff * stab * (1 + 0.07 * (att.lv - 1)) * (0.85 + Math.random() * 0.15) * (crit ? 1.5 : 1);
+    return { d: Math.max(1, Math.round(d)), eff, crit };
+  }
+  save() {
+    const s = this.state;
+    try { localStorage.setItem(Component.KEY, JSON.stringify({ pos: s.pos, dir: s.dir, team: s.team, prog: s.prog, bag: s.bag, scrolls: s.scrolls, caught: s.caught, chests: s.chests, beaten: s.beaten, likes: s.likes })); } catch (e) {}
+  }
+
+  // ---------- Hilfen ----------
+  sleep = ms => new Promise(r => setTimeout(r, ms));
+  raf = () => new Promise(r => requestAnimationFrame(() => r()));
+  setB(patch) { return new Promise(r => this.setState(s => (s.battle ? { battle: { ...s.battle, ...patch } } : null), r)); }
+  go(el, frames, opt, remove) {
+    let a;
+    try { a = el.animate(frames, opt); } catch (e) { if (remove) el.remove(); return Promise.resolve(); }
+    const done = () => { if (remove) el.remove(); };
+    return a.finished.then(done, done);
+  }
+
+  // ---------- Pfad ----------
+  onKey = e => {
+    const tg = e.target;
+    if (tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA' || tg.isContentEditable)) return;
+    const s = this.state;
+    if (s.tab !== 'pfad') return;
+    if (s.dialog && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); this.dialogNext(); return; }
+    if (s.battle && s.battle.phase === 'catch' && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (!e.repeat) this.catchTap(); return; }
+    const k = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0], w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0], W: [0, -1], S: [0, 1], A: [-1, 0], D: [1, 0] }[e.key];
+    if (!k || s.battle) return;
+    e.preventDefault();
+    this.step(k[0], k[1]);
+  };
+  step(dx, dy) {
+    const s = this.state;
+    if (s.battle || s.dialog || s.spot || s.loading || this.moving || this.turnBusy) return;
+    const dir = dx > 0 ? 'right' : dx < 0 ? 'left' : dy > 0 ? 'down' : 'up';
+    const [x, y] = s.pos, nx = x + dx, ny = y + dy, Wd = this.world();
+    const tr = Wd.trainers.find(t => t.x === nx && t.y === ny);
+    if (tr) { this.setState({ dir }); if (s.beaten.includes(tr.id)) this.say(tr.name, tr.after); else this.challenge(tr); return; }
+    const c = this.cell(nx, ny);
+    if (!c) return;
+    if (c.t === 'chest') { this.setState({ dir }); this.openChest(nx, ny); return; }
+    if (c.t === 'spring') { this.setState({ dir }); this.spring(); return; }
+    if (!this.walk(nx, ny)) { if (dir !== s.dir) this.setState({ dir }); return; }
+    this.moving = true;
+    setTimeout(() => { this.moving = false; }, 150);
+    const prevBio = this.cell(x, y).b;
+    this.setState({ pos: [nx, ny], dir, frame: s.frame === 1 ? 2 : 1 }, () => {
+      this.hop(); this.save();
+      clearTimeout(this.idleT);
+      this.idleT = setTimeout(() => { if (!this.dead) this.setState({ frame: 0 }); }, 260);
+      if (c.b !== prevBio) this.pulseBio();
+      this.afterStep(nx, ny, c);
+    });
+  }
+  hop() { const el = this.playerRef.current; if (el) this.go(el, [{ transform: 'translateY(0)' }, { transform: 'translateY(-10%)' }, { transform: 'translateY(0)' }], { duration: 150 }); }
+  pulseBio() { const el = this.bioRef.current; if (el) this.go(el, [{ transform: 'scale(1)', color: 'var(--color-accent)' }, { transform: 'scale(1.18)', color: 'var(--color-accent)', offset: 0.3 }, { transform: 'scale(1)', color: 'var(--color-text)' }], { duration: 900 }); }
+  sees(t, x, y) {
+    if (t.all) return Math.abs(x - t.x) <= t.all && Math.abs(y - t.y) <= t.all;
+    const [dx, dy] = t.dir, px = -dy, py = dx;
+    for (let k = 0; k <= t.sight; k++) {
+      const cx = t.x + dx * k, cy = t.y + dy * k;
+      if (k > 0 && !this.walk(cx, cy)) break;
+      for (const j of [-1, 0, 1]) { if (k === 0 && j === 0) continue; if (cx + px * j === x && cy + py * j === y) return true; }
+    }
+    return false;
+  }
+  afterStep(x, y, c) {
+    const s = this.state;
+    for (const t of this.world().trainers) {
+      if (s.beaten.includes(t.id)) continue;
+      if (this.sees(t, x, y)) { this.challenge(t); return; }
+    }
+    if (c.t === 'enc' && Math.random() < 0.08) this.wild(c.b);
+  }
+  challenge(t) {
+    this.setState({ spot: t.id });
+    setTimeout(() => { if (!this.dead) this.setState({ spot: null, dialog: { who: t.name, text: t.intro, btn: 'Kämpfen', next: 'fight:' + t.id } }); }, 800);
+  }
+  say(who, text) { this.setState({ dialog: { who, text, btn: 'Weiter', next: null } }); }
+  mapClick = () => { if (this.state.dialog) this.dialogNext(); };
+  dialogNext = () => {
+    const d = this.state.dialog; if (!d) return;
+    if (Date.now() - (this._dlgT || 0) < 300) return;
+    this._dlgT = Date.now();
+    this.setState({ dialog: null });
+    if (d.next && d.next.startsWith('fight:')) { const t = this.world().trainers.find(x => x.id === d.next.slice(6)); if (t) this.startTrainer(t); }
+  };
+  openChest(x, y) {
+    const key = x + ',' + y, s = this.state, C = this.world().chestMap[key];
+    if (!C) return;
+    if (s.chests.includes(key)) { this.say('Truhe', 'Die Truhe ist leer.'); return; }
+    const bag = { ...s.bag }, parts = [];
+    for (const [id, n] of Object.entries(C.items || {})) { bag[id] = (bag[id] || 0) + n; parts.push(`${n}× ${Component.ITEMS[id].name}`); }
+    for (const id of C.scrolls || []) parts.push(`Attacken-Rolle „${Component.ATT[id].name}“ (${Component.TN[Component.ATT[id].typ]})`);
+    if (C.likes) parts.push(`${C.likes} Likes`);
+    const tip = C.scrolls ? ' Attacken bringst du deinen Karten im Beutel bei.' : '';
+    this.setState({ bag, scrolls: [...s.scrolls, ...(C.scrolls || [])], chests: [...s.chests, key], likes: s.likes + (C.likes || 0), dialog: { who: 'Truhe', text: 'Du findest: ' + parts.join(', ') + '.' + tip, btn: 'Weiter', next: null } }, () => this.save());
+  }
+  spring() {
+    const prog = { ...this.state.prog };
+    for (const u of Object.keys(prog)) prog[u] = { ...prog[u], kp: null };
+    this.setState({ prog, dialog: { who: 'Quelle', text: 'Du trinkst vom Quellwasser. Alle Karten sind wieder bei vollen Kräften.', btn: 'Weiter', next: null } }, () => this.save());
+  }
+
+  // ---------- Kampf ----------
+  aliveIdx() { return this.state.team.findIndex(u => { const m = this.meStats(u); return m && m.kp > 0; }); }
+  async wild(bio) {
+    const B = Component.BIO[bio] || Component.BIO.wiese, model = B.types[Math.floor(Math.random() * B.types.length)];
+    const lv = B.lv[0] + Math.floor(Math.random() * (B.lv[1] - B.lv[0] + 1));
+    await this.startBattle('wild', [this.makeFoe(model, lv, Math.random)], null, bio);
+  }
+  async startTrainer(t) {
+    const rnd = this.rng('trainer-' + t.id);
+    await this.startBattle(t.boss ? 'boss' : 'trainer', t.team.map(([m, lv]) => this.makeFoe(m, lv, rnd)), t, this.cell(t.x, t.y).b);
+  }
+  async startBattle(kind, foes, t, bio) {
+    const mi = this.aliveIdx(); if (mi < 0) return;
+    this.turnBusy = true;
+    if (this._vp) await this.go(this._vp, [{ opacity: 1 }, { opacity: 0.15 }, { opacity: 1 }, { opacity: 0.15 }, { opacity: 1 }], { duration: 560 });
+    await new Promise(r => this.setState({ battle: { kind, foes, fi: 0, mi, tid: t ? t.id : null, bio, phase: 'busy', msg: '', meIn: false, foeIn: false } }, r));
+    await this.raf(); await this.raf();
+    const st = this.stageRef.current;
+    if (st) { const top = st.getBoundingClientRect().top + window.scrollY - 12; if (Math.abs(window.scrollY - top) > 40) window.scrollTo({ top, behavior: 'smooth' }); }
+    const f = foes[0];
+    await this.enter('foe');
+    await this.setB({ msg: kind === 'wild' ? `Ein wildes ${f.name} (${Component.TN[f.typ]}, ${Component.TIERS[f.tier || 0][0]}) springt aus dem ${(Component.BIO[bio] || Component.BIO.wiese).enc}!` : `${t.name} schickt ${f.name} (${Component.TN[f.typ]}) in den Kampf!` });
+    await this.sleep(1300);
+    const me = this.meStats(this.state.team[mi]);
+    await this.setB({ msg: `Los, ${me.name}!` });
+    await this.enter('me');
+    await this.sleep(450);
+    this.turnBusy = false;
+    this.menu();
+  }
+  menu() {
+    const b = this.state.battle; if (!b) return;
+    const me = this.meStats(this.state.team[b.mi]);
+    this.setB({ phase: 'menu', msg: `Was soll ${me ? me.name : 'deine Karte'} tun?` });
+  }
+  async enter(side) {
+    await this.setB(side === 'me' ? { meIn: true } : { foeIn: true });
+    await this.raf();
+    const el = (side === 'me' ? this.meRef : this.foeRef).current; if (!el) return;
+    await this.go(el, [{ transform: `translateX(${side === 'me' ? -50 : 50}%) scale(.6)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 450, easing: 'cubic-bezier(.2,.8,.3,1)' });
+  }
+  async leave(side, faint) {
+    const el = (side === 'me' ? this.meRef : this.foeRef).current, flag = side === 'me' ? { meIn: false } : { foeIn: false };
+    if (!el) { await this.setB(flag); return; }
+    const to = faint ? { transform: 'translateY(30%) scale(.9)', opacity: 0 } : { transform: `translateX(${side === 'me' ? -50 : 50}%) scale(.6)`, opacity: 0 };
+    const a = el.animate([{ transform: 'none', opacity: 1 }, to], { duration: 480, fill: 'forwards', easing: 'ease-in' });
+    await a.finished.catch(() => {});
+    await this.setB(flag); await this.raf(); a.cancel();
+  }
+  act = async action => {
+    if (!this.state.battle || this.turnBusy) return;
+    this.turnBusy = true;
+    await this.setB({ phase: 'busy' });
+    try { await this.turn(action); } catch (e) { console.error(e); this.menu(); }
+    this.turnBusy = false;
+  };
+  async turn(action) {
+    const B = () => this.state.battle, foe = () => B().foes[B().fi], me = () => this.meStats(this.state.team[B().mi]);
+    if (action.type === 'run') {
+      if (B().kind !== 'wild') { await this.setB({ msg: 'Vor einem Trainer läuft man nicht weg!' }); await this.sleep(1100); return this.menu(); }
+      await this.setB({ msg: 'Du bist entkommen.' }); await this.sleep(800); return this.endBattle();
+    }
+    if (action.type === 'catch') {
+      if (B().kind !== 'wild') { await this.setB({ msg: 'Wesen von Trainern kann man nicht fangen.' }); await this.sleep(1100); return this.menu(); }
+      const ok = await this.runCatch();
+      if (ok) return this.caughtFoe();
+      await this.setB({ msg: `${foe().name} hat sich losgerissen!` });
+      await this.sleep(1000);
+      await this.attack('foe', this.foeChoice(foe(), me()));
+      if (me().kp <= 0) return this.meDown();
+      return this.menu();
+    }
+    if (action.type === 'switch') { await this.switchTo(action.idx, action.forced); if (action.forced) return this.menu(); }
+    if (action.type === 'item') { const ok = await this.useItemBattle(action.id); if (!ok) return this.menu(); }
+    const fAtk = this.foeChoice(foe(), me());
+    let order = ['foe'];
+    if (action.type === 'attack') {
+      const sm = me().g + me().lv * 2, sf = foe().g + foe().lv * 2;
+      order = sm > sf || (sm === sf && Math.random() < 0.5) ? ['me', 'foe'] : ['foe', 'me'];
+    }
+    for (const side of order) {
+      if (side === 'me') { await this.attack('me', action.id); if (foe().kp <= 0) return this.foeDown(); }
+      else { await this.attack('foe', fAtk); if (me().kp <= 0) return this.meDown(); }
+    }
+    this.menu();
+  }
+  foeChoice(f, me) {
+    const A = Component.ATT;
+    if (f.kp < f.maxKp * 0.4) { const h = f.attacks.find(id => A[id].heal); if (h && Math.random() < 0.6) return h; }
+    const opts = f.attacks.filter(id => !A[id].heal);
+    if (!opts.length) return f.attacks[0];
+    if (Math.random() < 0.3) return opts[Math.floor(Math.random() * opts.length)];
+    return opts.reduce((best, id) => { const v = A[id].kraft * this.eff(A[id].typ, me.typ) * (A[id].typ === f.typ ? 1.25 : 1); return v > best[1] ? [id, v] : best; }, [opts[0], -1])[0];
+  }
+  async attack(side, id) {
+    const A = Component.ATT[id]; if (!A) return;
+    const b = this.state.battle, foe = b.foes[b.fi], me = this.meStats(this.state.team[b.mi]);
+    const att = side === 'me' ? me : foe, def = side === 'me' ? foe : me;
+    const fromEl = (side === 'me' ? this.meRef : this.foeRef).current, toEl = (side === 'me' ? this.foeRef : this.meRef).current;
+    await this.setB({ msg: `${att.name} setzt ${A.name} ein!` });
+    await this.sleep(420);
+    await this.fx(A, fromEl, toEl);
+    if (A.heal) {
+      const amt = Math.min(att.maxKp - att.kp, Math.round(att.maxKp * A.heal));
+      await this.setKp(side, att.kp + amt);
+      this.float(fromEl, '+' + amt, '#2f7d3b');
+      await this.setB({ msg: `${att.name} hält ein Nickerchen und erholt sich.` });
+      await this.sleep(1000);
+      return;
+    }
+    const r = this.dmg(A, att, def);
+    await this.setKp(side === 'me' ? 'foe' : 'me', Math.max(0, def.kp - r.d));
+    this.float(toEl, '−' + r.d, '#ec3013');
+    await this.hit(toEl, r.eff > 1 || r.crit);
+    const notes = [];
+    if (r.crit) notes.push('Volltreffer!');
+    if (r.eff > 1) notes.push('Das ist sehr effektiv!');
+    if (r.eff < 1) notes.push('Das ist nicht sehr effektiv …');
+    if (notes.length) { await this.setB({ msg: notes.join(' ') }); await this.sleep(1000); } else await this.sleep(350);
+  }
+  async setKp(side, v) {
+    if (side === 'me') {
+      const uid = this.state.team[this.state.battle.mi];
+      await new Promise(r => this.setState(s => ({ prog: { ...s.prog, [uid]: { ...s.prog[uid], kp: v } } }), r));
+    } else {
+      await new Promise(r => this.setState(s => { const b = s.battle; if (!b) return null; const foes = b.foes.slice(); foes[b.fi] = { ...foes[b.fi], kp: v }; return { battle: { ...b, foes } }; }, r));
+    }
+  }
+  async gainEp(uid, ep) {
+    const m = this.meStats(uid); if (!m) return;
+    await this.setB({ msg: `${m.name} bekommt ${ep} EP.` });
+    await this.sleep(800);
+    let lv = m.lv, cur = m.ep + ep, up = 0;
+    while (cur >= this.need(lv)) { cur -= this.need(lv); lv++; up++; }
+    const kp = m.kp + up * 4;
+    await new Promise(r => this.setState(s => ({ prog: { ...s.prog, [uid]: { ...s.prog[uid], lv, ep: cur, kp } } }), r));
+    if (up) { await this.setB({ msg: `${m.name} erreicht Stufe ${lv}!` }); await this.sleep(1100); }
+  }
+  async foeDown() {
+    const b = this.state.battle, f = b.foes[b.fi], t = this.world().trainers.find(x => x.id === b.tid);
+    await this.setB({ msg: `${f.name} ist erschöpft!` });
+    await this.leave('foe', true);
+    await this.sleep(300);
+    await this.gainEp(this.state.team[b.mi], Math.round(f.lv * (b.kind === 'wild' ? 8 : 12)));
+    if (b.fi + 1 < b.foes.length) {
+      const nx = b.foes[b.fi + 1];
+      await this.setB({ fi: b.fi + 1, msg: `${t.name} schickt ${nx.name} (${Component.TN[nx.typ]})!` });
+      await this.enter('foe'); await this.sleep(700);
+      return this.menu();
+    }
+    if (!t) { await this.setB({ msg: 'Gewonnen!' }); await this.sleep(800); return this.endBattle(); }
+    const bag = { ...this.state.bag }, parts = [];
+    for (const [id, n] of Object.entries(t.reward || {})) { bag[id] = (bag[id] || 0) + n; parts.push(`${n}× ${Component.ITEMS[id].name}`); }
+    await new Promise(r => this.setState(s => ({ bag, likes: s.likes + t.likes, beaten: [...s.beaten, t.id] }), r));
+    await this.setB({ msg: `Du hast ${t.name} besiegt! +${t.likes} Likes${parts.length ? ' · ' + parts.join(', ') : ''}` });
+    await this.sleep(1800);
+    this.endBattle({ who: t.name, text: t.after });
+  }
+  async meDown() {
+    const b = this.state.battle, m = this.meStats(this.state.team[b.mi]);
+    await this.setB({ msg: `${m.name} ist erschöpft!` });
+    await this.leave('me', true);
+    await this.sleep(400);
+    if (this.aliveIdx() >= 0) { await this.setB({ phase: 'force', msg: 'Welche Karte soll weiterkämpfen?' }); return; }
+    await this.setB({ msg: 'Alle Karten im Team sind erschöpft …' }); await this.sleep(1400);
+    await this.setB({ msg: 'Du läufst zurück zum Start. Dein Team ruht sich aus.' }); await this.sleep(1500);
+    const prog = { ...this.state.prog };
+    for (const u of Object.keys(prog)) prog[u] = { ...prog[u], kp: null };
+    await new Promise(r => this.setState({ prog, pos: Component.NODES.S, dir: 'right' }, r));
+    this.endBattle();
+  }
+  async switchTo(idx, forced) {
+    const b = this.state.battle, old = this.meStats(this.state.team[b.mi]);
+    if (!forced && old && old.kp > 0) { await this.setB({ msg: `Zurück, ${old.name}!` }); await this.leave('me'); }
+    const nw = this.meStats(this.state.team[idx]);
+    await this.setB({ mi: idx, msg: `Los, ${nw.name}!` });
+    await this.enter('me');
+    await this.sleep(400);
+  }
+  async useItemBattle(id) {
+    const s = this.state, b = s.battle, I = Component.ITEMS[id];
+    if (!(s.bag[id] > 0)) return false;
+    let uid;
+    if (I.revive) {
+      uid = s.team.find(u => { const m = this.meStats(u); return m && m.kp <= 0; });
+      if (!uid) { await this.setB({ msg: 'Keine Karte ist erschöpft.' }); await this.sleep(900); return false; }
+    } else uid = s.team[b.mi];
+    const m = this.meStats(uid);
+    if (!I.revive && m.kp >= m.maxKp) { await this.setB({ msg: `${m.name} hat schon volle KP.` }); await this.sleep(900); return false; }
+    const kp = I.revive ? Math.round(m.maxKp * I.revive) : Math.min(m.maxKp, m.kp + I.heal);
+    await new Promise(r => this.setState(st => ({ bag: { ...st.bag, [id]: st.bag[id] - 1 }, prog: { ...st.prog, [uid]: { ...st.prog[uid], kp } } }), r));
+    if (uid === s.team[b.mi]) this.float(this.meRef.current, '+' + (kp - m.kp), '#2f7d3b');
+    await this.setB({ msg: `Du benutzt ${I.name}. ${m.name} hat jetzt ${kp} KP.` });
+    await this.sleep(1100);
+    return true;
+  }
+  // ---------- Fangen (Minispiel) ----------
+  arcPath(a1, a2) {
+    const p = a => `${(100 + 90 * Math.sin(a * Math.PI / 180)).toFixed(2)} ${(100 - 90 * Math.cos(a * Math.PI / 180)).toFixed(2)}`;
+    return `M${p(a1)}A90 90 0 ${a2 - a1 > 180 ? 1 : 0} 1 ${p(a2)}`;
+  }
+  mgView() { const m = this.mg; return m ? { tier: m.tier, need: m.need, hits: m.hits, lives: m.lives, maxLives: m.maxLives, slow: m.slow } : null; }
+  newZone() { const m = this.mg; m.a1 = (m.angle + 110 + Math.random() * 140) % 360; m.zc = Math.min(170, m.zone); }
+  runCatch() {
+    const b = this.state.battle, f = b.foes[b.fi], tier = Math.min(4, f.tier || 0), low = 1 - f.kp / f.maxKp;
+    const lives = [2, 2, 1, 1, 1][tier];
+    const m = this.mg = { tier, need: [2, 3, 3, 4, 5][tier], lives, maxLives: lives, hits: 0, slow: Math.round(65 * low), zone: [80, 62, 48, 36, 26][tier] * (1 + 1.0 * low), speed: [820, 960, 1100, 1250, 1400][tier] * (1 - 0.65 * low), dir: 1, angle: 0, drift: tier >= 3 ? (Math.random() < 0.5 ? -1 : 1) * (tier === 4 ? 55 : 35) : 0, busy: false, raf: 0 };
+    this.newZone();
+    return new Promise(async resolve => {
+      m.resolve = resolve;
+      await this.setB({ phase: 'catch', msg: `Fang ${f.name}! Stopp den Zeiger im roten Feld.` });
+      await new Promise(r => this.setState({ mgView: this.mgView() }, r));
+      await this.raf();
+      m.t = performance.now();
+      m.raf = requestAnimationFrame(this.mgLoop);
+    });
+  }
+  mgLoop = t => {
+    const m = this.mg; if (!m || !m.raf || this.dead) return;
+    const dt = Math.min(0.05, (t - m.t) / 1000); m.t = t;
+    m.angle = (m.angle + m.speed * m.dir * dt + 360) % 360;
+    if (m.drift) m.a1 = (m.a1 + m.drift * dt + 360) % 360;
+    const n = this.needleRef.current, a = this.arcRef.current;
+    if (n) n.style.transform = `rotate(${m.angle}deg)`;
+    if (a) a.setAttribute('d', this.arcPath(m.a1, m.a1 + m.zc));
+    m.raf = requestAnimationFrame(this.mgLoop);
+  };
+  flashArc(col) { const a = this.arcRef.current; if (!a) return; a.setAttribute('stroke', col); setTimeout(() => { if (this.arcRef.current) this.arcRef.current.setAttribute('stroke', '#ec3013'); }, 180); }
+  catchTap = () => {
+    const m = this.mg; if (!m || m.busy || !m.raf) return;
+    const dial = this.dialRef.current, foe = this.foeRef.current;
+    const tol = Math.max(5, Math.min(12, m.speed * 0.015)), rel = (m.angle - m.a1 + tol + 720) % 360;
+    if (rel <= m.zc + 2 * tol) {
+      m.hits++;
+      this.flashArc('#2f7d3b');
+      if (foe) this.go(foe, [{ transform: 'scale(1,1)' }, { transform: 'scale(1.12,.84)' }, { transform: 'scale(1,1)' }], { duration: 240 });
+      if (dial) this.go(dial, [{ transform: 'scale(1)' }, { transform: 'scale(.92)' }, { transform: 'scale(1)' }], { duration: 200 });
+      if (m.hits >= m.need) { m.busy = true; this.setState({ mgView: this.mgView() }); setTimeout(() => this.mgEnd(true), 260); return; }
+      m.zone *= 0.85; m.speed *= 1.18;
+      if (m.tier >= 2) m.dir *= -1;
+      this.newZone();
+    } else {
+      m.lives--;
+      this.flashArc('#201e1d');
+      if (dial) this.go(dial, [{ transform: 'translateX(0)' }, { transform: 'translateX(-4%)' }, { transform: 'translateX(4%)' }, { transform: 'translateX(-2%)' }, { transform: 'translateX(0)' }], { duration: 300 });
+      if (foe) this.go(foe, [{ transform: 'rotate(0deg)' }, { transform: 'rotate(-8deg)' }, { transform: 'rotate(8deg)' }, { transform: 'rotate(0deg)' }], { duration: 320 });
+      if (m.lives <= 0) { m.busy = true; this.setState({ mgView: this.mgView() }); setTimeout(() => this.mgEnd(false), 380); return; }
+    }
+    this.setState({ mgView: this.mgView() });
+  };
+  async mgEnd(ok) {
+    const m = this.mg; if (!m) return;
+    cancelAnimationFrame(m.raf); m.raf = 0;
+    const dial = this.dialRef.current, foe = this.foeRef.current, L = this.fxRef.current;
+    let p = null, S = 8;
+    if (L && foe) { const lr = L.getBoundingClientRect(), r = foe.getBoundingClientRect(); S = lr.width / 100; p = { x: r.left - lr.left + r.width / 2, y: r.top - lr.top + r.height * 0.4 }; }
+    if (ok) {
+      if (dial) await this.go(dial, [{ transform: 'scale(1) rotate(0deg)', opacity: 1 }, { transform: 'scale(.2) rotate(200deg)', opacity: 0 }], { duration: 600, easing: 'ease-in', fill: 'forwards' });
+      if (p) this.word(L, 'GEFANGEN!', p, S);
+      if (foe) {
+        this.fx({ fx: 'sparkle', color: '#f2cf5b' }, foe, foe);
+        const a = foe.animate([{ transform: 'none', opacity: 1 }, { transform: 'scale(1.15)', opacity: 1, offset: 0.3 }, { transform: 'scale(0) rotate(-120deg)', opacity: 0 }], { duration: 700, fill: 'forwards', easing: 'ease-in' });
+        await a.finished.catch(() => {});
+        await this.setB({ foeIn: false }); await this.raf(); a.cancel();
+      }
+    } else {
+      if (dial) await this.go(dial, [{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(1.35)', opacity: 0 }], { duration: 320, easing: 'ease-out', fill: 'forwards' });
+      if (p) this.word(L, 'LOSGERISSEN!', p, S);
+      if (foe) await this.go(foe, [{ transform: 'translateY(0)' }, { transform: 'translateY(-12%)' }, { transform: 'translateY(0)' }, { transform: 'translateY(-6%)' }, { transform: 'translateY(0)' }], { duration: 500 });
+    }
+    this.mg = null;
+    await new Promise(r => this.setState({ mgView: null }, r));
+    m.resolve(ok);
+  }
+  async caughtFoe() {
+    const b = this.state.battle, f = b.foes[b.fi];
+    const uid = 'f' + Date.now().toString(36) + Math.floor(Math.random() * 1e4);
+    const raw = { uid, name: f.name, model: f.typ, params: f.params, likes: 0, caught: (Component.BIO[b.bio] || Component.BIO.wiese).name };
+    const card = this.cardFrom(raw), inTeam = this.state.team.length < 3;
+    await new Promise(r => this.setState(st => ({ cards: [...st.cards, card], arts: { ...st.arts, [uid]: f.art }, prog: { ...st.prog, [uid]: { lv: f.lv, ep: 0, kp: f.kp, attacks: f.attacks.slice() } }, caught: [...st.caught, raw], team: inTeam ? [...st.team, uid] : st.team }), r));
+    this.save();
+    await this.setB({ msg: `Gefangen! ${f.name} (${Component.TIERS[f.tier || 0][0]}) ist jetzt in deiner Sammlung${inTeam ? ' und kämpft in deinem Team mit.' : '. Im Team-Reiter kannst du es aufstellen.'}` });
+    await this.sleep(2200);
+    this.endBattle();
+  }
+  endBattle(dialog) { this.setState({ battle: null, dialog: dialog ? { ...dialog, btn: 'Weiter', next: null } : null }, () => this.save()); }
+
+  // ---------- Animationen ----------
+  part(L, o) {
+    const d = document.createElement('div'), s = d.style, z = o.size;
+    Object.assign(s, { position: 'absolute', left: '0', top: '0', width: z + 'px', height: z + 'px', marginLeft: -z / 2 + 'px', marginTop: -z / 2 + 'px', background: o.color, boxSizing: 'border-box', border: o.border === false ? 'none' : '2px solid #201e1d' });
+    if (o.shape === 'circle') s.borderRadius = '50%';
+    else if (o.shape === 'drop') s.borderRadius = '50% 50% 50% 0';
+    else if (o.shape === 'bean') { s.borderRadius = '50%'; s.height = z * 0.62 + 'px'; s.marginTop = -z * 0.31 + 'px'; }
+    else if (o.shape === 'rock') { s.clipPath = 'polygon(12% 30%,42% 0,86% 14%,100% 58%,72% 100%,16% 90%,0 62%)'; s.border = 'none'; s.background = 'linear-gradient(135deg,#c4bfb6 0 45%,#8a857c 45% 100%)'; }
+    else if (o.shape === 'shard') { s.clipPath = 'polygon(50% 0,100% 50%,50% 100%,0 50%)'; s.border = 'none'; s.background = `linear-gradient(135deg,#ffffff 0 48%,${o.color} 48% 100%)`; }
+    else if (o.shape === 'ring') { s.background = 'transparent'; s.borderRadius = '50%'; s.border = `${Math.max(3, z * 0.09)}px solid ${o.color}`; s.boxShadow = '0 0 0 2px #201e1d, inset 0 0 0 2px #201e1d'; }
+    else if (o.shape === 'wave') { s.borderRadius = '50% 50% 8% 8% / 70% 70% 8% 8%'; s.height = z * 0.6 + 'px'; s.marginTop = -z * 0.3 + 'px'; s.border = '3px solid #201e1d'; }
+    s.opacity = '0';
+    L.appendChild(d);
+    return d;
+  }
+  text(L, t, size, color) {
+    const d = document.createElement('div'); d.textContent = t;
+    Object.assign(d.style, { position: 'absolute', left: '0', top: '0', fontFamily: 'var(--font-heading)', fontWeight: '800', fontSize: size + 'px', lineHeight: '1', whiteSpace: 'nowrap', color: color || '#201e1d', opacity: '0' });
+    L.appendChild(d);
+    return d;
+  }
+  word(L, t, p, S) {
+    const d = this.text(L, t, Math.max(16, 3.4 * S));
+    Object.assign(d.style, { background: '#fbfaf8', border: '2px solid #201e1d', padding: '.12em .4em' });
+    const at = (dy, sc) => `translate(${p.x}px,${p.y - dy}px) translate(-50%,-50%) scale(${sc}) rotate(-4deg)`;
+    return this.go(d, [{ transform: at(0, 0), opacity: 1 }, { transform: at(0, 1.15), opacity: 1, offset: 0.15 }, { transform: at(0, 1), opacity: 1, offset: 0.25 }, { transform: at(1.5 * S, 1), opacity: 1, offset: 0.8 }, { transform: at(2 * S, 1), opacity: 0 }], { duration: 1100 }, true);
+  }
+  float(el, text, color) {
+    const L = this.fxRef.current; if (!L || !el) return;
+    const lr = L.getBoundingClientRect(), r = el.getBoundingClientRect();
+    const d = this.text(L, text, Math.max(18, lr.width * 0.035), color);
+    Object.assign(d.style, { left: (r.left - lr.left + r.width / 2) + 'px', top: (r.top - lr.top + r.height * 0.15) + 'px', textShadow: '2px 2px 0 #fbfaf8,-2px -2px 0 #fbfaf8,2px -2px 0 #fbfaf8,-2px 2px 0 #fbfaf8' });
+    this.go(d, [{ transform: 'translate(-50%,0)', opacity: 0 }, { transform: 'translate(-50%,-30%)', opacity: 1, offset: 0.2 }, { transform: 'translate(-50%,-140%)', opacity: 0 }], { duration: 1100, easing: 'ease-out' }, true);
+  }
+  flyArc(L, a, b, o) {
+    const d = this.part(L, o), cx = (a.x + b.x) / 2, cy = Math.min(a.y, b.y) - 2 * o.arc, rot = o.spin ? 360 : 0, fr = [];
+    for (let i = 0; i <= 8; i++) {
+      const t = i / 8, x = (1 - t) * (1 - t) * a.x + 2 * (1 - t) * t * cx + t * t * b.x, y = (1 - t) * (1 - t) * a.y + 2 * (1 - t) * t * cy + t * t * b.y;
+      fr.push({ transform: `translate(${x}px,${y}px) scale(${0.5 + 0.5 * Math.min(1, t * 2)}) rotate(${rot * t}deg)`, opacity: 1 });
+    }
+    return this.go(d, fr, { duration: o.dur || 440, delay: o.delay || 0, easing: 'linear' }, true);
+  }
+  flyLine(L, a, b, o) {
+    const d = this.part(L, o);
+    return this.go(d, [{ transform: `translate(${a.x}px,${a.y}px) rotate(0deg)`, opacity: 1 }, { transform: `translate(${b.x}px,${b.y}px) rotate(200deg)`, opacity: 1, offset: 0.85 }, { transform: `translate(${b.x}px,${b.y + o.size * 0.3}px) rotate(220deg)`, opacity: 0 }], { duration: o.dur, delay: o.delay, easing: 'ease-in' }, true);
+  }
+  splash(L, b, color, S, n) {
+    const ps = [];
+    for (let i = 0; i < n; i++) {
+      const ang = -Math.PI * (0.1 + 0.8 * (i / Math.max(1, n - 1))), dist = (5 + Math.random() * 5) * S;
+      const d = this.part(L, { size: 1.6 * S, color, shape: 'circle' });
+      ps.push(this.go(d, [{ transform: `translate(${b.x}px,${b.y}px) scale(1)`, opacity: 1 }, { transform: `translate(${b.x + Math.cos(ang) * dist}px,${b.y + Math.sin(ang) * dist}px) scale(.4)`, opacity: 0 }], { duration: 380, easing: 'ease-out' }, true));
+    }
+    return Promise.all(ps);
+  }
+  burst(L, p, color, S) {
+    for (let i = 0; i < 8; i++) {
+      const deg = i * 45, d = document.createElement('div');
+      Object.assign(d.style, { position: 'absolute', left: '0', top: '0', width: 5 * S + 'px', height: 1.4 * S + 'px', marginTop: -0.7 * S + 'px', background: color, border: '2px solid #201e1d', boxSizing: 'border-box', transformOrigin: '0 50%' });
+      L.appendChild(d);
+      this.go(d, [{ transform: `translate(${p.x}px,${p.y}px) rotate(${deg}deg) translateX(${S}px) scaleX(.3)`, opacity: 1 }, { transform: `translate(${p.x}px,${p.y}px) rotate(${deg}deg) translateX(${6 * S}px) scaleX(1)`, opacity: 0 }], { duration: 400, easing: 'ease-out' }, true);
+    }
+  }
+  fxWrap(L, b, A, S) {
+    const ps = [];
+    for (let i = 0; i < 3; i++) {
+      const d = document.createElement('div'), w = b.w * 1.05, h = 2.6 * S, rot = i % 2 ? 6 : -6;
+      Object.assign(d.style, { position: 'absolute', left: '0', top: '0', width: w + 'px', height: h + 'px', background: A.color, border: '2px solid #201e1d', boxSizing: 'border-box', transformOrigin: '0 50%', opacity: '0' });
+      L.appendChild(d);
+      const x = b.x - w / 2, y = b.y - b.h * 0.25 + i * b.h * 0.2, at = sx => `translate(${x}px,${y}px) rotate(${rot}deg) scaleX(${sx})`;
+      ps.push(this.go(d, [{ transform: at(0), opacity: 1 }, { transform: at(1), opacity: 1, offset: 0.35 }, { transform: at(1), opacity: 1, offset: 0.8 }, { transform: at(1), opacity: 0 }], { duration: 950, delay: i * 130 }, true));
+    }
+    return Promise.all(ps);
+  }
+  async fxLunge(L, el, a, b, A, S) {
+    const dx = (b.x - a.x) * 0.55, dy = (b.y - a.y) * 0.55, rot = A.spin ? 720 : 0, dur = A.spin ? 820 : 520;
+    const p = this.go(el, [{ transform: 'translate(0px,0px) rotate(0deg)' }, { transform: `translate(${dx}px,${dy}px) rotate(${rot}deg)`, offset: 0.45 }, { transform: `translate(${dx * 0.92}px,${dy * 0.92}px) rotate(${rot}deg)`, offset: 0.6 }, { transform: `translate(0px,0px) rotate(${rot}deg)` }], { duration: dur, easing: 'ease-in-out' });
+    await this.sleep(dur * 0.45);
+    const hp = { x: a.x + (b.x - a.x) * 0.8, y: a.y + (b.y - a.y) * 0.8 };
+    if (A.burst) this.burst(L, hp, A.color || '#ffffff', S);
+    if (A.word) this.word(L, A.word, { x: hp.x, y: hp.y - 8 * S }, S);
+    await p;
+  }
+  async fx(A, fromEl, toEl) {
+    const L = this.fxRef.current; if (!L || !fromEl || !toEl) return;
+    const lr = L.getBoundingClientRect(), S = lr.width / 100, R = Math.random;
+    const ctr = el => { const r = el.getBoundingClientRect(); return { x: r.left - lr.left + r.width / 2, y: r.top - lr.top + r.height * 0.6, w: r.width, h: r.height }; };
+    const a = ctr(fromEl), b = ctr(toEl);
+    const word = (t, p) => { if (t) this.word(L, t, p, S); };
+    switch (A.fx) {
+      case 'lunge': return this.fxLunge(L, fromEl, a, b, A, S);
+      case 'proj': {
+        const ps = [];
+        for (let i = 0; i < (A.n || 1); i++) ps.push(this.flyArc(L, a, { x: b.x + (R() - 0.5) * b.w * 0.35, y: b.y + (R() - 0.5) * b.h * 0.3 }, { size: (A.size || 3.4) * S, color: A.color, shape: A.shape, arc: (A.arc ?? 16) * S, dur: A.dur || 440, delay: i * (A.gap || 80), spin: true }));
+        word(A.word, { x: a.x, y: a.y - a.h * 0.45 });
+        await Promise.all(ps);
+        return this.splash(L, b, A.color, S, 6);
+      }
+      case 'stream': {
+        const ps = [], from = { x: a.x + a.w * 0.08, y: a.y - a.h * 0.05 };
+        for (let i = 0; i < 30; i++) ps.push(this.flyArc(L, from, { x: b.x + (R() - 0.5) * b.w * 0.15, y: b.y + (R() - 0.5) * b.h * 0.1 }, { size: 1.5 * S, color: A.color, shape: 'circle', border: false, arc: 13 * S, dur: 380, delay: i * 22 }));
+        if (A.word) setTimeout(() => word(A.word, { x: b.x, y: b.y - b.h * 0.5 }), 300);
+        await Promise.all(ps);
+        await this.splash(L, b, A.color, S, 8);
+        if (A.then === 'wrap') await this.fxWrap(L, b, A, S);
+        return;
+      }
+      case 'rings': {
+        word(A.word, { x: a.x + a.w * 0.1, y: a.y - a.h * 0.55 });
+        const ps = [], mx = a.x + (b.x - a.x) * 0.85, my = a.y + (b.y - a.y) * 0.85;
+        for (let i = 0; i < 4; i++) {
+          const d = this.part(L, { size: 9 * S, color: A.color, shape: 'ring' });
+          ps.push(this.go(d, [{ transform: `translate(${a.x}px,${a.y}px) scale(.2)`, opacity: 1 }, { transform: `translate(${mx}px,${my}px) scale(2.4)`, opacity: 0 }], { duration: 650, delay: i * 130, easing: 'ease-out' }, true));
+        }
+        return Promise.all(ps);
+      }
+      case 'cloud': {
+        const ps = [];
+        for (let i = 0; i < 9; i++) {
+          const sz = (8 + R() * 6) * S, x = b.x + (R() - 0.5) * b.w * 0.9, y = b.y + (R() - 0.5) * b.h * 0.6;
+          const d = this.part(L, { size: sz, color: A.color, shape: 'circle' });
+          ps.push(this.go(d, [{ transform: `translate(${x}px,${y}px) scale(0)`, opacity: 0 }, { transform: `translate(${x}px,${y - 2 * S}px) scale(1.1)`, opacity: 0.92, offset: 0.35 }, { transform: `translate(${x}px,${y - 6 * S}px) scale(1.35)`, opacity: 0 }], { duration: 1200, delay: i * 70, easing: 'ease-out' }, true));
+        }
+        word(A.word, { x: b.x, y: b.y - b.h * 0.55 });
+        return Promise.all(ps);
+      }
+      case 'wrap': return this.fxWrap(L, b, A, S);
+      case 'heal': {
+        const ps = [this.go(fromEl, [{ filter: 'none' }, { filter: 'brightness(1.35) saturate(1.3)' }, { filter: 'none' }], { duration: 1100 })];
+        for (let i = 0; i < 3; i++) {
+          const d = this.text(L, 'Z', 3.6 * S - i * 0.4 * S);
+          ps.push(this.go(d, [{ transform: `translate(${a.x + a.w * 0.1}px,${a.y - a.h * 0.3}px) scale(.4)`, opacity: 0 }, { transform: `translate(${a.x + a.w * 0.2 + i * 2 * S}px,${a.y - a.h * 0.5}px) scale(1)`, opacity: 1, offset: 0.4 }, { transform: `translate(${a.x + a.w * 0.3 + i * 3 * S}px,${a.y - a.h * 0.75}px) scale(1.1)`, opacity: 0 }], { duration: 1000, delay: i * 240 }, true));
+        }
+        for (let i = 0; i < 5; i++) {
+          const x = a.x + (R() - 0.5) * a.w * 0.7, y = a.y + (R() - 0.2) * a.h * 0.4, d = this.text(L, '+', 3 * S, '#2f7d3b');
+          ps.push(this.go(d, [{ transform: `translate(${x}px,${y}px)`, opacity: 0 }, { transform: `translate(${x}px,${y - 4 * S}px)`, opacity: 1, offset: 0.5 }, { transform: `translate(${x}px,${y - 8 * S}px)`, opacity: 0 }], { duration: 900, delay: 300 + i * 120 }, true));
+        }
+        return Promise.all(ps);
+      }
+      case 'wave': {
+        word(A.word, { x: b.x, y: b.y - b.h * 0.6 });
+        const d = this.part(L, { size: 26 * S, color: A.color, shape: 'wave' });
+        await this.go(d, [{ transform: `translate(${a.x}px,${a.y + 4 * S}px) scale(.3)`, opacity: 1 }, { transform: `translate(${(a.x + b.x) / 2}px,${(a.y + b.y) / 2}px) scale(.9)`, opacity: 1, offset: 0.5 }, { transform: `translate(${b.x}px,${b.y}px) scale(1.3)`, opacity: 0.9, offset: 0.85 }, { transform: `translate(${b.x}px,${b.y + 2 * S}px) scale(1.5)`, opacity: 0 }], { duration: 760, easing: 'ease-in' }, true);
+        return this.splash(L, b, A.color, S, 12);
+      }
+      case 'rain': {
+        const ps = [];
+        for (let i = 0; i < (A.n || 8); i++) {
+          const rx = (R() - 0.5) * b.w * 1.1;
+          ps.push(this.flyLine(L, { x: b.x + rx, y: b.y - 34 * S }, { x: b.x + rx * 0.7, y: b.y + (R() - 0.3) * b.h * 0.3 }, { size: (A.shape === 'shard' ? 2.6 : 4) * S * (0.7 + R() * 0.6), color: A.color, shape: A.shape, dur: 360, delay: i * 55 }));
+        }
+        if (A.word) setTimeout(() => word(A.word, { x: b.x, y: b.y - b.h * 0.55 }), 400);
+        return Promise.all(ps);
+      }
+      case 'sparkle': {
+        const ps = [];
+        for (let i = 0; i < 12; i++) {
+          const x = b.x + (R() - 0.5) * b.w * 0.9, y = b.y + (R() - 0.6) * b.h * 0.8, d = this.part(L, { size: (2 + R() * 2.4) * S, color: i % 3 ? A.color : '#ffffff', shape: 'shard' });
+          ps.push(this.go(d, [{ transform: `translate(${x}px,${y}px) scale(0) rotate(0deg)`, opacity: 1 }, { transform: `translate(${x}px,${y}px) scale(1.2) rotate(45deg)`, opacity: 1, offset: 0.5 }, { transform: `translate(${x}px,${y}px) scale(0) rotate(90deg)`, opacity: 1 }], { duration: 520, delay: i * 45 }, true));
+        }
+        return Promise.all(ps);
+      }
+      case 'flash': {
+        const o = document.createElement('div');
+        Object.assign(o.style, { position: 'absolute', inset: '0', background: '#ffffff', opacity: '0' });
+        L.appendChild(o);
+        word(A.word, { x: a.x, y: a.y - a.h * 0.55 });
+        await this.go(o, [{ opacity: 0 }, { opacity: 0.95, offset: 0.25 }, { opacity: 0 }], { duration: 520 }, true);
+        return this.fx({ ...A, fx: 'sparkle' }, fromEl, toEl);
+      }
+      case 'tickle': {
+        word(A.word, { x: b.x, y: b.y - b.h * 0.55 });
+        const ps = [this.go(toEl, [{ transform: 'rotate(0deg)' }, { transform: 'rotate(-7deg)' }, { transform: 'rotate(7deg)' }, { transform: 'rotate(-6deg)' }, { transform: 'rotate(6deg)' }, { transform: 'rotate(0deg)' }], { duration: 700 })];
+        for (let i = 0; i < 8; i++) {
+          const x = b.x + (R() - 0.5) * b.w, y = b.y + (R() - 0.5) * b.h * 0.6, d = this.part(L, { size: 2.6 * S, color: A.color, shape: 'drop' });
+          ps.push(this.go(d, [{ transform: `translate(${x}px,${y}px) rotate(0deg) scale(.4)`, opacity: 0 }, { transform: `translate(${x + 2 * S}px,${y - 3 * S}px) rotate(160deg) scale(1)`, opacity: 1, offset: 0.5 }, { transform: `translate(${x - 2 * S}px,${y - 6 * S}px) rotate(320deg) scale(.6)`, opacity: 0 }], { duration: 700, delay: i * 60 }, true));
+        }
+        return Promise.all(ps);
+      }
+    }
+  }
+  async hit(el, strong) {
+    if (!el) return;
+    const p = this.go(el, [{ transform: 'translateX(0)', opacity: 1 }, { transform: 'translateX(-5%)', opacity: 0.2 }, { transform: 'translateX(5%)', opacity: 1 }, { transform: 'translateX(-3%)', opacity: 0.2 }, { transform: 'translateX(2%)', opacity: 1 }, { transform: 'translateX(0)', opacity: 1 }], { duration: 480 });
+    if (strong && this.arenaRef.current) this.go(this.arenaRef.current, [{ transform: 'translate(0,0)' }, { transform: 'translate(-7px,4px)' }, { transform: 'translate(6px,-3px)' }, { transform: 'translate(-4px,2px)' }, { transform: 'translate(0,0)' }], { duration: 320 });
+    await p;
+  }
+  preview = async id => {
+    if (this.pvBusy || !this.pvFoe) return;
+    this.pvBusy = true;
+    try {
+      const A = Component.ATT[id];
+      await this.fx(A, this.meRef.current, this.foeRef.current);
+      if (!A.heal) await this.hit(this.foeRef.current, A.kraft >= 30);
+    } finally { this.pvBusy = false; }
+  };
+  arenaBg(bio, boss) {
+    const k = boss ? 'arena' : (Component.ARENA[bio] ? bio : 'wiese');
+    this._abg = this._abg || {};
+    if (this._abg[k]) return this._abg[k];
+    const P = Component.ARENA[k], I = '#201e1d', f = v => v.toFixed(0), els = [];
+    for (let i = 0; i < 15; i++) {
+      const t = Math.PI + (i + 0.5) / 15 * Math.PI, x = 800 + Math.cos(t) * 740, y = 440 + Math.sin(t) * 60;
+      const sc = 0.7 + 0.3 * Math.abs(Math.cos(t)), w = (44 + (i * 37) % 26) * sc, h = (80 + (i * 53) % 56) * sc, ln = ((i * 29) % 11 - 5) * 1.5;
+      let d;
+      if (P.shape === 'pine') d = `<rect x='${f(x - w * 0.12)}' y='${f(y - h * 0.3)}' width='${f(w * 0.24)}' height='${f(h * 0.3)}' fill='#5a3a20' stroke='${I}' stroke-width='3'/><path d='M${f(x)} ${f(y - h * 1.5)}L${f(x + w * 0.8)} ${f(y - h * 0.25)}H${f(x - w * 0.8)}Z' fill='${P.stone}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/><path d='M${f(x)} ${f(y - h * 1.15)}L${f(x + w * 0.95)} ${f(y - h * 0.1)}H${f(x - w * 0.95)}Z' fill='${P.stone}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/>`;
+      else if (P.shape === 'crystal') d = `<path d='M${f(x - w / 2)} ${f(y)}L${f(x - w / 2 + ln)} ${f(y - h * 0.75)}L${f(x + ln)} ${f(y - h * 1.2)}L${f(x + w / 2 + ln)} ${f(y - h * 0.75)}L${f(x + w / 2)} ${f(y)}Z' fill='${P.stone}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/><path d='M${f(x + ln * 0.4)} ${f(y - 6)}L${f(x + ln)} ${f(y - h * 1.15)}' stroke='${P.line}' stroke-width='3'/>`;
+      else d = `<path d='M${f(x - w / 2)} ${f(y)}L${f(x - w / 2 + 5 + ln)} ${f(y - h + 10)}L${f(x + ln)} ${f(y - h)}L${f(x + w / 2 + ln)} ${f(y - h + 14)}L${f(x + w / 2)} ${f(y)}Z' fill='${P.stone}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/><path d='M${f(x - w / 5)} ${f(y - 8)}L${f(x - w / 5 + ln * 0.7)} ${f(y - h + 22)}' stroke='${P.line}' stroke-width='3' stroke-linecap='round'/>`;
+      els.push({ y, d });
+    }
+    els.sort((a, b) => a.y - b.y);
+    const plat = (cx, cy, rx, ry) => `<ellipse cx='${cx}' cy='${cy + 14}' rx='${rx}' ry='${ry}' fill='#8f897f' stroke='${I}' stroke-width='4'/><ellipse cx='${cx}' cy='${cy}' rx='${rx}' ry='${ry}' fill='#c9c3b8' stroke='${I}' stroke-width='4'/>`;
+    const tufts = [[90, 540], [300, 468], [1300, 468], [1510, 540]].map(([x, y]) => P.shape === 'crystal'
+      ? `<path d='M${x - 12} ${y}l5-22 6 10 5-18 6 30Z' fill='${P.tuft}' stroke='${I}' stroke-width='2.5' stroke-linejoin='round'/>`
+      : `<path d='M${x - 14} ${y}l6-18 4 14 6-22 5 22 4-14 6 18Z' fill='${P.tuft}' stroke='${I}' stroke-width='2.5' stroke-linejoin='round'/>`).join('');
+    const flags = P.flags ? [300, 1300].map(x => `<path d='M${x} 472V170' stroke='${I}' stroke-width='5'/><path d='M${x} 172L${x + 90} 200L${x} 228Z' fill='#ec3013' stroke='${I}' stroke-width='3' stroke-linejoin='round'/>`).join('') : '';
+    const hills = P.peaks
+      ? `<path d='M0 360L120 210L220 290L360 120L480 280L620 170L760 300L900 140L1040 290L1180 170L1320 300L1460 150L1600 260V900H0Z' fill='${P.hill}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/><path d='M360 120L330 165L390 160ZM900 140L870 185L935 180ZM1460 150L1430 195L1495 190Z' fill='#fbfaf8' stroke='${I}' stroke-width='3' stroke-linejoin='round'/>`
+      : `<path d='M0 330L160 250L330 300L520 200L720 290L900 220L1100 300L1300 210L1480 280L1600 240V900H0Z' fill='${P.hill}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/>`;
+    const sky = P.dark
+      ? `<rect width='1600' height='900' fill='${P.sky}'/>` + [[180, 90], [520, 160], [860, 70], [1180, 150], [1450, 80]].map(([x, y]) => `<path d='M${x} ${y - 14}L${x + 6} ${y}L${x} ${y + 14}L${x - 6} ${y}Z' fill='#bfe9ff'/>`).join('')
+      : `<rect width='1600' height='900' fill='${P.sky}'/><circle cx='1340' cy='130' r='56' fill='#f2e2ae' stroke='${I}' stroke-width='3'/>`;
+    const water = P.water ? `<path d='M0 396Q800 356 1600 396V470H0Z' fill='#94bfdc' stroke='${I}' stroke-width='3'/><path d='M180 420q20-12 40 0t40 0M760 404q20-12 40 0t40 0M1280 420q20-12 40 0t40 0' fill='none' stroke='#e6f1f7' stroke-width='4' stroke-linecap='round'/>` : '';
+    const s = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900' preserveAspectRatio='xMidYMid slice'>`
+      + sky + hills + water + els.map(x => x.d).join('')
+      + `<path d='M0 450Q800 330 1600 450V900H0Z' fill='${P.ground}' stroke='${I}' stroke-width='3'/>`
+      + flags
+      + `<ellipse cx='800' cy='660' rx='790' ry='235' fill='${P.floor}' stroke='${I}' stroke-width='4'/><ellipse cx='800' cy='660' rx='610' ry='170' fill='none' stroke='${P.ring}' stroke-width='4' stroke-dasharray='22 16'/>`
+      + plat(1150, 470, 225, 50) + plat(420, 770, 300, 70) + tufts
+      + `<path d='M-20 900L-10 790L60 740L150 770L190 860L180 900Z' fill='#bdb8ae' stroke='${I}' stroke-width='4' stroke-linejoin='round'/><path d='M1420 900L1440 800L1530 760L1620 790V900Z' fill='#bdb8ae' stroke='${I}' stroke-width='4' stroke-linejoin='round'/>`
+      + `</svg>`;
+    return (this._abg[k] = `url("data:image/svg+xml,${encodeURIComponent(s)}")`);
+  }
+
+  // ---------- Team & Beutel ----------
+  toggleTeam(uid) {
+    let team = this.state.team.slice();
+    if (team.includes(uid)) { if (team.length <= 1) return; team = team.filter(u => u !== uid); }
+    else { if (team.length >= 3) return; team.push(uid); }
+    this.setState({ team, pvMe: 0 }, () => this.save());
+  }
+  lead(uid) { this.setState({ team: [uid, ...this.state.team.filter(u => u !== uid)] }, () => this.save()); }
+  toast(t) { this.setState({ toast: t }); clearTimeout(this.toastT); this.toastT = setTimeout(() => { if (!this.dead) this.setState({ toast: '' }); }, 4500); }
+  pickCard(uid) {
+    const s = this.state, pk = s.pick, m = this.meStats(uid);
+    if (!pk || !m) return;
+    if (pk.kind === 'item') {
+      const I = Component.ITEMS[pk.id];
+      if (I.revive && m.kp > 0) return this.toast(`${m.name} ist nicht erschöpft.`);
+      if (!I.revive && m.kp <= 0) return this.toast(`${m.name} ist erschöpft. Dafür braucht es Riechsalz.`);
+      if (!I.revive && m.kp >= m.maxKp) return this.toast(`${m.name} hat schon volle KP.`);
+      const kp = I.revive ? Math.round(m.maxKp * I.revive) : Math.min(m.maxKp, m.kp + I.heal);
+      this.setState({ bag: { ...s.bag, [pk.id]: s.bag[pk.id] - 1 }, prog: { ...s.prog, [uid]: { ...s.prog[uid], kp } }, pick: null }, () => this.save());
+      this.toast(`${I.name} benutzt. ${m.name} hat jetzt ${kp} KP.`);
+    } else {
+      const id = s.scrolls[pk.idx];
+      if (m.attacks.includes(id)) return this.toast(`${m.name} kann ${Component.ATT[id].name} schon.`);
+      this.setState({ pick: { ...pk, uid } });
+    }
+  }
+  forget(slot) {
+    const s = this.state, pk = s.pick;
+    if (!pk || pk.kind !== 'scroll' || !pk.uid) return;
+    const id = s.scrolls[pk.idx], m = this.meStats(pk.uid), old = m.attacks[slot];
+    const attacks = m.attacks.slice(); attacks[slot] = id;
+    const scrolls = s.scrolls.slice(); scrolls.splice(pk.idx, 1);
+    this.setState({ prog: { ...s.prog, [pk.uid]: { ...s.prog[pk.uid], attacks } }, scrolls, pick: null }, () => this.save());
+    this.toast(`${m.name} hat ${Component.ATT[old].name} verlernt und kann jetzt ${Component.ATT[id].name}.`);
+  }
+  resetAll = () => {
+    const prog = {};
+    for (const c of this.state.cards) prog[c.uid] = { lv: 3, ep: 0, kp: null, attacks: [Component.LINE[c.model][0], 'rempler'] };
+    this.setState({ pos: Component.NODES.S, dir: 'right', prog, bag: { heiltrank: 2, riechsalz: 1 }, scrolls: [], chests: [], beaten: [], likes: 0, dialog: null, askReset: false, pick: null }, () => this.save());
+  };
+
+  renderVals() {
+    const s = this.state, C = Component, A = C.ATT, b = s.battle, tab = s.tab, Wd = this.world();
+    const pct = (v, m) => (m ? Math.max(0, Math.min(100, v / m * 100)) : 0).toFixed(1) + '%';
+    const kpCol = (v, m) => v / m > 0.5 ? 'var(--color-text)' : v / m > 0.2 ? 'var(--color-accent-400)' : 'var(--color-accent)';
+    const atkSub = id => `${C.TN[A[id].typ]} · ${A[id].heal ? 'heilt' : 'Kraft ' + A[id].kraft}`;
+    const tabCls = t => tab === t ? 'btn btn-primary' : 'btn btn-ghost';
+    const goTab = t => () => { if (!this.state.battle) this.setState({ tab: t, pick: null }); };
+    const ready = !s.loading && s.cards.length > 0;
+    const px = x => (x / C.W * 100).toFixed(4) + '%', py = y => (y / C.H * 100).toFixed(4) + '%';
+    const here = this.cell(s.pos[0], s.pos[1]), curBio = here ? here.b : 'wiese';
+
+    const tile = (s.vpH || 600) / C.VH, vw = (s.vpW || 1000) / tile;
+    let cx = s.pos[0] + 0.5 - vw / 2, cy = s.pos[1] + 0.5 - C.VH / 2;
+    cx = vw >= C.W ? (C.W - vw) / 2 : Math.max(0, Math.min(C.W - vw, cx));
+    cy = Math.max(0, Math.min(C.H - C.VH, cy));
+    const boss = Wd.trainers.find(t => t.boss);
+
+    let me = null, foe = null;
+    if (b) { me = this.meStats(s.team[b.mi]); foe = b.foes[b.fi]; }
+    else if (tab === 'atk' && ready) { me = this.meStats(s.team[s.pvMe] || s.team[0]); foe = this.pvFoe || null; }
+    const showArena = !!(me && foe && (b || tab === 'atk'));
+    const ar = showArena ? {
+      arenaBg: this.arenaBg(b ? b.bio : curBio, b && b.kind === 'boss'),
+      meName: me.name, meLv: 'St. ' + me.lv, meTyp: C.TN[me.typ], meKpPct: pct(me.kp, me.maxKp), meKpCol: kpCol(me.kp, me.maxKp), meKpTxt: `${me.kp} / ${me.maxKp} KP`, meEpPct: pct(me.ep, this.need(me.lv)), meArt: me.art, meOp: b ? (b.meIn ? 1 : 0) : 1,
+      foeTier: C.TIERS[foe.tier || 0][0], foeTierBg: C.TIERS[foe.tier || 0][1],
+      foeName: foe.name, foeLv: 'St. ' + foe.lv, foeTyp: C.TN[foe.typ], foeKpPct: pct(foe.kp, foe.maxKp), foeKpCol: kpCol(foe.kp, foe.maxKp), foeArt: foe.art, foeOp: b ? (b.foeIn ? 1 : 0) : 1,
+    } : { arenaBg: 'none', meName: '', meLv: '', meTyp: '', meKpPct: '0%', meKpCol: 'transparent', meKpTxt: '', meEpPct: '0%', meArt: 'none', meOp: 0, foeTier: '', foeTierBg: 'transparent', foeName: '', foeLv: '', foeTyp: '', foeKpPct: '0%', foeKpCol: 'transparent', foeArt: 'none', foeOp: 0 };
+
+    const ph = b ? b.phase : '';
+    const atkBtns = b && me && foe ? me.attacks.map(id => { const e = this.eff(A[id].typ, foe.typ); return { name: A[id].name, sub: atkSub(id) + (A[id].heal ? '' : e > 1 ? ' · sehr effektiv' : e < 1 ? ' · schwach' : ''), go: () => this.act({ type: 'attack', id }) }; }) : [];
+    const bagBtns = b ? Object.keys(C.ITEMS).map(id => ({ name: `${C.ITEMS[id].name} ×${s.bag[id] || 0}`, sub: C.ITEMS[id].text, off: !(s.bag[id] > 0), go: () => this.act({ type: 'item', id }) })) : [];
+    const teamBtns = b ? s.team.map((u, i) => { const m = this.meStats(u); return m && { name: m.name, sub: `${C.TN[m.typ]} · St. ${m.lv} · ${m.kp > 0 ? m.kp + ' / ' + m.maxKp + ' KP' : 'erschöpft'}${i === b.mi && m.kp > 0 ? ' · kämpft gerade' : ''}`, off: m.kp <= 0 || i === b.mi, go: () => this.act({ type: 'switch', idx: i, forced: ph === 'force' }) }; }).filter(Boolean) : [];
+
+    const sideTeam = ready ? s.team.map(u => { const m = this.meStats(u), c = s.cards.find(x => x.uid === u); return m && c && { name: m.name, info: `${C.TN[m.typ]} · St. ${m.lv}`, kpTxt: m.kp > 0 ? `${m.kp}/${m.maxKp}` : 'erschöpft', kpPct: pct(m.kp, m.maxKp), kpCol: kpCol(m.kp, m.maxKp), art: m.art, bg: c.color }; }).filter(Boolean) : [];
+    const legend = [
+      { bg: this.symUrl('tall', '#a9cc8c'), label: 'Gras, Farn, Schilf, Geröll: wilde Wesen' },
+      { bg: this.symUrl('chest', '#c8dba8'), label: 'Truhe: Items und Attacken-Rollen' },
+      { bg: this.symUrl('spring', '#c8dba8'), label: 'Quelle: heilt alle Karten' },
+      { bg: `${this.trainerSprite(Wd.trainers[0])} center / contain no-repeat, #c8dba8`, label: 'Trainer: sieht dich in Blickrichtung' },
+    ];
+    const B = C.BIO[curBio];
+    const bioInfo = curBio === 'arena' ? 'Hier wartet die Hüterin. Dahinter liegen zwei Truhen.' : `Wilde Wesen: ${B.types.map(t => C.TN[t]).join(', ')} · Stufe ${B.lv[0]}–${B.lv[1]}`;
+    const areas = ['wiese', 'wald', 'see', 'fels', 'kristall', 'arena'].map(k => {
+      const tr = Wd.trainers.filter(t => this.cell(t.x, t.y).b === k), ch = Wd.chestList.filter(c => this.cell(c.x, c.y).b === k);
+      return { name: C.BIO[k].name + (k === curBio ? ' · hier' : ''), tr: `${tr.filter(t => s.beaten.includes(t.id)).length}/${tr.length}`, ch: `${ch.filter(c => s.chests.includes(c.key)).length}/${ch.length}`, weight: k === curBio ? 800 : 400, color: k === curBio ? 'var(--color-accent-700)' : 'var(--color-text)' };
+    });
+
+    const cardsOrdered = [...s.team, ...s.cards.map(c => c.uid).filter(u => !s.team.includes(u))];
+    const teamCards = ready ? s.cards.map(cd => {
+      const m = this.meStats(cd.uid); if (!m) return null;
+      const ti = s.team.indexOf(cd.uid);
+      return {
+        name: cd.name, typ: C.TN[cd.model], lv: 'Stufe ' + m.lv, art: m.art, bg: cd.color, patImg: cd.patImg, patSize: cd.patSize,
+        kpPct: pct(m.kp, m.maxKp), kpCol: kpCol(m.kp, m.maxKp), kpTxt: m.kp > 0 ? `${m.kp} / ${m.maxKp} KP` : 'erschöpft', epPct: pct(m.ep, this.need(m.lv)), epTxt: `${m.ep} / ${this.need(m.lv)} EP`,
+        a: m.a, c: m.c, g: m.g, attacks: m.attacks.map(id => ({ name: A[id].name, sub: atkSub(id) })),
+        slot: ti >= 0 ? 'Team ' + (ti + 1) : cd.caught ? 'Gefangen' : '', notLead: ti > 0, border: ti >= 0 ? 'var(--color-accent)' : 'var(--color-text)',
+        toggleLabel: ti >= 0 ? 'Aus dem Team' : s.team.length >= 3 ? 'Team ist voll' : 'Ins Team', toggleOff: (ti < 0 && s.team.length >= 3) || (ti >= 0 && s.team.length <= 1),
+        toggle: () => this.toggleTeam(cd.uid), lead: () => this.lead(cd.uid),
+      };
+    }).filter(Boolean) : [];
+
+    const itemRows = Object.keys(C.ITEMS).map(id => ({ name: C.ITEMS[id].name, n: '×' + (s.bag[id] || 0), text: C.ITEMS[id].text, off: !(s.bag[id] > 0), use: () => this.setState({ pick: { kind: 'item', id } }) }));
+    const scrollRows = s.scrolls.map((id, i) => ({ name: A[id].name, typ: C.TN[A[id].typ], kraft: A[id].heal ? 'heilt' : 'Kraft ' + A[id].kraft, text: A[id].text, teach: () => this.setState({ pick: { kind: 'scroll', idx: i } }) }));
+    const pk = s.pick;
+    let pickTitle = '', pickList = [], forgetList = [];
+    if (pk && ready) {
+      if (pk.kind === 'item') pickTitle = `${C.ITEMS[pk.id].name}: für welche Karte?`;
+      else if (!pk.uid) pickTitle = `„${A[s.scrolls[pk.idx]].name}“ (${C.TN[A[s.scrolls[pk.idx]].typ]}): welche Karte soll sie lernen?`;
+      else { const m = this.meStats(pk.uid); pickTitle = `Welche Attacke soll ${m.name} dafür verlernen?`; forgetList = m.attacks.map((id, slot) => ({ label: `${A[id].name} verlernen`, sub: atkSub(id), go: () => this.forget(slot) })); }
+      if (!pk.uid) pickList = cardsOrdered.map(u => { const m = this.meStats(u); return m && { name: m.name + (s.team.includes(u) ? ' · Team' : ''), sub: `${C.TN[m.typ]} · St. ${m.lv} · ${m.kp > 0 ? m.kp + ' / ' + m.maxKp + ' KP' : 'erschöpft'} · ${m.attacks.map(id => A[id].name).join(', ')}`, go: () => this.pickCard(u) }; }).filter(Boolean);
+    }
+
+    const chestAtt = new Set(C.CHESTS.flatMap(c => c.scrolls || []));
+    const known = id => s.team.map(u => this.meStats(u)).filter(m => m && m.attacks.includes(id)).map(m => m.name);
+    const row = id => { const k = ready ? known(id) : [], src = id === 'rempler' ? 'Kann jede Karte' : C.LINE[A[id].typ][0] === id ? 'Standard-Attacke der Sorte' : chestAtt.has(id) ? 'Liegt in einer Truhe' : 'Setzen bisher nur Gegner ein'; return { name: A[id].name + (A[id].word ? ' · „' + A[id].word + '“' : ''), kraft: A[id].heal ? 'heilt' : 'Kraft ' + A[id].kraft, text: A[id].text, src: src + (k.length ? ' · kann: ' + k.join(', ') : ''), go: () => this.preview(id) }; };
+    const dex = [{ typ: 'Neutral', rows: [row('rempler')] }, ...C.TYPES.map(t => ({ typ: C.TN[t], rows: C.LINE[t].map(row) }))];
+    const pvBtns = ready ? s.team.map((u, i) => { const m = this.meStats(u); return m && { name: m.name, cls: i === (s.pvMe < s.team.length ? s.pvMe : 0) ? 'btn btn-primary' : 'btn btn-ghost', go: () => this.setState({ pvMe: i }) }; }).filter(Boolean) : [];
+
+    const hdir = s.dir === 'left' || s.dir === 'right' ? 'side' : s.dir;
+    const d = s.dialog;
+    return {
+      likes: s.likes, note: s.note, loading: s.loading,
+      tPfad: tabCls('pfad'), tTeam: tabCls('team'), tBag: tabCls('bag'), tAtk: tabCls('atk'), tabsOff: !!b,
+      goPfad: goTab('pfad'), goTeam: goTab('team'), goBag: goTab('bag'), goAtk: goTab('atk'),
+      isPfad: tab === 'pfad', isAtk: tab === 'atk', isTeam: tab === 'team' && ready, isBag: tab === 'bag' && ready,
+      showMap: ready && tab === 'pfad' && !b, showArena, inBattle: !!b, arenaMax: b ? 'calc((100vh - 230px) * 16 / 9)' : 'none',
+      vpRef: this.vpRef, stageRef: this.stageRef, arenaRef: this.arenaRef, meRef: this.meRef, foeRef: this.foeRef, fxRef: this.fxRef, playerRef: this.playerRef, bioRef: this.bioRef,
+      mapImg: Wd.mapImg, layerW: C.W * tile + 'px', layerH: C.H * tile + 'px', layerT: `translate(${(-cx * tile).toFixed(1)}px, ${(-cy * tile).toFixed(1)}px)`,
+      chests: Wd.chestList.map(c => ({ l: px(c.x), t: py(c.y), img: this.symUrl(s.chests.includes(c.key) ? 'chestOpen' : 'chest', '') })),
+      mapTrainers: Wd.trainers.map(t => ({ l: px(t.x), t: py(t.y), sprite: this.trainerSprite(t), flip: t.dir[0] < 0 ? 'scaleX(-1)' : 'none', bubble: s.spot === t.id, op: s.beaten.includes(t.id) ? 0.55 : 1 })),
+      plL: px(s.pos[0]), plT: py(s.pos[1]), plImg: this.human({ dir: hdir, frame: s.frame, coat: '#2f5f8f', cap: '#ec3013', pack: true }), plFlip: s.dir === 'left' ? 'scaleX(-1)' : 'none',
+      bioName: B.name, bioInfo,
+      mmVL: px(Math.max(0, cx)), mmVT: py(cy), mmVW: px(Math.min(C.W, vw)), mmVH: py(C.VH), mmPL: px(s.pos[0] + 0.5), mmPT: py(s.pos[1] + 0.5), mmBL: px(boss.x + 0.5), mmBT: py(boss.y + 0.5),
+      ...ar,
+      mgOn: !!s.mgView && !!b, catchTap: this.catchTap, dialRef: this.dialRef, needleRef: this.needleRef, arcRef: this.arcRef,
+      mgRings: s.mgView ? Array.from({ length: s.mgView.hits }, (_, i) => ({ r: 70 - i * 9 })) : [],
+      mgDots: s.mgView ? Array.from({ length: s.mgView.need }, (_, i) => ({ bg: i < s.mgView.hits ? '#f2cf5b' : '#fbfaf8' })) : [],
+      mgLives: s.mgView ? Array.from({ length: s.mgView.maxLives }, (_, i) => ({ bg: i < s.mgView.lives ? 'var(--color-accent)' : '#fbfaf8' })) : [],
+      mgSlow: s.mgView ? (s.mgView.slow >= 5 ? `Geschwächt: Zeiger ${s.mgView.slow} % langsamer, Feld größer` : 'Volle KP: Zeiger auf vollem Tempo. Erst schwächen macht es leichter.') : '',
+      bCatchPh: ph === 'catch', catchOff: !!b && b.kind !== 'wild', bCatch: () => this.act({ type: 'catch' }),
+      bMsg: b ? b.msg : '', bMenu: ph === 'menu', bAtk: ph === 'atk', bBag: ph === 'bag', bTeam: ph === 'team' || ph === 'force', bBusy: ph === 'busy', bCanBack: ph === 'team',
+      atkBtns, bagBtns, teamBtns,
+      bFight: () => this.setB({ phase: 'atk' }), bBagOpen: () => this.setB({ phase: 'bag' }), bTeamOpen: () => this.setB({ phase: 'team' }), bBack: () => this.setB({ phase: 'menu' }), bRun: () => this.act({ type: 'run' }),
+      mapClick: this.mapClick, mapCursor: d ? 'pointer' : 'default',
+      noDialog: !d, popOpen: !!s.pop, popTeam: s.pop === 'team', popSteuer: s.pop === 'steuer', popGebiete: s.pop === 'gebiete', popLegende: s.pop === 'legende',
+      popBtns: [['team', 'Team'], ['steuer', 'Steuerung'], ['gebiete', 'Gebiete'], ['legende', 'Legende']].map(([k, label]) => ({ label, cls: s.pop === k ? 'btn btn-primary' : 'btn btn-secondary', bg: s.pop === k ? 'var(--color-accent)' : '#fbfaf8', go: () => this.setState({ pop: s.pop === k ? null : k }) })),
+      stageW: b ? 'min(100cqw, (100cqh - 168px) * 16 / 9)' : 'min(100cqw, 100cqh * 16 / 9)',
+      hasDialog: !!d && tab === 'pfad', dlgWho: d ? d.who : '', dlgText: d ? d.text : '', dlgBtn: d ? d.btn : '', dialogNext: this.dialogNext,
+      sideTeam, legend, areas,
+      mvUp: () => this.step(0, -1), mvDown: () => this.step(0, 1), mvLeft: () => this.step(-1, 0), mvRight: () => this.step(1, 0),
+      noAskReset: !s.askReset, isAskReset: s.askReset, askReset: () => this.setState({ askReset: true }), cancelReset: () => this.setState({ askReset: false }), resetAll: this.resetAll,
+      pvBtns, dex,
+      teamCards,
+      hasToast: !!s.toast, toast: s.toast,
+      hasPick: !!pk && ready, pickTitle, pickList, forgetList, cancelPick: () => this.setState({ pick: null }),
+      itemRows, scrollRows, noScrolls: s.scrolls.length === 0,
+    };
+  }
+}
+</script>
+</body>
+</html>
