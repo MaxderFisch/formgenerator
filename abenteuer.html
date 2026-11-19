@@ -30,7 +30,7 @@
         <button class="btn btn-secondary btn-icon" onClick="{{ goPfad }}" disabled="{{ tabsOff }}" aria-label="Zur Karte" title="Zur Karte" style="width:40px;height:36px;padding:0;justify-content:center;font-size:18px">←</button>
       </sc-if>
       <sc-if value="{{ mpChipOn }}" hint-placeholder-val="{{ false }}">
-        <span title="{{ mpChipTitle }}" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;white-space:nowrap"><span style="width:9px;height:9px;box-sizing:border-box;border:2px solid var(--color-text);background:{{ mpChipDot }}"></span>{{ mpChipTxt }}</span>
+        <span title="{{ mpChipTitle }}" style="display:flex;align-items:center;gap:6px;min-width:0;font-size:13px;font-weight:800;white-space:nowrap"><span style="flex:none;width:9px;height:9px;box-sizing:border-box;border:2px solid var(--color-text);background:{{ mpChipDot }}"></span><span style="flex:none">{{ mpChipTxt }}</span><sc-if value="{{ mpChipHasNames }}" hint-placeholder-val="{{ false }}"><span style="min-width:0;max-width:260px;overflow:hidden;text-overflow:ellipsis;font-weight:600;color:var(--color-neutral-700)">{{ mpChipNames }}</span></sc-if></span>
       </sc-if>
       <span title="Abenteuer-Likes" style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:15px;white-space:nowrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="var(--color-accent)" stroke="var(--color-accent)" stroke-width="2" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>{{ likes }}</span>
       <button class="{{ menuCls }}" onClick="{{ toggleMenu }}" disabled="{{ tabsOff }}" aria-label="Menü" style="width:40px;height:36px;padding:0;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
@@ -60,7 +60,7 @@
     </sc-if>
 
     <sc-if value="{{ showMap }}" hint-placeholder-val="{{ false }}">
-      <div ref="{{ vpRef }}" onClick="{{ mapClick }}" style="cursor:{{ mapCursor }};position:absolute;inset:0;overflow:hidden;background:#5a6070">
+      <div ref="{{ vpRef }}" onClick="{{ mapClick }}" onPointerDown="{{ tDown }}" onPointerMove="{{ tMove }}" onPointerUp="{{ tUp }}" onPointerCancel="{{ tUp }}" style="cursor:{{ mapCursor }};position:absolute;inset:0;overflow:hidden;background:#5a6070;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none">
         <div style="position:absolute;left:0;top:0;width:{{ layerW }};height:{{ layerH }};transform:{{ layerT }};transition:transform .14s linear;background-image:{{ mapImg }};background-size:100% 100%;background-repeat:no-repeat">
           <sc-for list="{{ chests }}" as="c" hint-placeholder-count="0">
             <div style="position:absolute;left:{{ c.l }};top:{{ c.t }};width:1.5625%;height:1.8519%;background-image:{{ c.img }};background-size:100% 100%"></div>
@@ -83,7 +83,7 @@
             </div>
           </sc-for>
           <sc-for list="{{ mpOthers }}" as="o" hint-placeholder-count="0">
-            <div onClick="{{ o.open }}" style="position:absolute;left:{{ o.l }};top:{{ o.t }};width:1.5625%;height:1.8519%;z-index:2;cursor:pointer;transition:{{ o.tr }}">
+            <div data-nowalk="1" onClick="{{ o.open }}" style="position:absolute;left:{{ o.l }};top:{{ o.t }};width:1.5625%;height:1.8519%;z-index:2;cursor:pointer;transition:{{ o.tr }}">
               <div style="position:absolute;left:4%;right:4%;bottom:-6%;height:26%;background:rgba(32,30,29,.25);border-radius:50%"></div>
               <div style="position:absolute;left:-12%;right:-12%;bottom:2%;height:140%;background-image:{{ o.sprite }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;transform:{{ o.flip }}"></div>
               <div style="position:absolute;left:50%;bottom:150%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none">
@@ -144,7 +144,7 @@
     </sc-if>
 
     <sc-if value="{{ showIn }}" hint-placeholder-val="{{ false }}">
-      <div ref="{{ vpRef }}" onClick="{{ mapClick }}" style="position:absolute;inset:0;overflow:hidden;background:#2a2827;cursor:{{ mapCursor }}">
+      <div ref="{{ vpRef }}" onClick="{{ mapClick }}" onPointerDown="{{ tDown }}" onPointerMove="{{ tMove }}" onPointerUp="{{ tUp }}" onPointerCancel="{{ tUp }}" style="position:absolute;inset:0;overflow:hidden;background:#2a2827;cursor:{{ mapCursor }};touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none">
         <div style="position:absolute;left:{{ inL }};top:{{ inT }};width:{{ inW }};height:{{ inH }};background-image:{{ inImg }};background-size:100% 100%;box-shadow:0 24px 60px rgba(0,0,0,.45)">
           <sc-for list="{{ inArts }}" as="a" hint-placeholder-count="0">
             <div style="position:absolute;left:{{ a.l }};top:{{ a.t }};width:{{ a.w }};height:{{ a.h }};background-color:{{ a.bg }};background-image:{{ a.art }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;z-index:1"></div>
@@ -166,7 +166,7 @@
     </sc-if>
 
     <sc-if value="{{ hasBanner }}" hint-placeholder-val="{{ false }}">
-      <div style="position:absolute;left:0;right:0;top:14px;z-index:5;display:flex;justify-content:center;pointer-events:none;padding:0 12px">
+      <div style="position:absolute;left:0;right:0;top:{{ bnTop }};z-index:5;display:flex;justify-content:center;pointer-events:none;padding:0 12px">
         <div ref="{{ bannerRef }}" style="max-width:min(100%,440px);background:#fbfaf8;border:2px solid var(--color-text);border-top:5px solid var(--color-accent);box-shadow:var(--shadow-md);padding:8px 18px 10px;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
           <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ bnKicker }}</span>
           <span style="font-family:var(--font-heading);font-weight:800;font-size:24px;line-height:1.05">{{ bnTitle }}</span>
@@ -199,6 +199,45 @@
           <button class="btn btn-secondary" onClick="{{ shopHeal }}" style="justify-content:flex-start">Team heilen</button>
           <sc-if value="{{ shopHasMsg }}" hint-placeholder-val="{{ false }}">
             <span style="font-size:14px;font-weight:700;color:var(--color-accent-700)">{{ shopMsg }}</span>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ storeOn }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ storeClose }}" style="position:absolute;inset:0;z-index:6;overflow:auto;background:rgba(32,30,29,.6);display:flex;padding:16px;box-sizing:border-box">
+        <div onClick="{{ revealStop }}" style="margin:auto;width:min(760px,100%);background:#fbfaf8;border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ storeKicker }}</span>
+              <span style="font-family:var(--font-heading);font-weight:800;font-size:26px;line-height:1">Accessoires</span>
+            </div>
+            <button class="btn btn-ghost btn-icon" onClick="{{ storeClose }}" aria-label="Schließen" style="width:36px;height:36px;padding:0;justify-content:center;font-size:22px">×</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;border-top:2px solid var(--color-text);border-bottom:2px solid var(--color-text);padding:10px 0">
+            <div style="flex:none;width:52px;height:68px;background:{{ storeYou }} center / contain no-repeat"></div>
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <span style="font-family:var(--font-heading);font-weight:800;font-size:44px;line-height:.9">{{ storeLikes }}</span>
+              <span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">Likes</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:10px">
+            <sc-for list="{{ storeRows }}" as="r" hint-placeholder-count="10">
+              <div style="display:flex;gap:12px;align-items:stretch;border:2px solid var(--color-text);padding:8px;min-width:0">
+                <div style="flex:none;width:56px;background:#efe9df;display:flex;align-items:center;justify-content:center"><div style="width:44px;height:57px;background:{{ r.img }} center / contain no-repeat"></div></div>
+                <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1">
+                  <span style="font-weight:800;font-size:15px;line-height:1.15">{{ r.name }}</span>
+                  <span style="font-size:12.5px;line-height:1.35;color:var(--color-neutral-700)">{{ r.text }}</span>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:4px">
+                    <span style="font-weight:800;font-size:14px">{{ r.price }}</span>
+                    <button class="{{ r.cls }}" onClick="{{ r.go }}" disabled="{{ r.off }}" style="justify-content:flex-start;padding:5px 12px;font-size:13px;font-weight:700">{{ r.label }}</button>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ storeHasMsg }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:14px;font-weight:700;color:var(--color-accent-700)">{{ storeMsg }}</span>
           </sc-if>
         </div>
       </div>
@@ -1105,6 +1144,11 @@ class Component extends DCLogic {
     moor: { name: 'Nebelmoor', c: [26, 46], types: ['tropfen', 'kokon', 'bohne'], lv: [6, 8], enc: 'Sumpfgras' },
     vulkan: { name: 'Glutberg', c: [51, 22], types: ['horn', 'kiesel', 'kristall'], lv: [7, 8], enc: 'Glutgeröll' },
     tempel: { name: 'Sonnentempel', c: [56, 48], types: [], lv: [8, 8], enc: '' },
+    wueste: { name: 'Sandwüste', c: [14, 34], types: ['kiesel', 'bohne', 'horn'], lv: [8, 9], enc: 'Treibsand' },
+    pilz: { name: 'Pilzwald', c: [16, 10], types: ['kokon', 'raupe', 'tropfen'], lv: [8, 10], enc: 'Sporenfeld' },
+    ruine: { name: 'Alte Ruinen', c: [36, 25], types: ['kristall', 'kiesel', 'horn'], lv: [9, 11], enc: 'Trümmerfeld' },
+    schnee: { name: 'Frostfeld', c: [52, 9], types: ['tropfen', 'kristall', 'kokon'], lv: [9, 10], enc: 'Schneewehe' },
+    mond: { name: 'Mondhalle', c: [55, 36], types: [], lv: [12, 12], enc: '' },
   };
   static NODES = { S: [5, 22], Sc: [7, 28], A: [15, 22], B: [13, 9], Bc: [4, 4], C: [26, 6], D: [39, 9], E: [50, 6], Ec: [58, 3], F: [27, 22], G: [22, 34], Gc: [11, 40], H: [38, 37], AW: [53, 38], I: [40, 22], Ic: [45, 30], J: [50, 20], K: [55, 27], Kc: [61, 17], AN: [58, 34] };
   static EDGES = [['S', 'A'], ['S', 'Sc'], ['A', 'B'], ['B', 'Bc'], ['B', 'C'], ['C', 'D'], ['D', 'E'], ['E', 'Ec'], ['A', 'F'], ['F', 'I'], ['D', 'I'], ['F', 'G'], ['G', 'Gc'], ['G', 'H'], ['H', 'AW'], ['I', 'J'], ['I', 'Ic'], ['J', 'K'], ['K', 'Kc'], ['K', 'AN']];
@@ -1163,6 +1207,45 @@ class Component extends DCLogic {
       { id: 'sol', name: 'Tempelwächter Sol', pos: [57, 47], all: 3, boss: true, coat: '#c9a96a', cap: '#ec3013', team: [['kristall', 8], ['horn', 8], ['kiesel', 9]], likes: 25, reward: {}, intro: 'Seit hundert Jahren hat mich keiner besiegt. Versuch es.', after: 'Du bist würdig. Die Schätze des Tempels gehören dir.' },
     ],
   };
+  static MOND = {
+    nodes: { S: [14, 36], P: [14, 41], Sc: [4, 37], A: [24, 31], B: [14, 21], Bc: [5, 15], C: [16, 9], Cc: [4, 4], D: [30, 9], E: [44, 12], Ec: [59, 4], F: [36, 24], G: [46, 18], Gc: [60, 22], H: [33, 38], Hc: [26, 41], AW: [45, 35], AN: [52, 27] },
+    edges: [['S', 'P'], ['S', 'Sc'], ['S', 'A'], ['S', 'B'], ['B', 'Bc'], ['B', 'C'], ['C', 'Cc'], ['C', 'D'], ['D', 'E'], ['E', 'Ec'], ['A', 'F'], ['F', 'D'], ['F', 'G'], ['E', 'G'], ['G', 'Gc'], ['G', 'AN'], ['A', 'H'], ['H', 'AW'], ['P', 'Hc']],
+    springs: [[18, 33], [21, 12], [40, 17], [38, 31]],
+    chests: [
+      { at: 'Sc', items: { supertrank: 1 }, scrolls: ['stein'] },
+      { at: 'Bc', items: { heiltrank: 2 }, scrolls: ['wickel'] },
+      { at: 'Cc', items: { riechsalz: 2 }, likes: 6 },
+      { at: 'Ec', items: { supertrank: 2 }, scrolls: ['glitzer'] },
+      { at: 'Gc', items: { supertrank: 1 }, likes: 8 },
+      { at: 'Hc', items: { heiltrank: 2 }, scrolls: ['kopfnuss'] },
+      { pos: [61, 32], items: { supertrank: 2 }, scrolls: ['spucke'] },
+      { pos: [61, 39], items: { riechsalz: 2 }, likes: 15 },
+    ],
+    trainers: [
+      { id: 'sandra', name: 'Sandsammlerin Sandra', edge: ['S', 'A'], at: 0.55, coat: '#d9b36a', cap: '#8a5532', team: [['kiesel', 8], ['bohne', 8]], likes: 6, reward: { heiltrank: 2 }, intro: 'Jedes Sandkorn hier gehört mir. Auch das unter deinen Schuhen!', after: 'Im Norden wachsen Pilze, so groß wie Häuser. Nimm dich in Acht.' },
+      { id: 'karim', name: 'Kaktusgärtner Karim', edge: ['S', 'B'], at: 0.5, coat: '#5f8f50', cap: '#e4572e', team: [['horn', 8], ['kiesel', 9]], likes: 6, reward: { supertrank: 1 }, intro: 'Fass die Kakteen nicht an. Und mich auch nicht!', after: 'Hinter mir beginnt der Pilzwald. Dort riecht es nach Regen.' },
+      { id: 'pilla', name: 'Pilzhirtin Pilla', edge: ['B', 'C'], at: 0.5, coat: '#8a5a9a', cap: '#c2453a', team: [['kokon', 9], ['raupe', 9]], likes: 7, reward: { heiltrank: 2 }, intro: 'Du trampelst auf meiner Herde herum. Das sind alles meine Pilze!', after: 'Ganz hinten im Wald steht eine Truhe. Die Sporen davor sind harmlos. Meistens.' },
+      { id: 'bert', name: 'Sporenbert', edge: ['C', 'D'], at: 0.5, coat: '#6a4a6a', cap: '#d8c9a8', team: [['raupe', 9], ['tropfen', 10]], likes: 7, reward: { supertrank: 1 }, intro: 'Hatschi! Entschuldige. Das war aber schon der erste Angriff.', after: 'Im Osten wird es kalt. Zieh dich warm an.' },
+      { id: 'frida', name: 'Eisfischerin Frida', edge: ['D', 'E'], at: 0.5, coat: '#4f7fa8', cap: '#fbfaf8', team: [['tropfen', 10], ['kristall', 9]], likes: 8, reward: { supertrank: 1 }, intro: 'Pssst. Du verscheuchst mir die Fische. Dafür gibt es eine Abkühlung.', after: 'Weiter im Osten liegt eine Truhe im Schnee. Vorsicht, glatt.' },
+      { id: 'jonte', name: 'Schneepflüger Jonte', edge: ['E', 'G'], at: 0.5, coat: '#e4572e', cap: '#2f2b28', team: [['kristall', 10], ['kokon', 10]], likes: 8, reward: { riechsalz: 1 }, intro: 'Aus dem Weg! Ich habe gerade erst freigeschaufelt.', after: 'Südlich liegen die alten Ruinen. Dort hat die Forscherin Ruth ihr Lager.' },
+      { id: 'ruth', name: 'Ruinenforscherin Ruth', edge: ['A', 'F'], at: 0.5, coat: '#c9b27a', cap: '#5a6170', team: [['kristall', 10], ['kiesel', 10]], likes: 8, reward: { supertrank: 1 }, intro: 'Fass nichts an! Diese Steine sind älter als alle Karten der Welt.', after: 'Die Mondhalle liegt im Südosten. Dort wartet Selene.' },
+      { id: 'orlando', name: 'Orakel Orlando', edge: ['F', 'G'], at: 0.55, coat: '#3f4a7a', cap: '#f2cf5b', team: [['horn', 10], ['kristall', 11]], likes: 9, reward: { supertrank: 1 }, intro: 'Ich habe es kommen sehen. Du verlierst. Oder gewinnst du? Das Orakel schweigt.', after: 'Ich wusste es. Fast.' },
+      { id: 'tilda', name: 'Trümmer-Tilda', edge: ['A', 'H'], at: 0.5, coat: '#9a9684', cap: '#ec3013', team: [['kiesel', 9], ['horn', 10]], likes: 8, reward: { heiltrank: 2 }, intro: 'Ich räume hier auf. Wer im Weg steht, wird mit weggeräumt.', after: 'Hinter dem Hügel liegt die Mondhalle. Geh vorsichtig.' },
+      { id: 'selene', name: 'Mondwächterin Selene', pos: [55, 35], all: 3, boss: true, coat: '#c5cbe0', cap: '#ec3013', team: [['kristall', 11], ['horn', 12], ['kiesel', 12]], likes: 30, reward: {}, intro: 'Der Mond sieht alles. Auch deine Schwächen. Zeig, was in deinen Karten steckt.', after: 'Das Licht hat dich erkannt. Die Schätze der Halle gehören dir.' },
+    ],
+  };
+  static ACC = [
+    { id: 'brille', name: 'Sonnenbrille', price: 15, slot: 'face', text: 'Cool bleiben, auch bei Gegenwind.' },
+    { id: 'zylinder', name: 'Zylinder', price: 25, slot: 'head', text: 'Für den feinen Auftritt.' },
+    { id: 'kette', name: 'Goldkette', price: 40, slot: 'neck', text: 'Schwer, glänzend, laut.' },
+    { id: 'umhang', name: 'Umhang', price: 50, slot: 'back', text: 'Weht heldenhaft hinter dir her.' },
+    { id: 'heiligenschein', name: 'Heiligenschein', price: 60, slot: 'top', text: 'Du hast dir den Glanz verdient.' },
+    { id: 'duese', name: 'Düsenrucksack', price: 90, slot: 'back', text: 'Zwei Düsen, kein Antrieb. Sieht trotzdem gut aus.' },
+    { id: 'krone', name: 'Krone', price: 120, slot: 'head', text: 'Fürs Königsgefühl. Ein Thron ist nicht nötig.' },
+    { id: 'testo', name: 'Testo-Spritze', price: 200, slot: 'arms', text: 'Zwei komplett muskulöse Arme. Nebenwirkungen unbekannt.' },
+    { id: 'gold', name: 'Goldener Anzug', price: 250, slot: 'skin', text: 'Von Kopf bis Fuß aus Gold.' },
+    { id: 'ice', name: 'Iced-out Skin', price: 300, slot: 'skin', text: 'Der ganze Mensch aus Diamanten, Glitzer und Funkeln.' },
+  ];
   static WHEEL = [
     ['heil', 18], ['l2', 15], ['niete', 22], ['gold', 8], ['riech', 16], ['heil', 18], ['frei', 11], ['niete', 22], ['holo', 5], ['super', 14], ['l10', 7], ['niete', 21], ['god', 1], ['heil', 18],
     ['l5', 10], ['niete', 22], ['gold', 8], ['riech', 16], ['frei', 11], ['super', 14], ['niete', 22], ['ikone', 3], ['heil', 18], ['l25', 3], ['l2', 15], ['niete', 22],
@@ -1212,6 +1295,8 @@ class Component extends DCLogic {
   static CARD_GOD_RAYS_BG = 'repeating-conic-gradient(from 0deg, rgba(251,250,248,.5) 0deg 4deg, rgba(251,250,248,0) 4deg 14deg, rgba(236,48,19,.6) 14deg 16deg, rgba(251,250,248,0) 16deg 30deg)';
   static STAT_NAMES = [['Arschfix', 'Arschfix-Skill'], ['Chill', 'Chill-Skill'], ['Gurke', 'Gurkenresonanz']];
   static ROOMS = {
+    store: { name: 'Inselladen', w: 11, h: 8, start: [5, 6], npc: { x: 5, y: 1, coat: '#3f7fa8', cap: '#fbfaf8' }, info: 'Tresen: Accessoires kaufen',
+      map: ['WWWWWWWWWWW', 'WRR..N..RRW', 'W..KKKKK..W', 'W.........W', 'WP.......PW', 'W..T...T..W', 'W.........W', 'WWWWWEWWWWW'] },
     shop: { name: 'Kartenladen', w: 11, h: 8, start: [5, 6], npc: { x: 5, y: 1, coat: '#ec3013', cap: '#fbfaf8' }, info: 'Tresen: Karten · Gerät: heilen',
       map: ['WWWWWWWWWWW', 'WRR..N..HHW', 'W..KKKKK..W', 'W.........W', 'WP.......PW', 'W..T...T..W', 'W.........W', 'WWWWWEWWWWW'] },
     gal: { name: 'Galerie', w: 13, h: 8, start: [6, 6], npc: { x: 2, y: 4, coat: '#3a3735', cap: '#c9a96a' }, info: 'Pult oder Bild: alle Wesen',
@@ -1226,6 +1311,7 @@ class Component extends DCLogic {
     { id: 'hubert', isle: 'heim', title: 'Durch den Dunkelwald', text: 'Besiege Förster Hubert.', tr: 'hubert', likes: 3 },
     { id: 'boot', isle: 'heim', title: 'Ein Boot muss her', text: 'Finde ein Boot, um zur anderen Insel zu kommen. Es liegt in einer Truhe am Südufer.', key: 'boot', likes: 3 },
     { id: 'insel', isle: 'heim', title: 'Ab übers Meer', text: 'Lauf am Steg ins Wasser und fahr nach Süden.', seen: 'glut', likes: 5 },
+    { id: 'osten', isle: 'heim', title: 'Der Osten ruft', text: 'Fahr mit dem Boot am Südufer entlang nach Osten.', seen: 'mond', likes: 5 },
     { id: 'marlene', isle: 'heim', title: 'Die Hüterin', text: 'Besiege Hüterin Marlene in der Steinarena.', tr: 'marlene', items: { supertrank: 2 } },
     { id: 'paula', isle: 'glut', title: 'Gestrandet', text: 'Besiege Strandläuferin Paula am Palmenstrand.', tr: 'paula', likes: 3 },
     { id: 'gfang', isle: 'glut', title: 'Inselfang', text: 'Fang ein Wesen auf der Glutinsel.', fang: 1, likes: 4 },
@@ -1234,6 +1320,14 @@ class Component extends DCLogic {
     { id: 'greta', isle: 'glut', title: 'Heißes Pflaster', text: 'Besiege Glutforscherin Greta am Glutberg.', tr: 'greta', likes: 5 },
     { id: 'rad', isle: 'glut', title: 'Der alte Glücksspieler', text: 'Besuch Kuno in seiner Hütte ganz im Süden und dreh einmal am Glücksrad.', spins: 1, likes: 1 },
     { id: 'sol', isle: 'glut', title: 'Der Tempelwächter', text: 'Besiege Tempelwächter Sol im Sonnentempel.', tr: 'sol', likes: 10 },
+    { id: 'msandra', isle: 'mond', title: 'Sand im Getriebe', text: 'Besiege Sandsammlerin Sandra in der Wüste.', tr: 'sandra', likes: 4 },
+    { id: 'mladen', isle: 'mond', title: 'Der Inselladen', text: 'Schau in den Inselladen neben dem Start.', flag: 'store', likes: 2 },
+    { id: 'mfang', isle: 'mond', title: 'Fang auf der Mondinsel', text: 'Fang ein Wesen auf der Mondinsel.', fang: 1, likes: 5 },
+    { id: 'mtruhen', isle: 'mond', title: 'Mondschätze', text: 'Öffne 4 Truhen auf der Mondinsel.', chests: 4, items: { supertrank: 2 } },
+    { id: 'mpilla', isle: 'mond', title: 'Im Pilzwald', text: 'Besiege Pilzhirtin Pilla.', tr: 'pilla', likes: 6 },
+    { id: 'mfrida', isle: 'mond', title: 'Frostfeld', text: 'Besiege Eisfischerin Frida im Schnee.', tr: 'frida', likes: 6 },
+    { id: 'mruth', isle: 'mond', title: 'Zwischen den Ruinen', text: 'Besiege Ruinenforscherin Ruth.', tr: 'ruth', likes: 6 },
+    { id: 'selene', isle: 'mond', title: 'Die Mondwächterin', text: 'Besiege Mondwächterin Selene in der Mondhalle.', tr: 'selene', likes: 15 },
   ];
   static isle(id) {
     const C = Component;
@@ -1243,13 +1337,19 @@ class Component extends DCLogic {
         arena: { b: 'arena', x0: 53, y0: 34, y1: 42, gates: [[52, 38], [53, 38], [52, 39], [53, 39], [58, 33], [59, 33], [58, 34], [59, 34]] },
         nodes: { ...C.NODES, ...C.HEIM_X.nodes }, edges: C.EDGES, extra: C.HEIM_X.edges, dock: { x: 30, y0: 43, y1: 46, b: 'see' },
         springs: C.SPRINGS, chests: [...C.CHESTS, ...C.HEIM_X.chests], trainers: [...C.TRAINERS, ...C.HEIM_X.trainers], start: 'S',
-        houses: [{ kind: 'shop', x: 2, y: 16, node: 'S' }, { kind: 'gal', x: 8, y: 16, node: 'S' }], exit: { dy: 1, to: 'glut', y: 0 }, bossInfo: 'Hier wartet die Hüterin. Dahinter liegen zwei Truhen.' },
+        houses: [{ kind: 'shop', x: 2, y: 16, node: 'S' }, { kind: 'gal', x: 8, y: 16, node: 'S' }], exit: { dy: 1, to: 'glut', y: 0 }, exits: [{ dy: 1, to: 'glut', y: 0 }, { dx: 1, to: 'mond', x: 0 }], bossInfo: 'Hier wartet die Hüterin. Dahinter liegen zwei Truhen.' },
       glut: { id: 'glut', name: 'Glutinsel', seed: 'welt-2', pre: 'glut:', land: [10, 53], sea: [0, 9], coast: [10, 13, -1],
         bios: ['strand', 'dschungel', 'moor', 'vulkan'], open: 'strand', count: { strand: 7, dschungel: 7, moor: 7, vulkan: 6 },
         arena: { b: 'tempel', x0: 50, y0: 43, y1: 52, gates: [[49, 47], [50, 47], [49, 48], [50, 48], [56, 42], [57, 42], [56, 43], [57, 43]] },
         nodes: C.GLUT.nodes, edges: C.GLUT.edges, extra: C.GLUT.extra, hut: C.GLUT.hut, dock: { x: 30, y0: 7, y1: 11, b: 'strand' },
         springs: C.GLUT.springs, chests: C.GLUT.chests, trainers: C.GLUT.trainers, start: 'L',
-        houses: [{ kind: 'shop', x: 24, y: 12, node: 'L' }, { kind: 'gal', x: 35, y: 12, node: 'L' }], exit: { dy: -1, to: 'heim', y: 53 }, bossInfo: 'Hier wartet der Tempelwächter. Dahinter liegen zwei Truhen.' },
+        houses: [{ kind: 'shop', x: 24, y: 12, node: 'L' }, { kind: 'gal', x: 35, y: 12, node: 'L' }], exit: { dy: -1, to: 'heim', y: 53 }, exits: [{ dy: -1, to: 'heim', y: 53 }], bossInfo: 'Hier wartet der Tempelwächter. Dahinter liegen zwei Truhen.' },
+      mond: { id: 'mond', name: 'Mondinsel', seed: 'welt-3', pre: 'mond:', land: [0, 43], sea: [44, 53], coast: [40, 43, 1], beach: true,
+        bios: ['wueste', 'pilz', 'ruine', 'schnee'], open: 'wueste', count: { wueste: 9, pilz: 7, ruine: 6, schnee: 7 },
+        arena: { b: 'mond', x0: 46, y0: 28, y1: 42, gates: [[45, 35], [46, 35], [45, 36], [46, 36], [52, 27], [53, 27], [52, 28], [53, 28]] },
+        nodes: C.MOND.nodes, edges: C.MOND.edges, extra: [], dock: { x: 14, y0: 43, y1: 46, b: 'wueste' },
+        springs: C.MOND.springs, chests: C.MOND.chests, trainers: C.MOND.trainers, start: 'S',
+        houses: [{ kind: 'store', x: 9, y: 29, node: 'S' }], exit: { dx: -1, to: 'heim', x: 63 }, exits: [{ dx: -1, to: 'heim', x: 63 }], bossInfo: 'Hier wartet die Mondwächterin. Dahinter liegen zwei Truhen.' },
     };
     return C._isles[id] || C._isles.heim;
   }
@@ -1266,6 +1366,11 @@ class Component extends DCLogic {
     moor: { floor: '#aeaf90', path: '#a39a80', enc: '#98a17f', wall: '#77826d' },
     vulkan: { floor: '#857a74', path: '#a3978e', enc: '#8a6455', wall: '#5a514d' },
     tempel: { floor: '#e6d3a3', path: '#e6d3a3', enc: '#e6d3a3', wall: '#d9c18e' },
+    wueste: { floor: '#ecd9a6', path: '#d9bd84', enc: '#dcc68a', wall: '#ecd9a6' },
+    pilz: { floor: '#b9a5b8', path: '#d8c9bd', enc: '#a58fa5', wall: '#8a6f8a' },
+    ruine: { floor: '#c8c4b4', path: '#e0dccb', enc: '#b4b09c', wall: '#9a9684' },
+    schnee: { floor: '#f0f4f6', path: '#cfe0e9', enc: '#dfe9ef', wall: '#e3edf2' },
+    mond: { floor: '#d5d9e3', path: '#d5d9e3', enc: '#d5d9e3', wall: '#6d7390' },
   };
   static SYM = (() => {
     const I = '#201e1d';
@@ -1301,6 +1406,22 @@ class Component extends DCLogic {
       vrock: `<path d='M3 36L9 16L19 7L31 12L37 36Z' fill='#3a3433' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='M19 7L17 20L25 28M17 20L9 30' fill='none' stroke='#ec6a2a' stroke-width='1.8' stroke-linecap='round'/>`,
       ember: `<path d='M5 30l6-4 4 5 6-7 5 4 6-5M8 15l5 3 5-4 6 3' fill='none' stroke='#f29a3a' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/><circle cx='31' cy='13' r='2' fill='#f2cf5b'/><circle cx='14' cy='36' r='1.6' fill='#f2cf5b'/>`,
       pillar: `<rect x='9' y='3' width='22' height='5' fill='#d8c08a' stroke='${I}' stroke-width='2'/><rect x='12' y='8' width='16' height='26' fill='#ecdcb0' stroke='${I}' stroke-width='2'/><rect x='9' y='34' width='22' height='4' fill='#d8c08a' stroke='${I}' stroke-width='2'/><path d='M17 11v20M23 11v20' stroke='#c9a96a' stroke-width='1.6'/>`,
+      kaktus: `<path d='M20 38V9M20 28H11V20M20 23H29V15' fill='none' stroke='${I}' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/><path d='M20 38V9M20 28H11V20M20 23H29V15' fill='none' stroke='#6fa05a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/><path d='M20 14V32M11 22V25M29 17V20' stroke='#9bc47f' stroke-width='1.4' stroke-linecap='round'/>`,
+      thorn: `<path d='M6 38L9 25L14 33L18 19L23 32L28 23L33 38Z' fill='#c4ad62' stroke='${I}' stroke-width='1.6' stroke-linejoin='round'/><path d='M18 38V28M26 38V32' stroke='#8f7a3a' stroke-width='1.4' stroke-linecap='round'/>`,
+      dune2: "<path d='M5 14q4-3 8 0t8 0M20 31q4-3 8 0t8 0' fill='none' stroke='#cdb273' stroke-width='1.8' stroke-linecap='round'/>",
+      shroom: `<rect x='16' y='22' width='8' height='15' fill='#f3e9dc' stroke='${I}' stroke-width='2'/><path d='M4 25Q4 4 20 4Q36 4 36 25Z' fill='#c2453a' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><circle cx='13' cy='15' r='2.6' fill='#fbfaf8'/><circle cx='24' cy='11' r='2' fill='#fbfaf8'/><circle cx='29' cy='19' r='2.2' fill='#fbfaf8'/>`,
+      shroom2: `<rect x='17' y='24' width='6' height='13' fill='#efe6d2' stroke='${I}' stroke-width='2'/><path d='M7 27Q7 9 20 9Q33 9 33 27Z' fill='#8a5aa8' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><circle cx='15' cy='19' r='2' fill='#f2e2ae'/><circle cx='25' cy='17' r='1.6' fill='#f2e2ae'/><circle cx='21' cy='23' r='1.4' fill='#f2e2ae'/>`,
+      spores: `<path d='M5 37V32Q5 25 11 25Q17 25 17 32V37Z' fill='#c2453a' stroke='${I}' stroke-width='1.6' stroke-linejoin='round'/><path d='M22 37V31Q22 22 29 22Q36 22 36 31V37Z' fill='#8a5aa8' stroke='${I}' stroke-width='1.6' stroke-linejoin='round'/><circle cx='14' cy='12' r='1.6' fill='#f2e2ae'/><circle cx='25' cy='9' r='1.3' fill='#f2e2ae'/><circle cx='33' cy='15' r='1.5' fill='#f2e2ae'/>`,
+      tshroom: `<path d='M10 30v-3a3.5 3.5 0 0 1 7 0v3Z' fill='#d8c3d3' stroke='${I}' stroke-width='1' stroke-linejoin='round'/><circle cx='28' cy='12' r='1.4' fill='#d8c3d3'/>`,
+      spine: `<rect x='17' y='29' width='6' height='9' fill='#5a3a20' stroke='${I}' stroke-width='2'/><path d='M20 2L33 22H7Z' fill='#5f8a7a' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='M20 9L35 31H5Z' fill='#4f7a6a' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='M20 2L26 12H14Z' fill='#fbfaf8' stroke='${I}' stroke-width='1.6' stroke-linejoin='round'/><path d='M11 22L8 29H17ZM29 22L32 29H23Z' fill='#fbfaf8'/>`,
+      drift: `<path d='M3 36Q9 21 18 29Q24 17 37 36Z' fill='#fbfaf8' stroke='${I}' stroke-width='1.8' stroke-linejoin='round'/><path d='M10 33Q14 28 18 31M24 31Q28 27 31 31' fill='none' stroke='#b9d0dc' stroke-width='1.6' stroke-linecap='round'/>`,
+      flake: "<path d='M12 14v9M7.5 18.5h9M9 15.5l6 6M15 15.5l-6 6' stroke='#a9c4d2' stroke-width='1.4' stroke-linecap='round'/>",
+      ruinS: `<rect x='8' y='33' width='24' height='5' fill='#b4b09c' stroke='${I}' stroke-width='2'/><path d='M12 33V15L16 11L19 16L23 9L28 14V33Z' fill='#d6d2c0' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='M17 17V33M23 13V33' stroke='#a8a490' stroke-width='1.6'/>`,
+      ruinB: `<rect x='5' y='26' width='17' height='12' fill='#cfcbb8' stroke='${I}' stroke-width='2'/><rect x='21' y='19' width='14' height='19' fill='#d6d2c0' stroke='${I}' stroke-width='2'/><rect x='11' y='12' width='12' height='14' fill='#bfbba8' stroke='${I}' stroke-width='2'/><path d='M26 24h5M8 32h6' stroke='#a8a490' stroke-width='1.4'/>`,
+      rubble: `<path d='M6 31l5-5 6 2 1 6zM21 22l6-4 5 4-1 6h-8zM15 37l3-3 5 1v4z' fill='#c4bfaa' stroke='${I}' stroke-width='1.5' stroke-linejoin='round'/>`,
+      tileB: "<path d='M0 20h40M20 0v20M10 20v20M30 20v20' stroke='#b9b5a1' stroke-width='1.6'/><path d='M23 4l4 5-3 4' fill='none' stroke='#a8a490' stroke-width='1.4' stroke-linecap='round'/>",
+      tileM: "<path d='M0 20h40M20 0v20M10 20v20M30 20v20' stroke='#b4bbd2' stroke-width='1.6'/>",
+      mpillar: `<rect x='9' y='3' width='22' height='5' fill='#b9c0d8' stroke='${I}' stroke-width='2'/><rect x='12' y='8' width='16' height='26' fill='#e4e8f4' stroke='${I}' stroke-width='2'/><rect x='9' y='34' width='22' height='4' fill='#b9c0d8' stroke='${I}' stroke-width='2'/><path d='M23 14a6 6 0 1 0 0 12a4.6 4.6 0 1 1 0-12Z' fill='#8d95b8'/>`,
       dune: "<path d='M5 38Q7 26 3 17M11 38Q12 24 15 13M17 38Q18 28 23 22M25 38Q25 25 23 11M31 38Q32 27 37 19' fill='none' stroke='#8f8a3a' stroke-width='2.2' stroke-linecap='round'/>",
     };
   })();
@@ -1316,6 +1437,11 @@ class Component extends DCLogic {
     moor: { sky: '#d9dcd2', hill: '#8f9a84', ground: '#8f9a78', floor: '#c2b994', ring: '#a79c78', stone: '#6f7a66', line: '#55604f', shape: 'stone', water: true, tuft: '#5b6b3a' },
     vulkan: { sky: '#e3d6cc', hill: '#6a5e58', ground: '#857a74', floor: '#a3978e', ring: '#8a7e76', stone: '#4a4240', line: '#ec6a2a', shape: 'stone', peaks: true, tuft: '#f29a3a' },
     tempel: { sky: '#efe6d0', hill: '#d8c08a', ground: '#e0cc98', floor: '#ecdcb0', ring: '#d0b77e', stone: '#c9a96a', line: '#a9894a', shape: 'stone', flags: true, tuft: '#c9a96a' },
+    wueste: { sky: '#f1e6c8', hill: '#dcc58e', ground: '#e6d29c', floor: '#efdcae', ring: '#d1b878', stone: '#6fa05a', line: '#9bc47f', shape: 'cactus', tuft: '#b5a05a' },
+    pilz: { sky: '#e5d9e3', hill: '#b79ab5', ground: '#a58fa5', floor: '#d6c6d2', ring: '#b9a3b6', stone: '#c2453a', line: '#8a2c24', shape: 'mush', tuft: '#8a5aa8' },
+    ruine: { sky: '#e8e6dc', hill: '#b9b5a0', ground: '#b4b09c', floor: '#d8d4c2', ring: '#bdb8a2', stone: '#d6d2c0', line: '#9a9684', shape: 'column', tuft: '#9a9684' },
+    schnee: { sky: '#e6eef3', hill: '#c9dae4', ground: '#e8f0f4', floor: '#f6fafc', ring: '#c4d6e0', stone: '#e8f1f5', line: '#7c9aa8', shape: 'pine', peaks: true, tuft: '#a9c4d2' },
+    mond: { sky: '#242a45', hill: '#3c4466', ground: '#59618a', floor: '#8a92b5', ring: '#6c7498', stone: '#c5cbe0', line: '#8d95b8', shape: 'column', flags: true, dark: true, tuft: '#c5cbe0' },
   };
   static DEMO = [['Bohnito', 'bohne'], ['Tropfine', 'tropfen'], ['Kieselkurt', 'kiesel'], ['Hornhilde', 'horn']];
   static PAT = {
@@ -1346,9 +1472,9 @@ class Component extends DCLogic {
 
   fromSave(o) {
     return {
-      isle: o.isle === 'glut' ? 'glut' : 'heim', keys: (o.keys || []).some(k => k === 'boot' || /^\d+,\d+$/.test(k) && k === '47,41') ? ['boot'] : [], seen: o.seen || ['heim'], qdone: o.qdone || [], flags: o.flags || {},
+      isle: ['glut', 'mond'].includes(o.isle) ? o.isle : 'heim', keys: (o.keys || []).some(k => k === 'boot' || /^\d+,\d+$/.test(k) && k === '47,41') ? ['boot'] : [], seen: o.seen || ['heim'], qdone: o.qdone || [], flags: o.flags || {},
       pos: o.pos || Component.NODES.S, dir: o.dir || 'right', team: o.team || [], prog: o.prog || {},
-      bag: o.bag || { heiltrank: 2, riechsalz: 1 }, scrolls: o.scrolls || [], caught: o.caught || [], chests: o.chests || [], beaten: o.beaten || [], likes: o.likes || 0,
+      bag: o.bag || { heiltrank: 2, riechsalz: 1 }, scrolls: o.scrolls || [], caught: o.caught || [], chests: o.chests || [], beaten: o.beaten || [], likes: o.likes || 0, owned: o.owned || [], worn: o.worn || [],
     };
   }
   saveKey() {
@@ -1378,7 +1504,7 @@ class Component extends DCLogic {
     window.addEventListener('keydown', this.onKey);
     await new Promise(r => this.setState(this.readSave(), r));
     this.manLoop();
-    try { if (window.matchMedia && matchMedia('(pointer: coarse)').matches) this.setState({ pad: true }); } catch (e) {}
+    try { if (window.matchMedia && matchMedia('(pointer: coarse)').matches && !localStorage.getItem('formgen.touchtipp')) { localStorage.setItem('formgen.touchtipp', '1'); setTimeout(() => this.hint('Tippen oder wischen zum Laufen. Finger halten = weiterlaufen.', 4200), 1500); } } catch (e) {}
     this.shRaf = requestAnimationFrame(this.shineLoop);
     this.world();
     { const [x0, y0] = this.state.pos, c0 = this.cell(x0, y0); if (!this.walk(x0, y0) && !(c0 && c0.t === 'sea' && this.state.keys.includes('boot'))) this.setState({ pos: this.startPos() }); }
@@ -1500,7 +1626,7 @@ class Component extends DCLogic {
     const [k0, k1, side] = D.coast;
     for (let x = 1; x < W - 1; x++) {
       const k = Math.max(0, Math.min(3, Math.round(1.4 + Math.sin(x * 0.37) * 1.1 + Math.cos(x * 0.83 + 1) * 0.6)));
-      for (let y = k0; y <= k1; y++) { const c = g[y * W + x]; if (c.t === 'wall' && c.b !== A.b && (side > 0 ? y >= k1 - k : y <= k0 + k)) { c.t = 'sea'; c.b = 'meer'; } }
+      for (let y = k0; y <= k1; y++) { const c = g[y * W + x]; if ((c.t === 'wall' || (D.beach && (c.t === 'floor' || c.t === 'enc'))) && c.b !== A.b && (side > 0 ? y >= k1 - k : y <= k0 + k)) { c.t = 'sea'; c.b = 'meer'; } }
     }
     const K = D.dock;
     for (let y = K.y0; y <= K.y1; y++) for (const x of [K.x, K.x + 1]) g[y * W + x] = { t: 'dock', b: K.b, v: 0 };
@@ -1524,11 +1650,11 @@ class Component extends DCLogic {
     const b = c.b, v = c.v;
     if (c.t === 'sea') return v < 2 ? 'wave1' : v < 3 ? 'wave2' : '';
     if (c.t === 'dock') return 'plank';
-    if (c.t === 'wall') return { wiese: 'tree', wald: 'pine', see: v < 2 ? 'wave1' : v < 4 ? 'wave2' : '', fels: 'rock', kristall: v < 3 ? 'cryst' : 'cryst2', arena: 'rock', strand: 'palm', dschungel: v < 4 ? 'jtree' : 'tree', moor: v < 3 ? 'deadtree' : v < 5 ? 'wave2' : '', vulkan: 'vrock', tempel: 'pillar' }[b] || '';
-    if (c.t === 'enc') return { wiese: 'tall', wald: 'fern', see: 'reed', fels: 'scree', kristall: 'shards', strand: 'dune', dschungel: 'fern', moor: 'reed', vulkan: 'ember' }[b] || '';
+    if (c.t === 'wall') return { wiese: 'tree', wald: 'pine', see: v < 2 ? 'wave1' : v < 4 ? 'wave2' : '', fels: 'rock', kristall: v < 3 ? 'cryst' : 'cryst2', arena: 'rock', strand: 'palm', dschungel: v < 4 ? 'jtree' : 'tree', moor: v < 3 ? 'deadtree' : v < 5 ? 'wave2' : '', vulkan: 'vrock', tempel: 'pillar', wueste: 'kaktus', pilz: v < 3 ? 'shroom' : 'shroom2', ruine: v < 3 ? 'ruinS' : 'ruinB', schnee: 'spine', mond: 'mpillar' }[b] || '';
+    if (c.t === 'enc') return { wiese: 'tall', wald: 'fern', see: 'reed', fels: 'scree', kristall: 'shards', strand: 'dune', dschungel: 'fern', moor: 'reed', vulkan: 'ember', wueste: 'thorn', pilz: 'spores', ruine: 'rubble', schnee: 'drift' }[b] || '';
     if (c.t === 'path') return b === 'see' || b === 'moor' ? 'plank' : v === 0 ? 'dots' : '';
     if (c.t === 'spring') return 'spring';
-    if (c.t === 'floor') return { wiese: ['gr1', 'gr2', 'flower', '', '', ''][v], wald: v === 0 ? 'twig' : '', fels: v < 2 ? 'pebble' : '', kristall: v === 0 ? 'spark' : '', see: v === 0 ? 'shell' : '', arena: 'tileA', strand: v === 0 ? 'shell' : v === 1 ? 'gr2' : '', dschungel: v === 0 ? 'twig' : v === 1 ? 'gr1' : '', vulkan: v < 2 ? 'pebble' : '', tempel: 'tileA' }[b] || '';
+    if (c.t === 'floor') return { wiese: ['gr1', 'gr2', 'flower', '', '', ''][v], wald: v === 0 ? 'twig' : '', fels: v < 2 ? 'pebble' : '', kristall: v === 0 ? 'spark' : '', see: v === 0 ? 'shell' : '', arena: 'tileA', strand: v === 0 ? 'shell' : v === 1 ? 'gr2' : '', dschungel: v === 0 ? 'twig' : v === 1 ? 'gr1' : '', vulkan: v < 2 ? 'pebble' : '', tempel: 'tileA', wueste: v === 0 ? 'dune2' : v === 1 ? 'pebble' : '', pilz: v === 0 ? 'tshroom' : '', ruine: v < 2 ? 'tileB' : '', schnee: v === 0 ? 'flake' : '', mond: 'tileM' }[b] || '';
     return '';
   }
   mapSvg(g) {
@@ -1556,18 +1682,35 @@ class Component extends DCLogic {
     this._hs = this._hs || {};
     const key = JSON.stringify(o);
     if (this._hs[key]) return this._hs[key];
-    const I = '#201e1d', d = o.dir, fr = o.frame;
+    const I = '#201e1d', d = o.dir, fr = o.frame, fx = o.fx || [], has = k => fx.includes(k);
+    const sk = has('ice') ? 'ice' : has('gold') ? 'gold' : '', SK = sk ? 'url(#sk)' : '#f0d2b4', LG = sk ? 'url(#sk)' : I, hat = has('krone') || has('zylinder'), jet = has('duese');
+    const defs = sk === 'ice' ? "<defs><linearGradient id='sk' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#f4feff'/><stop offset='.35' stop-color='#9aeeff'/><stop offset='.62' stop-color='#e9f8ff'/><stop offset='1' stop-color='#7fc8e8'/></linearGradient></defs>" : sk === 'gold' ? "<defs><linearGradient id='sk' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#fff1c2'/><stop offset='.35' stop-color='#e2b13c'/><stop offset='.62' stop-color='#fbe39a'/><stop offset='1' stop-color='#a97a1c'/></linearGradient></defs>" : '';
+    const gem = (x, y, r) => `<path d='M${x} ${y - r}L${x + r} ${y}L${x} ${y + r}L${x - r} ${y}Z' fill='#fbfaf8' stroke='${I}' stroke-width='.8' stroke-linejoin='round'/>`;
     const legs = d === 'side'
-      ? (fr ? `<path d='M15 38L11 50H16L20 40Z' fill='${I}'/><path d='M21 38L26 50H31L25 38Z' fill='${I}'/>` : `<rect x='15' y='38' width='5' height='12' fill='${I}'/><rect x='20' y='38' width='5' height='12' fill='${I}'/>`)
-      : `<rect x='13' y='38' width='5' height='${fr === 2 ? 9 : 12}' fill='${I}'/><rect x='22' y='38' width='5' height='${fr === 1 ? 9 : 12}' fill='${I}'/>`;
-    const cape = o.boss ? `<path d='M11 24L5 50H35L29 24Z' fill='#ec3013' stroke='${I}' stroke-width='2' stroke-linejoin='round'/>` : '';
-    const packSide = o.pack && d === 'side' ? `<rect x='8' y='25' width='7' height='12' fill='#8a5532' stroke='${I}' stroke-width='2'/>` : '';
-    const packBack = o.pack && d === 'up' ? `<rect x='13' y='25' width='14' height='12' fill='#8a5532' stroke='${I}' stroke-width='2'/><path d='M13 30h14' stroke='${I}' stroke-width='1.6'/>` : '';
-    const body = `<path d='M10 41L13 24H27L30 41Z' fill='${o.coat}' stroke='${I}' stroke-width='2' stroke-linejoin='round'/>`;
-    const head = `<circle cx='20' cy='16' r='8' fill='${d === 'up' ? '#5a3a20' : '#f0d2b4'}' stroke='${I}' stroke-width='2'/>`;
+      ? (fr ? `<path d='M15 38L11 50H16L20 40Z' fill='${LG}' stroke='${sk ? I : 'none'}' stroke-width='1.2'/><path d='M21 38L26 50H31L25 38Z' fill='${LG}' stroke='${sk ? I : 'none'}' stroke-width='1.2'/>` : `<rect x='15' y='38' width='5' height='12' fill='${LG}' stroke='${sk ? I : 'none'}' stroke-width='1.2'/><rect x='20' y='38' width='5' height='12' fill='${LG}' stroke='${sk ? I : 'none'}' stroke-width='1.2'/>`)
+      : `<rect x='13' y='38' width='5' height='${fr === 2 ? 9 : 12}' fill='${LG}' stroke='${sk ? I : 'none'}' stroke-width='1.2'/><rect x='22' y='38' width='5' height='${fr === 1 ? 9 : 12}' fill='${LG}' stroke='${sk ? I : 'none'}' stroke-width='1.2'/>`;
+    const capeP = d === 'side' ? 'M12 24L4 47H22L24 24Z' : 'M11 24L6 49H34L29 24Z';
+    const capeSvg = `<path d='${capeP}' fill='#3f4a7a' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='${d === 'side' ? 'M4 47H22' : 'M6 49H34'}' stroke='#f2cf5b' stroke-width='2.4'/>`;
+    const cape = o.boss ? `<path d='M11 24L5 50H35L29 24Z' fill='#ec3013' stroke='${I}' stroke-width='2' stroke-linejoin='round'/>` : has('umhang') && d !== 'up' ? capeSvg : '';
+    const capeFront = has('umhang') && d === 'up' ? capeSvg + `<circle cx='20' cy='25' r='2.4' fill='#f2cf5b' stroke='${I}' stroke-width='1.2'/>` : '';
+    const tank = (x, w) => `<rect x='${x}' y='25' width='${w}' height='13' fill='#d3d7db' stroke='${I}' stroke-width='2'/><path d='M${x + 1} 38l${(w - 2) / 2} 7 ${(w - 2) / 2}-7Z' fill='#ec6a2a' stroke='${I}' stroke-width='1.4' stroke-linejoin='round'/>`;
+    const packSide = d === 'side' ? (jet ? tank(5, 8) : o.pack ? `<rect x='8' y='25' width='7' height='12' fill='#8a5532' stroke='${I}' stroke-width='2'/>` : '') : jet && d === 'down' ? tank(5, 6) + tank(29, 6) : '';
+    const packBack = d === 'up' ? (jet ? tank(10, 8) + tank(22, 8) : o.pack ? `<rect x='13' y='25' width='14' height='12' fill='#8a5532' stroke='${I}' stroke-width='2'/><path d='M13 30h14' stroke='${I}' stroke-width='1.6'/>` : '') : '';
+    const body = `<path d='M10 41L13 24H27L30 41Z' fill='${sk ? 'url(#sk)' : o.coat}' stroke='${I}' stroke-width='2' stroke-linejoin='round'/>`;
+    const shine = sk === 'ice' ? `<path d='M13 24L20 41L27 24M20 24V41M11.5 33H28.5' fill='none' stroke='#fbfaf8' stroke-width='1' opacity='.9'/>` + gem(24, 30, 2.6) + gem(14, 36, 1.8) : sk === 'gold' ? `<path d='M20 25V40M13.5 25L17 40M26.5 25L23 40' fill='none' stroke='#a97a1c' stroke-width='1' opacity='.7'/>` : '';
+    const arms = !has('testo') ? '' : d === 'side'
+      ? `<ellipse cx='19.5' cy='30' rx='6.4' ry='6.6' fill='${SK}' stroke='${I}' stroke-width='2'/><ellipse cx='23' cy='38' rx='4.6' ry='5.4' fill='${SK}' stroke='${I}' stroke-width='2'/><path d='M17 26.5Q20 28.5 19 32' fill='none' stroke='${I}' stroke-width='1.2' stroke-linecap='round'/>`
+      : [7, 33].map((x, i) => `<ellipse cx='${x}' cy='29.5' rx='6' ry='6.6' fill='${SK}' stroke='${I}' stroke-width='2'/><ellipse cx='${x + (i ? 0.6 : -0.6)}' cy='38.5' rx='4.4' ry='5.4' fill='${SK}' stroke='${I}' stroke-width='2'/><path d='M${x - 2.5 + (i ? 5 : 0)} 26Q${x + (i ? -1 : 1)} 28.5 ${x + (i ? 0 : -1)} 32' fill='none' stroke='${I}' stroke-width='1.2' stroke-linecap='round'/>`).join('');
+    const head = `<circle cx='20' cy='16' r='8' fill='${d === 'up' && !sk ? '#5a3a20' : SK}' stroke='${I}' stroke-width='2'/>`;
     const eyes = d === 'down' ? `<circle cx='17' cy='17.5' r='1.6' fill='${I}'/><circle cx='23' cy='17.5' r='1.6' fill='${I}'/>` : d === 'side' ? `<circle cx='24.5' cy='17.5' r='1.6' fill='${I}'/>` : '';
-    const cap = `<path d='M11.5 13.5Q20 3 28.5 13.5Z' fill='${o.cap}' stroke='${I}' stroke-width='2' stroke-linejoin='round'/>` + (d === 'side' ? `<path d='M27 13.5h7' stroke='${I}' stroke-width='3' stroke-linecap='round'/>` : d === 'down' ? `<path d='M12 13.5h16' stroke='${I}' stroke-width='3' stroke-linecap='round'/>` : '');
-    const s = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 52'>${cape}${legs}${packSide}${body}${packBack}${head}${eyes}${cap}</svg>`;
+    const shades = !has('brille') ? '' : d === 'down' ? `<rect x='11.5' y='14.8' width='7.6' height='5' rx='1' fill='${I}'/><rect x='20.9' y='14.8' width='7.6' height='5' rx='1' fill='${I}'/><path d='M19 16.5h2' stroke='${I}' stroke-width='1.6'/><path d='M13 16.2h2.4M22.4 16.2h2.4' stroke='#fbfaf8' stroke-width='.9'/>` : d === 'side' ? `<rect x='19.5' y='14.8' width='9' height='5' rx='1' fill='${I}'/><path d='M19.5 16.5H13' stroke='${I}' stroke-width='1.6'/><path d='M21 16.2h2.6' stroke='#fbfaf8' stroke-width='.9'/>` : '';
+    const chain = !has('kette') ? '' : d === 'down' ? `<path d='M13.5 24Q20 34 26.5 24' fill='none' stroke='${I}' stroke-width='3.4' stroke-linecap='round'/><path d='M13.5 24Q20 34 26.5 24' fill='none' stroke='#f2cf5b' stroke-width='1.8' stroke-linecap='round'/><circle cx='20' cy='30.2' r='2.8' fill='#f2cf5b' stroke='${I}' stroke-width='1.4'/>` : d === 'side' ? `<path d='M17 24Q21 31 25 25' fill='none' stroke='${I}' stroke-width='3.4' stroke-linecap='round'/><path d='M17 24Q21 31 25 25' fill='none' stroke='#f2cf5b' stroke-width='1.8' stroke-linecap='round'/><circle cx='22' cy='29' r='2.6' fill='#f2cf5b' stroke='${I}' stroke-width='1.4'/>` : '';
+    const halo = has('heiligenschein') ? `<ellipse cx='20' cy='3.4' rx='8.5' ry='2' fill='none' stroke='${I}' stroke-width='3.4'/><ellipse cx='20' cy='3.4' rx='8.5' ry='2' fill='none' stroke='#f2cf5b' stroke-width='1.6'/>` : '';
+    const cap = has('zylinder') ? `<rect x='12.5' y='1.5' width='15' height='12' fill='#2f2b28' stroke='${I}' stroke-width='2'/><rect x='12.5' y='9' width='15' height='3.4' fill='#ec3013'/><rect x='8.5' y='12' width='23' height='4' fill='#2f2b28' stroke='${I}' stroke-width='2'/>`
+      : has('krone') ? `<path d='M11 13.5L11.5 3.5L16 8.5L20 2.5L24 8.5L28.5 3.5L29 13.5Z' fill='#f2cf5b' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><circle cx='20' cy='10.5' r='1.7' fill='#ec3013' stroke='${I}' stroke-width='.8'/><circle cx='14.5' cy='11' r='1.1' fill='#9aeeff'/><circle cx='25.5' cy='11' r='1.1' fill='#9aeeff'/>`
+      : `<path d='M11.5 13.5Q20 3 28.5 13.5Z' fill='${o.cap}' stroke='${I}' stroke-width='2' stroke-linejoin='round'/>` + (d === 'side' ? `<path d='M27 13.5h7' stroke='${I}' stroke-width='3' stroke-linecap='round'/>` : d === 'down' ? `<path d='M12 13.5h16' stroke='${I}' stroke-width='3' stroke-linecap='round'/>` : '');
+    const sparks = sk === 'ice' ? gem(11, 12, 2.4) + gem(30, 21, 2.2) + gem(33, 8, 2) : sk === 'gold' ? gem(31, 10, 1.8) : '';
+    const s = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 52'>${defs}${cape}${legs}${packSide}${body}${shine}${packBack}${capeFront}${arms}${halo}${head}${eyes}${shades}${chain}${cap}${sparks}</svg>`;
     return (this._hs[key] = `url("data:image/svg+xml,${encodeURIComponent(s)}")`);
   }
   trainerSprite(t) { const [dx, dy] = t.dir; return this.human({ dir: dy > 0 ? 'down' : dy < 0 ? 'up' : 'side', frame: 0, coat: t.coat, cap: t.cap, boss: !!t.boss }); }
@@ -1776,7 +1919,7 @@ class Component extends DCLogic {
   save() {
     const s = this.state;
     if (!this._sk) return;
-    try { localStorage.setItem(this._sk, JSON.stringify({ pos: s.pos, dir: s.dir, team: s.team, prog: s.prog, bag: s.bag, scrolls: s.scrolls, caught: s.caught, chests: s.chests, beaten: s.beaten, likes: s.likes, isle: s.isle, keys: s.keys, seen: s.seen, qdone: s.qdone, flags: s.flags })); } catch (e) {}
+    try { localStorage.setItem(this._sk, JSON.stringify({ pos: s.pos, dir: s.dir, team: s.team, prog: s.prog, bag: s.bag, scrolls: s.scrolls, caught: s.caught, chests: s.chests, beaten: s.beaten, likes: s.likes, isle: s.isle, keys: s.keys, seen: s.seen, qdone: s.qdone, flags: s.flags, owned: s.owned, worn: s.worn })); } catch (e) {}
     this.checkQuests();
   }
 
@@ -1825,7 +1968,7 @@ class Component extends DCLogic {
     if (op) { this.setState({ dir, mpWin: op.id }); return; }
     if (D.hut && ((nx === D.hut.man[0] && ny === D.hut.man[1]) || (this.cell(nx, ny) || {}).t === 'hut')) { this.setState({ dir }); this.hutTalk(); return; }
     const c = this.cell(nx, ny);
-    if (!c) { if (here && here.t === 'sea' && D.exit && dy === D.exit.dy) this.travel(D.exit.to, [nx, D.exit.y], dir); else if (dir !== s.dir) this.setState({ dir }); return; }
+    if (!c) { const ex = here && here.t === 'sea' && (D.exits || [D.exit]).find(e => e && (e.dx ? dx === e.dx : dy === e.dy)); if (ex) this.travel(ex.to, ex.dx ? [ex.x, ny] : [nx, ex.y], dir); else if (dir !== s.dir) this.setState({ dir }); return; }
     if (c.t === 'door' || c.t === 'house') { this.setState({ dir }); const h = c.t === 'door' && dy < 0 && Wd.houses.find(q => q.door[0] === nx && q.door[1] === ny); if (h) this.goIn(h); return; }
     if (c.t === 'chest') { this.setState({ dir }); this.openChest(nx, ny); return; }
     if (c.t === 'spring') { this.setState({ dir }); this.spring(); return; }
@@ -2304,7 +2447,12 @@ class Component extends DCLogic {
     this._hi = this._hi || {};
     if (this._hi[kind]) return this._hi[kind];
     const I = '#201e1d';
-    const s = kind === 'shop'
+    const s = kind === 'store'
+      ? `<rect x='4' y='32' width='52' height='47' fill='#f3efe6' stroke='${I}' stroke-width='2'/><path d='M1 34L6 16H54L59 34Z' fill='#3f7fa8' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='M14 16L12 34M26 16L25 34M38 16L37 34M50 16L48 34' stroke='#fbfaf8' stroke-width='4'/><path d='M1 34L6 16H54L59 34Z' fill='none' stroke='${I}' stroke-width='2' stroke-linejoin='round'/>`
+        + `<rect x='16' y='3' width='28' height='13' fill='#fbfaf8' stroke='${I}' stroke-width='2'/><rect x='24' y='6' width='12' height='8' fill='#c99528' stroke='${I}' stroke-width='1.5'/><path d='M24 9.5H36' stroke='${I}' stroke-width='1.2'/>`
+        + `<rect x='8' y='48' width='12' height='12' fill='#94bfdc' stroke='${I}' stroke-width='2'/><rect x='41' y='48' width='12' height='12' fill='#94bfdc' stroke='${I}' stroke-width='2'/>`
+        + `<rect x='23' y='52' width='14' height='27' fill='#3f7fa8' stroke='${I}' stroke-width='2'/><circle cx='34' cy='66' r='1.4' fill='#f2cf5b'/><rect x='42' y='64' width='11' height='11' fill='#b5753f' stroke='${I}' stroke-width='1.6'/><path d='M42 69.5H53' stroke='${I}' stroke-width='1.2'/>`
+      : kind === 'shop'
       ? `<rect x='4' y='30' width='52' height='49' fill='#fbfaf8' stroke='${I}' stroke-width='2'/><path d='M4 43H56' stroke='#ec3013' stroke-width='5'/><path d='M1 32L8 12H52L59 32Z' fill='#ec3013' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='M6 22H54' stroke='#b8240e' stroke-width='1.6'/>`
         + `<rect x='17' y='1' width='26' height='16' fill='#fbfaf8' stroke='${I}' stroke-width='2'/><rect x='22' y='4' width='8' height='11' fill='#f2cf5b' stroke='${I}' stroke-width='1.5' transform='rotate(-12 26 9.5)'/><rect x='30' y='4' width='8' height='11' fill='#9aeeff' stroke='${I}' stroke-width='1.5' transform='rotate(10 34 9.5)'/>`
         + `<rect x='8' y='50' width='10' height='11' fill='#94bfdc' stroke='${I}' stroke-width='2'/><rect x='42' y='50' width='10' height='11' fill='#94bfdc' stroke='${I}' stroke-width='2'/>`
@@ -2319,21 +2467,21 @@ class Component extends DCLogic {
   roomSvg(kind) {
     this._rs = this._rs || {};
     if (this._rs[kind]) return this._rs[kind];
-    const R = Component.ROOMS[kind], I = '#201e1d', shop = kind === 'shop', fl = shop ? ['#efe9df', '#e2d8c6'] : ['#d6bb8a', '#cdb07c'];
+    const R = Component.ROOMS[kind], I = '#201e1d', shop = kind === 'shop' || kind === 'store', ac = kind === 'store' ? '#3f7fa8' : '#ec3013', fl = shop ? ['#efe9df', '#e2d8c6'] : ['#d6bb8a', '#cdb07c'];
     let s = '';
     R.map.forEach((row, y) => [...row].forEach((ch, x) => {
       const X = x * 40, Y = y * 40, r = (a, b, w, h, f, sw) => `<rect x='${X + a}' y='${Y + b}' width='${w}' height='${h}' fill='${f}'${sw ? ` stroke='${I}' stroke-width='${sw}'` : ''}/>`;
       if (ch === 'W' || ch === 'F') {
         if (y === 0) {
-          s += r(0, 0, 40, 40, shop ? '#fbfaf8' : '#f3efe6') + r(0, 27, 40, 6, shop ? '#ec3013' : '#c9a96a') + `<path d='M${X} ${Y + 39}h40' stroke='${I}' stroke-width='2'/>`;
+          s += r(0, 0, 40, 40, shop ? '#fbfaf8' : '#f3efe6') + r(0, 27, 40, 6, shop ? ac : '#c9a96a') + `<path d='M${X} ${Y + 39}h40' stroke='${I}' stroke-width='2'/>`;
           if (ch === 'F') s += r(5, 3, 30, 30, '#c99528', 2) + r(9, 7, 22, 22, '#fbfaf8', 1.2);
         } else s += r(0, 0, 40, 40, '#5a514d');
         return;
       }
       s += r(0, 0, 40, 40, fl[(x + y) % 2]);
       if (!shop) s += `<path d='M${X} ${Y + 20}h40M${X + (y % 2 ? 10 : 30)} ${Y}v20M${X + (y % 2 ? 30 : 10)} ${Y + 20}v20' stroke='#b39461' stroke-width='1'/>`;
-      if (ch === 'E') s += r(3, 4, 34, 32, shop ? '#ec3013' : '#8a5532', 2) + `<path d='M${X + 9} ${Y + 12}h22M${X + 9} ${Y + 20}h22M${X + 9} ${Y + 28}h22' stroke='#fbfaf8' stroke-width='1.5' opacity='.6'/>`;
-      else if (ch === 'K') s += r(0, 8, 40, 30, '#fbfaf8', 2) + r(0, 8, 40, 8, shop ? '#ec3013' : '#8a5532', 2);
+      if (ch === 'E') s += r(3, 4, 34, 32, shop ? ac : '#8a5532', 2) + `<path d='M${X + 9} ${Y + 12}h22M${X + 9} ${Y + 20}h22M${X + 9} ${Y + 28}h22' stroke='#fbfaf8' stroke-width='1.5' opacity='.6'/>`;
+      else if (ch === 'K') s += r(0, 8, 40, 30, '#fbfaf8', 2) + r(0, 8, 40, 8, shop ? ac : '#8a5532', 2);
       else if (ch === 'H') s += r(3, 4, 34, 32, '#d3d7db', 2) + [0, 1, 2].map(i => `<circle cx='${X + 11 + i * 9}' cy='${Y + 14}' r='3.2' fill='#ec3013' stroke='${I}' stroke-width='1.2'/><circle cx='${X + 11 + i * 9}' cy='${Y + 26}' r='3.2' fill='#f2cf5b' stroke='${I}' stroke-width='1.2'/>`).join('');
       else if (ch === 'R') s += r(2, 2, 36, 36, '#8a5532', 2) + `<path d='M${X + 2} ${Y + 14}h36M${X + 2} ${Y + 26}h36' stroke='${I}' stroke-width='1.6'/>` + ['#ec3013', '#f2cf5b', '#9aeeff', '#fbfaf8', '#b8ffa6', '#ff9ab8'].map((c, i) => r(6 + (i % 3) * 10, i < 3 ? 5 : 17, 7, 8, c, 1)).join('');
       else if (ch === 'P') s += `<path d='M20 26Q8 22 9 10Q17 14 20 24Q22 8 31 8Q31 20 20 26Z' transform='translate(${X} ${Y})' fill='#5f8f50' stroke='${I}' stroke-width='1.6' stroke-linejoin='round'/>` + r(13, 24, 14, 13, '#b5753f', 2);
@@ -2389,6 +2537,10 @@ class Component extends DCLogic {
       else if (ch === 'H') this.shopHeal(true);
       else if (ch === 'R') this.hint('Regale voller Kartenpacks. Kim verkauft sie am Tresen.', 2200);
       else if (ch === 'T') this.hint('Ein Tisch mit Probekarten. Lieber nicht anfassen.', 2200);
+    } else if (kind === 'store') {
+      if (ch === 'K' || ch === 'N') this.openPanel('store');
+      else if (ch === 'R') this.hint('Regale voller Accessoires. Verkauft wird am Tresen.', 2200);
+      else if (ch === 'T') this.hint('Ein Tisch mit Probestücken. Lieber nicht anfassen.', 2200);
     } else if (ch === 'K' || ch === 'N' || ch === 'F' || ch === 'O') this.openPanel('gal');
     else if (ch === 'B') this.hint('Eine Bank. Von hier sieht man alle Bilder.', 2200);
   }
@@ -2397,6 +2549,19 @@ class Component extends DCLogic {
     if (kind === 'gal' && !(this.state.gal && this.state.gal.items.length)) this.galLoad('top');
   }
   closePanel = () => this.setState({ panel: null });
+  wearAcc(id, on) {
+    const s = this.state, A = Component.ACC, it = A.find(a => a.id === id);
+    if (!it) return [...s.worn];
+    const rest = s.worn.filter(w => w !== id && (A.find(a => a.id === w) || {}).slot !== it.slot);
+    return on ? [...rest, id] : s.worn.filter(w => w !== id);
+  }
+  accAct(id) {
+    const s = this.state, it = Component.ACC.find(a => a.id === id);
+    if (!it) return;
+    if (s.owned.includes(id)) { this.setState({ worn: this.wearAcc(id, !s.worn.includes(id)), shopMsg: '' }, () => this.save()); return; }
+    if (s.likes < it.price) { this.setState({ shopMsg: 'Dir fehlen noch ' + (it.price - s.likes) + ' Likes für ' + it.name + '.' }); return; }
+    this.setState({ likes: s.likes - it.price, owned: [...s.owned, id], worn: this.wearAcc(id, true), shopMsg: it.name + ' gekauft und angezogen.' }, () => this.save());
+  }
   shopHeal = fromMachine => {
     const prog = { ...this.state.prog };
     for (const u of Object.keys(prog)) prog[u] = { ...prog[u], kp: null };
@@ -2783,7 +2948,7 @@ class Component extends DCLogic {
       Object.assign(out, {
         showIn: true, inImg: this.roomSvg(I.kind), inW: R.w * tile + 'px', inH: R.h * tile + 'px', inL: Math.round((vw - R.w * tile) / 2) + 'px', inT: Math.round((vh - R.h * tile) / 2) + 'px',
         inTileW: pc(1, R.w), inTileH: pc(1, R.h), ipL: pc(I.pos[0], R.w), ipT: pc(I.pos[1], R.h),
-        ipImg: this.human({ dir: hd, frame: s.frame, coat: '#2f5f8f', cap: '#ec3013', pack: true }), ipFlip: I.dir === 'left' ? 'scaleX(-1)' : 'none',
+        ipImg: this.human({ dir: hd, frame: s.frame, coat: '#2f5f8f', cap: '#ec3013', pack: true, fx: s.worn }), ipFlip: I.dir === 'left' ? 'scaleX(-1)' : 'none',
         ihTop: I.pos[1] <= 1 ? '125%' : 'auto', ihBot: I.pos[1] <= 1 ? 'auto' : '175%',
         inNpcs: [{ l: pc(R.npc.x, R.w), t: pc(R.npc.y, R.h), sprite: this.human({ dir: 'down', frame: 0, coat: R.npc.coat, cap: R.npc.cap }) }],
         inArts: arts, inKicker: C.isle(s.isle).name + ' · ' + R.name, inInfo: R.info,
@@ -2792,6 +2957,9 @@ class Component extends DCLogic {
     const avail = gl ? Math.max(0, gl.earned - gl.spent) : 0, need = Math.max(0, cost - avail), canN = Math.floor(avail / cost);
     const noCards = !s.cards.some(c => !String(c.uid).startsWith('demo')), starter = !!gl && noCards;
     Object.assign(out, {
+      storeOn: !!(P && P.kind === 'store'), storeKicker: 'Inselladen · ' + C.isle(s.isle).name, storeClose: this.closePanel,
+      storeLikes: s.likes, storeMsg: s.shopMsg, storeHasMsg: !!s.shopMsg, storeYou: this.human({ dir: 'down', frame: 0, coat: '#2f5f8f', cap: '#ec3013', pack: true, fx: s.worn }),
+      storeRows: C.ACC.map(a => { const own = s.owned.includes(a.id), wr = s.worn.includes(a.id), can = s.likes >= a.price; return { name: a.name, text: a.text, price: a.price + ' Likes', own, img: this.human({ dir: 'down', frame: 0, coat: '#2f5f8f', cap: '#ec3013', pack: false, fx: [a.id] }), label: own ? (wr ? 'Ausziehen' : 'Anziehen') : 'Kaufen', cls: own ? (wr ? 'btn btn-secondary' : 'btn btn-primary') : (can ? 'btn btn-primary' : 'btn btn-secondary'), off: !own && !can, go: () => this.accAct(a.id), tag: wr ? 'Getragen' : own ? 'Gekauft' : '' }; }),
       shopOn: !!(P && P.kind === 'shop'), shopKicker: 'Kartenladen · ' + C.isle(s.isle).name,
       shopLine: !gl ? 'Zum Ziehen erst anmelden.' : starter ? 'Deine ersten 3 Karten gehen aufs Haus.' : need ? 'Noch ' + need + (need === 1 ? ' Like' : ' Likes') + ' bis zur nächsten Karte' : '', shopHasLine: !gl || starter || need > 0,
       shopClerk: this.human({ dir: 'down', frame: 0, coat: '#ec3013', cap: '#fbfaf8' }),
@@ -3409,7 +3577,7 @@ class Component extends DCLogic {
     } finally { this.pvBusy = false; }
   };
   arenaBg(bio, boss) {
-    const k = boss ? (bio === 'tempel' ? 'tempel' : 'arena') : (Component.ARENA[bio] ? bio : 'wiese');
+    const k = boss ? (bio === 'tempel' || bio === 'mond' ? bio : 'arena') : (Component.ARENA[bio] ? bio : 'wiese');
     this._abg = this._abg || {};
     if (this._abg[k]) return this._abg[k];
     const P = Component.ARENA[k], I = '#201e1d', f = v => v.toFixed(0), els = [];
@@ -3418,6 +3586,9 @@ class Component extends DCLogic {
       const sc = 0.7 + 0.3 * Math.abs(Math.cos(t)), w = (44 + (i * 37) % 26) * sc, h = (80 + (i * 53) % 56) * sc, ln = ((i * 29) % 11 - 5) * 1.5;
       let d;
       if (P.shape === 'pine') d = `<rect x='${f(x - w * 0.12)}' y='${f(y - h * 0.3)}' width='${f(w * 0.24)}' height='${f(h * 0.3)}' fill='#5a3a20' stroke='${I}' stroke-width='3'/><path d='M${f(x)} ${f(y - h * 1.5)}L${f(x + w * 0.8)} ${f(y - h * 0.25)}H${f(x - w * 0.8)}Z' fill='${P.stone}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/><path d='M${f(x)} ${f(y - h * 1.15)}L${f(x + w * 0.95)} ${f(y - h * 0.1)}H${f(x - w * 0.95)}Z' fill='${P.stone}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/>`;
+      else if (P.shape === 'cactus') { const cp = `M${f(x)} ${f(y)}V${f(y - h)}M${f(x)} ${f(y - h * 0.35)}H${f(x - w * 0.55)}V${f(y - h * 0.62)}M${f(x)} ${f(y - h * 0.5)}H${f(x + w * 0.55)}V${f(y - h * 0.8)}`; d = `<path d='${cp}' fill='none' stroke='${I}' stroke-width='${f(w * 0.42 + 6)}' stroke-linecap='round' stroke-linejoin='round'/><path d='${cp}' fill='none' stroke='${P.stone}' stroke-width='${f(w * 0.42)}' stroke-linecap='round' stroke-linejoin='round'/>`; }
+      else if (P.shape === 'mush') d = `<rect x='${f(x - w * 0.14)}' y='${f(y - h * 0.5)}' width='${f(w * 0.28)}' height='${f(h * 0.5)}' fill='#f3e9dc' stroke='${I}' stroke-width='3'/><path d='M${f(x - w * 0.8)} ${f(y - h * 0.45)}Q${f(x - w * 0.75)} ${f(y - h * 1.2)} ${f(x)} ${f(y - h * 1.25)}Q${f(x + w * 0.75)} ${f(y - h * 1.2)} ${f(x + w * 0.8)} ${f(y - h * 0.45)}Z' fill='${P.stone}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/><circle cx='${f(x - w * 0.3)}' cy='${f(y - h * 0.85)}' r='${f(w * 0.1 + 2)}' fill='#fbfaf8'/><circle cx='${f(x + w * 0.25)}' cy='${f(y - h * 0.95)}' r='${f(w * 0.08 + 2)}' fill='#fbfaf8'/>`;
+      else if (P.shape === 'column') d = `<path d='M${f(x - w * 0.4)} ${f(y)}V${f(y - h * 0.8)}L${f(x - w * 0.2 + ln)} ${f(y - h * 0.95)}L${f(x + w * 0.05)} ${f(y - h * 0.82)}L${f(x + w * 0.4)} ${f(y - h)}V${f(y)}Z' fill='${P.stone}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/><path d='M${f(x - w * 0.12)} ${f(y - 6)}V${f(y - h * 0.7)}M${f(x + w * 0.16)} ${f(y - 6)}V${f(y - h * 0.75)}' stroke='${P.line}' stroke-width='3' stroke-linecap='round'/>`;
       else if (P.shape === 'crystal') d = `<path d='M${f(x - w / 2)} ${f(y)}L${f(x - w / 2 + ln)} ${f(y - h * 0.75)}L${f(x + ln)} ${f(y - h * 1.2)}L${f(x + w / 2 + ln)} ${f(y - h * 0.75)}L${f(x + w / 2)} ${f(y)}Z' fill='${P.stone}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/><path d='M${f(x + ln * 0.4)} ${f(y - 6)}L${f(x + ln)} ${f(y - h * 1.15)}' stroke='${P.line}' stroke-width='3'/>`;
       else d = `<path d='M${f(x - w / 2)} ${f(y)}L${f(x - w / 2 + 5 + ln)} ${f(y - h + 10)}L${f(x + ln)} ${f(y - h)}L${f(x + w / 2 + ln)} ${f(y - h + 14)}L${f(x + w / 2)} ${f(y)}Z' fill='${P.stone}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/><path d='M${f(x - w / 5)} ${f(y - 8)}L${f(x - w / 5 + ln * 0.7)} ${f(y - h + 22)}' stroke='${P.line}' stroke-width='3' stroke-linecap='round'/>`;
       els.push({ y, d });
@@ -3484,7 +3655,7 @@ class Component extends DCLogic {
   resetAll = () => {
     const prog = {};
     for (const c of this.state.cards) prog[c.uid] = { lv: 3, ep: 0, kp: null, attacks: [Component.LINE[c.model][0], 'rempler'] };
-    this.setState({ isle: 'heim', keys: [], seen: ['heim'], qdone: [], flags: {}, pos: Component.NODES.S, dir: 'right', prog, bag: { heiltrank: 2, riechsalz: 1 }, scrolls: [], chests: [], beaten: [], likes: 0, dialog: null, askReset: false, pick: null, inside: null, panel: null }, () => this.save());
+    this.setState({ isle: 'heim', keys: [], seen: ['heim'], qdone: [], flags: {}, pos: Component.NODES.S, dir: 'right', prog, bag: { heiltrank: 2, riechsalz: 1 }, scrolls: [], chests: [], beaten: [], likes: 0, owned: [], worn: [], dialog: null, askReset: false, pick: null, inside: null, panel: null }, () => this.save());
   };
 
   // ---------- Mehrspieler: andere Spieler, Chat, Schnapp-Duell ----------
@@ -3943,7 +4114,7 @@ class Component extends DCLogic {
       else if (d.state === 'play' && now > d.start_at + C.DUEL_MS + 20000) finish(d, true);
     };
     // Bot Kiki: läuft in deiner Nähe herum, antwortet im Chat, nimmt Duelle an
-    if (path === '/api/mp/sync') h.pres[me.id] = { id: me.id, name: me.name, isle: b.isle === 'glut' ? 'glut' : 'heim', x: b.x, y: b.y, dir: b.dir, seq: b.seq, trail: b.trail || [], inside: b.inside ? 1 : 0, busy: b.busy || '', seen: now };
+    if (path === '/api/mp/sync') h.pres[me.id] = { id: me.id, name: me.name, isle: ['glut', 'mond'].includes(b.isle) ? b.isle : 'heim', x: b.x, y: b.y, dir: b.dir, seq: b.seq, trail: b.trail || [], inside: b.inside ? 1 : 0, busy: b.busy || '', seen: now };
     const bot = h.bot || (h.bot = { seq: 0, trail: [], next: 0, tgt: null, pend: [] }), mine = h.pres[me.id];
     if (mine && mine.isle === this.state.isle && path === '/api/mp/sync') {
       let bp = h.pres[BOT.id];
@@ -4044,6 +4215,34 @@ class Component extends DCLogic {
     return JSON.parse(JSON.stringify(out));
   }
 
+  // ---------- Touch: tippen = Schritt Richtung Finger, halten = weiterlaufen, wischen = in Wischrichtung laufen ----------
+  tDown = e => {
+    if (e.pointerType === 'mouse' || this.state.dialog) return;
+    if (e.target && e.target.closest && e.target.closest('button,a,input,[data-nowalk]')) return;
+    clearInterval(this.tpT); clearTimeout(this.tpS);
+    this.tp = { id: e.pointerId, x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY, steps: 0, swipe: false };
+    this.tpS = setTimeout(() => { this.tWalk(); this.tpT = setInterval(this.tWalk, 170); }, 110);
+  };
+  tMove = e => { const p = this.tp; if (!p || e.pointerId !== p.id) return; p.x = e.clientX; p.y = e.clientY; if (Math.hypot(p.x - p.x0, p.y - p.y0) > 28) p.swipe = true; };
+  tUp = e => {
+    const p = this.tp; if (!p || e.pointerId !== p.id) return;
+    clearTimeout(this.tpS); clearInterval(this.tpT);
+    if (!p.steps) this.tWalk();
+    this.tp = null;
+  };
+  tWalk = () => {
+    const p = this.tp; if (!p) return;
+    let dx, dy;
+    if (p.swipe) { dx = p.x - p.x0; dy = p.y - p.y0; }
+    else {
+      const el = this.playerRef.current; if (!el) return;
+      const r = el.getBoundingClientRect(); dx = p.x - (r.left + r.width / 2); dy = p.y - (r.top + r.height / 2);
+      if (Math.abs(dx) < r.width * 0.6 && Math.abs(dy) < r.height * 0.6) return;
+    }
+    p.steps++;
+    if (Math.abs(dx) >= Math.abs(dy)) this.step(Math.sign(dx), 0); else this.step(0, Math.sign(dy));
+  };
+
   mpVals(ready, px, py) {
     const s = this.state, C = Component, R = this.mpR || {}, d = s.mpDuel, me = this.mpMe;
     const showMap = ready && s.tab === 'pfad' && !s.battle && !s.inside;
@@ -4081,7 +4280,10 @@ class Component extends DCLogic {
       { pts: '0,4 s', bg: 'var(--color-neutral-300)', fg: 'var(--color-text)', text: 'Daneben: kurz gesperrt' },
     ];
     return {
-      mpChipOn: ready, mpChipTxt: online ? (n ? n + ' online' : 'online') : s.mpStatus === 'connecting' ? 'verbinde …' : s.mpStatus === 'other' ? 'anderer Tab' : 'offline', mpChipDot: online ? 'var(--color-accent)' : 'transparent',
+      tDown: this.tDown, tMove: this.tMove, tUp: this.tUp,
+      bnTop: vW < 600 && showMap ? Math.round(24 + Math.min(vW * 0.2, 190) * 54 / 64) + 'px' : '14px',
+      mpChipHasNames: online && n > 0 && vW >= 700, mpChipNames: '· ' + all.slice(0, 4).map(r => r.name).join(', ') + (n > 4 ? ' +' + (n - 4) : ''),
+      mpChipOn: ready, mpChipTxt: online ? (n ? (vW < 480 ? String(n) : n + ' online') : vW < 480 ? '' : 'online') : s.mpStatus === 'connecting' ? 'verbinde …' : s.mpStatus === 'other' ? 'anderer Tab' : 'offline', mpChipDot: online ? 'var(--color-accent)' : 'transparent',
       mpChipTitle: online ? (n ? 'Gerade auch online: ' + all.map(r => r.name).join(', ') : 'Gerade ist niemand sonst online.') : s.mpStatus === 'other' ? 'Du bist in einem anderen Tab online. Dort siehst du die anderen Spieler.' : s.mpStatus === 'broken' ? 'Mehrspieler ist auf dem Server noch nicht eingerichtet.' : 'Andere sehen dich gerade nicht.',
       mpOthers, mmOthers: showMap ? here.map(r => ({ l: px(r.x + 0.5), t: py(r.y + 0.5), name: r.name })) : [],
       mpNotesOn: ready && notes.length > 0, mpNotes: notes.map(x => ({ ...x, hasBtns: x.btns.length > 0 })), mpNotesTop: showMap ? Math.round(24 + Math.min(vW * 0.2, 190) * 54 / 64) + 'px' : '12px',
@@ -4121,10 +4323,10 @@ class Component extends DCLogic {
     const here = this.cell(s.pos[0], s.pos[1]), curBio = here ? here.b : 'wiese';
     const D = C.isle(s.isle), onSea = !!here && here.t === 'sea';
 
-    const tile = (s.vpH || 600) / C.VH, vw = (s.vpW || 1000) / tile;
-    let cx = s.pos[0] + 0.5 - vw / 2, cy = s.pos[1] + 0.5 - C.VH / 2;
+    const tile = Math.min((s.vpH || 600) / C.VH, (s.vpW || 1000) / 9), vw = (s.vpW || 1000) / tile, vh = (s.vpH || 600) / tile;
+    let cx = s.pos[0] + 0.5 - vw / 2, cy = s.pos[1] + 0.5 - vh / 2;
     cx = vw >= C.W ? (C.W - vw) / 2 : Math.max(0, Math.min(C.W - vw, cx));
-    cy = Math.max(0, Math.min(C.H - C.VH, cy));
+    cy = Math.max(0, Math.min(C.H - vh, cy));
     const boss = Wd.trainers.find(t => t.boss);
 
     let me = null, foe = null;
@@ -4153,7 +4355,7 @@ class Component extends DCLogic {
       { bg: `${this.trainerSprite(Wd.trainers[0])} center / contain no-repeat, #c8dba8`, label: 'Trainer: sieht dich in Blickrichtung' },
     ];
     const B = C.BIO[curBio];
-    const nxt = C.isle(D.exit.to), seaTxt = 'Im ' + (D.exit.dy > 0 ? 'Süden' : 'Norden') + ' liegt ' + (s.seen.includes(nxt.id) ? 'die ' + nxt.name : 'eine unbekannte Insel') + '.';
+    const seaTxt = (D.exits || [D.exit]).map(e => { const nxt = C.isle(e.to); return 'Im ' + (e.dy > 0 ? 'Süden' : e.dy < 0 ? 'Norden' : e.dx > 0 ? 'Osten' : 'Westen') + ' liegt ' + (s.seen.includes(nxt.id) ? 'die ' + nxt.name : 'eine unbekannte Insel') + '.'; }).join(' ');
     const bioInfo = curBio === D.arena.b ? D.bossInfo : curBio === 'meer' ? (s.keys.includes('boot') ? 'Mit dem Boot unterwegs. ' : 'Ohne Boot geht es nicht weiter. ') + seaTxt : `Wilde Wesen: ${B.types.map(t => C.TN[t]).join(', ')} · Stufe ${B.lv[0]}–${B.lv[1]}`;
     const areas = [...D.bios, D.arena.b].map(k => {
       const tr = Wd.trainers.filter(t => this.cell(t.x, t.y).b === k), ch = Wd.chestList.filter(c => this.cell(c.x, c.y).b === k);
@@ -4196,7 +4398,7 @@ class Component extends DCLogic {
 
     const qRow = (q, cur) => { const p = this.qProg(q), done = s.qdone.includes(q.id); return { title: q.title, text: q.text, prog: done ? 'Erledigt' : p.of > 1 ? p.n + ' / ' + p.of : 'Offen', reward: this.rewardTxt(q), mark: done ? '✓' : '', box: done ? 'var(--color-text)' : 'transparent', bd: cur ? 'var(--color-accent)' : 'var(--color-text)', op: done ? 0.55 : 1 }; };
     const openQ = id => C.QUESTS.find(q => q.isle === id && !s.qdone.includes(q.id));
-    const questCols = ['heim', 'glut'].map(id => {
+    const questCols = ['heim', 'glut', 'mond'].map(id => {
       const I = C.isle(id), qs = C.QUESTS.filter(q => q.isle === id), cur = openQ(id);
       return s.seen.includes(id)
         ? { name: I.name, count: qs.filter(q => s.qdone.includes(q.id)).length + ' / ' + qs.length, locked: false, lockText: '', rows: qs.map(q => qRow(q, q === cur)) }
@@ -4222,9 +4424,9 @@ class Component extends DCLogic {
       mapNpcs: D.hut ? [{ l: px(D.hut.man[0]), t: py(D.hut.man[1]), sprite: this.oldMan(s.manIn ? 'empty' : 'sit') }] : [],
       ...this.wheelVals(),
       mapTrainers: Wd.trainers.map(t => ({ l: px(t.x), t: py(t.y), sprite: this.trainerSprite(t), flip: t.dir[0] < 0 ? 'scaleX(-1)' : 'none', bubble: s.spot === t.id, op: s.beaten.includes(t.id) ? 0.55 : 1 })),
-      plL: px(s.pos[0]), plT: py(s.pos[1]), plImg: onSea ? this.boat(hdir) : this.human({ dir: hdir, frame: s.frame, coat: '#2f5f8f', cap: '#ec3013', pack: true }), plFlip: s.dir === 'left' ? 'scaleX(-1)' : 'none',
+      plL: px(s.pos[0]), plT: py(s.pos[1]), plImg: onSea ? this.boat(hdir) : this.human({ dir: hdir, frame: s.frame, coat: '#2f5f8f', cap: '#ec3013', pack: true, fx: s.worn }), plFlip: s.dir === 'left' ? 'scaleX(-1)' : 'none',
       bioName: B.name, bioInfo,
-      mmVL: px(Math.max(0, cx)), mmVT: py(cy), mmVW: px(Math.min(C.W, vw)), mmVH: py(C.VH), mmPL: px(s.pos[0] + 0.5), mmPT: py(s.pos[1] + 0.5), mmBL: px(boss.x + 0.5), mmBT: py(boss.y + 0.5),
+      mmVL: px(Math.max(0, cx)), mmVT: py(cy), mmVW: px(Math.min(C.W, vw)), mmVH: py(vh), mmPL: px(s.pos[0] + 0.5), mmPT: py(s.pos[1] + 0.5), mmBL: px(boss.x + 0.5), mmBT: py(boss.y + 0.5),
       ...ar,
       mgOn: !!s.mgView && !!b, catchTap: this.catchTap, dialRef: this.dialRef, needleRef: this.needleRef, arcRef: this.arcRef,
       mgRings: s.mgView ? Array.from({ length: s.mgView.hits }, (_, i) => ({ r: 70 - i * 9 })) : [],
