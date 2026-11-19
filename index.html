@@ -19,33 +19,12 @@
   </style>
 </helmet>
 <div style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)">
-  <sc-if value="{{ isTest }}" hint-placeholder-val="{{ false }}">
-    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);padding:var(--space-2) var(--space-6);background:var(--color-accent-100);border-bottom:2px solid var(--color-accent);font-size:13px">
-      <strong style="color:var(--color-accent-800)">Testmodus</strong>
-      <span style="color:var(--color-neutral-800);flex:1 1 300px">Spieler, Galerie und Karten liegen nur in diesem Browser. Der echte Server wird nicht berührt.</span>
-      <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
-        <button class="btn btn-secondary" onClick="{{ testSeed }}" style="padding:4px 10px;font-size:12px">Beispiel-Galerie erzeugen</button>
-        <button class="btn btn-secondary" onClick="{{ tBoost }}" style="padding:4px 10px;font-size:12px">{{ tBoostLabel }}</button>
-        <sc-if value="{{ tNoConfirm }}" hint-placeholder-val="{{ true }}">
-          <button class="btn btn-ghost" onClick="{{ tAskReset }}" style="padding:4px 10px;font-size:12px">Test zurücksetzen</button>
-        </sc-if>
-        <sc-if value="{{ tConfirm }}" hint-placeholder-val="{{ false }}">
-          <button class="btn btn-primary" onClick="{{ testReset }}" style="padding:4px 10px;font-size:12px">Ja, alles löschen (Spieler, Galerie, Karten, Ikonen)</button>
-          <button class="btn btn-ghost" onClick="{{ tCancel }}" style="padding:4px 10px;font-size:12px">Abbrechen</button>
-        </sc-if>
-      </div>
-      <sc-if value="{{ tMsg }}" hint-placeholder-val="{{ false }}">
-        <span style="flex-basis:100%;color:var(--color-accent-800);font-weight:700">{{ tMsg }}</span>
-      </sc-if>
-    </div>
-  </sc-if>
   <sc-if value="{{ needLogin }}" hint-placeholder-val="{{ false }}">
     <div style="position:fixed;inset:0;z-index:100;background:var(--color-bg);overflow:auto">
       <div style="max-width:560px;margin:0 auto;padding:12vh var(--space-6) var(--space-8);display:flex;flex-direction:column;gap:var(--space-6)">
         <div style="display:flex;flex-direction:column;gap:var(--space-2)">
           <div style="font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--color-accent-700)">Formgenerator</div>
           <h1 style="margin:0;font-family:var(--font-heading);font-weight:800;font-size:48px;line-height:1;letter-spacing:-0.02em">Wer spielt?</h1>
-          <p style="margin:0;font-size:15px;line-height:1.5;color:var(--color-neutral-800);text-wrap:pretty">Wähle deinen Namen und gib dein Passwort ein. Zum ersten Mal hier? Dann leg einen neuen Spieler an.</p>
         </div>
         <sc-if value="{{ lgLoading }}" hint-placeholder-val="{{ false }}">
           <div style="font-size:14px;color:var(--color-neutral-700)">Spieler werden geladen …</div>
@@ -94,33 +73,49 @@
             <button class="btn btn-ghost" onClick="{{ lgGuest }}">Ohne Anmeldung ansehen</button>
           </div>
         </sc-if>
-        <sc-if value="{{ lgTest }}" hint-placeholder-val="{{ false }}">
-          <div style="font-size:13px;line-height:1.5;color:var(--color-accent-800);background:var(--color-accent-100);border-left:0;padding:var(--space-3);text-wrap:pretty"><strong>Testmodus:</strong> Spieler, Galerie und Karten liegen nur in diesem Browser, der echte Server wird nicht berührt. Nach dem Anmelden kannst du oben eine Beispiel-Galerie mit Testspielern erzeugen.</div>
-        </sc-if>
       </div>
     </div>
   </sc-if>
   <sc-if value="{{ isSimple }}" hint-placeholder-val="{{ true }}">
-    <header style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);border-bottom:2px solid var(--color-divider)">
-      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-6)">
-        <div style="font-family:var(--font-heading);font-weight:800;font-size:22px;letter-spacing:-0.01em">Formgenerator</div>
-        <nav style="display:flex;gap:var(--space-2)">
-          <button class="{{ tabCreateCls }}" onClick="{{ goCreate }}" style="padding:6px 14px">Erstellen</button>
-          <button class="{{ tabGalleryCls }}" onClick="{{ goGallery }}" style="padding:6px 14px">Galerie</button>
-          <button class="{{ tabCardsCls }}" onClick="{{ goCards }}" style="padding:6px 14px">Sammelkarten</button>
-          <a class="btn btn-secondary" href="abenteuer.html" style="padding:6px 14px;text-decoration:none">Abenteuer</a>
-          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
-            <button class="{{ tabAdminCls }}" onClick="{{ goAdmin }}" style="padding:6px 14px">Admin</button>
-          </sc-if>
+    <header style="position:relative;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px var(--space-6);border-bottom:2px solid var(--color-divider)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <nav style="display:flex;border:2px solid var(--color-text)">
+          <button onClick="{{ goCreate }}" style="padding:6px 14px;font-family:inherit;font-size:14px;font-weight:700;border:none;cursor:pointer;background:{{ fgSegBg }};color:{{ fgSegFg }}">Erstellen</button>
+          <a href="abenteuer.html" style="padding:6px 14px;font-size:14px;font-weight:700;text-decoration:none;color:var(--color-text)" style-hover="background:var(--color-accent-100)">Abenteuer</a>
         </nav>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3)">
-        <span style="font-size:13px;color:var(--color-neutral-700)">Spieler: <button onClick="{{ openMe }}" style="background:none;border:none;padding:0;font:inherit;font-weight:700;color:var(--color-text);cursor:pointer;text-decoration:underline;text-underline-offset:3px" style-hover="color:var(--color-accent)">{{ userName }}</button></span>
-        <sc-if value="{{ showLogout }}" hint-placeholder-val="{{ true }}">
-          <button class="btn btn-ghost" onClick="{{ logout }}" style="font-size:13px">{{ logoutLabel }}</button>
+        <sc-if value="{{ isTest }}" hint-placeholder-val="{{ false }}">
+          <span class="tag tag-accent">Test</span>
         </sc-if>
-        <button class="btn btn-ghost" onClick="{{ goDev }}" style="font-size:13px">Entwicklermodus</button>
       </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:14px;font-weight:700;white-space:nowrap">{{ userName }}</span>
+        <button class="btn btn-secondary btn-icon" onClick="{{ fgMenuToggle }}" aria-label="Menü" style="width:40px;height:36px;padding:0;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+      </div>
+      <sc-if value="{{ fgMenuOpen }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ fgMenuClose }}" style="position:fixed;inset:0;z-index:39"></div>
+        <div style="position:absolute;right:var(--space-6);top:calc(100% + 6px);z-index:40;width:250px;background:#fbfaf8;border:2px solid var(--color-text);box-shadow:var(--shadow-lg);display:flex;flex-direction:column">
+          <button onClick="{{ mLogout }}" style="display:flex;padding:11px 14px;border:none;background:transparent;font:inherit;font-size:15px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-accent-100)">Spieler wechseln</button>
+          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ mAdmin }}" style="display:flex;padding:11px 14px;border:none;border-top:1px solid var(--color-divider);background:transparent;font:inherit;font-size:15px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-accent-100)">Admin</button>
+          </sc-if>
+          <button onClick="{{ mDev }}" style="display:flex;padding:11px 14px;border:none;border-top:1px solid var(--color-divider);background:transparent;font:inherit;font-size:15px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-accent-100)">Entwicklermodus</button>
+          <sc-if value="{{ isTest }}" hint-placeholder-val="{{ false }}">
+            <span style="padding:12px 14px 4px;border-top:2px solid var(--color-text);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Testmodus</span>
+            <button onClick="{{ testSeed }}" style="display:flex;padding:9px 14px;border:none;background:transparent;font:inherit;font-size:14px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-accent-100)">Beispiel-Galerie erzeugen</button>
+            <button onClick="{{ tBoost }}" style="display:flex;padding:9px 14px;border:none;background:transparent;font:inherit;font-size:14px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-accent-100)">{{ tBoostLabel }}</button>
+            <sc-if value="{{ tNoConfirm }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ tAskReset }}" style="display:flex;padding:9px 14px;border:none;background:transparent;font:inherit;font-size:14px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-accent-100)">Test zurücksetzen</button>
+            </sc-if>
+            <sc-if value="{{ tConfirm }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ testReset }}" style="display:flex;padding:9px 14px;border:none;background:var(--color-accent);font:inherit;font-size:14px;font-weight:700;text-align:left;cursor:pointer;color:#fbfaf8">Ja, alles löschen</button>
+              <button onClick="{{ tCancel }}" style="display:flex;padding:9px 14px;border:none;background:transparent;font:inherit;font-size:14px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)">Abbrechen</button>
+            </sc-if>
+            <sc-if value="{{ tMsg }}" hint-placeholder-val="{{ false }}">
+              <span style="padding:6px 14px 12px;font-size:12px;font-weight:700;color:var(--color-accent-700)">{{ tMsg }}</span>
+            </sc-if>
+          </sc-if>
+        </div>
+      </sc-if>
     </header>
 
     <sc-if value="{{ isCreate }}" hint-placeholder-val="{{ true }}">
@@ -191,8 +186,7 @@
           <button class="btn btn-primary" onClick="{{ roll }}" style="justify-content:flex-start;padding:14px 16px;font-size:16px;font-weight:700">Neu würfeln</button>
           <button class="btn btn-ghost" onClick="{{ undo }}" disabled="{{ undoOff }}" style="align-self:flex-start;margin-top:-6px;font-size:13px;gap:6px;color:var(--color-text)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"></path></svg>{{ undoLabel }}</button>
           <div style="border-top:2px solid var(--color-divider);margin-top:var(--space-2);padding-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)">
-            <label style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Name</label>
-            <input class="input" value="{{ name }}" onChange="{{ onName }}" maxlength="40" placeholder="Wie heißt das Wesen?" style="font-size:15px">
+                        <input class="input" value="{{ name }}" onChange="{{ onName }}" maxlength="40" placeholder="Wie heißt das Wesen?" style="font-size:15px">
             <button class="btn btn-secondary" onClick="{{ rollName }}" style="justify-content:flex-start;font-size:14px">Zufallsname</button>
           </div>
           <div style="border-top:2px solid var(--color-divider);margin-top:var(--space-2);padding-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)">
@@ -961,7 +955,7 @@ class Component extends DCLogic {
     const base = {
       user: auth.user || null, token: auth.token || null, authMode: auth.mode || '', srv: 'unknown', guest: false,
       lgUsers: [], lgSel: null, lgPin: '', lgNew: false, lgName: '', lgPinNew: '', lgErr: '', lgBusy: false, lgLoading: true,
-      player: null, pData: null, pLoading: false, prevView: 'create', adm: null, amLoading: false, amMsg: '', amAmt: {}, amConfirm: null, cards: [], cPool: [], cPoolN: 0, cIconN: 0, adOpen: false, adKey: '', adCount: null, adMsg: '', adBusy: false, tConfirm: false, tMsg: '', cEarned: 0, cSpent: 0, cLoading: false, cDrawing: false, cNote: '', cDemo: false, cSort: 'new', reveal: null, cArtTick: 0, hist: Array.isArray(ui.hist) ? ui.hist.slice(-10) : [], extras: exSaved, view: ui.view || 'create', name: ui.name || '', gSort: 'new', gItems: [], gLoading: false, gError: '', shareMsg: '', liked, model: 'raupe', target: 'kokon', morph: 0, params: Component.preset('raupe'), wire: false, lines3d: true, collapsed: {}, copied: false, ready: false, error: '', basicOnly: true, snaps, snapsCopied: false };
+      player: null, pData: null, pLoading: false, prevView: 'create', adm: null, amLoading: false, amMsg: '', amAmt: {}, amConfirm: null, cards: [], cPool: [], cPoolN: 0, cIconN: 0, adOpen: false, adKey: '', adCount: null, adMsg: '', adBusy: false, tConfirm: false, tMsg: '', cEarned: 0, cSpent: 0, cLoading: false, cDrawing: false, cNote: '', cDemo: false, cSort: 'new', reveal: null, cArtTick: 0, hist: Array.isArray(ui.hist) ? ui.hist.slice(-10) : [], extras: exSaved, view: ['gallery', 'cards'].includes(ui.view) ? 'create' : ui.view || 'create', name: ui.name || '', gSort: 'new', gItems: [], gLoading: false, gError: '', shareMsg: '', liked, model: 'raupe', target: 'kokon', morph: 0, params: Component.preset('raupe'), wire: false, lines3d: true, collapsed: {}, copied: false, ready: false, error: '', basicOnly: true, snaps, snapsCopied: false };
     try {
       const s = JSON.parse(localStorage.getItem('formgen.v1') || 'null');
       if (s && s.params) return { ...base, model: s.model || 'bohne', target: s.target || 'kokon', morph: s.morph || 0, params: { ...Component.defaults(), ...s.params }, wire: !!s.wire, lines3d: s.lines3d !== false, collapsed: s.collapsed || {}, basicOnly: s.basicOnly !== false };
@@ -972,10 +966,10 @@ class Component extends DCLogic {
   svgRef = React.createRef();
   svgRef2 = React.createRef();
   fxRef = React.createRef(); raysRef = React.createRef(); boxRef = React.createRef(); flipRef = React.createRef(); flashRef = React.createRef();
-  componentDidUpdate(_, prev) {
-    if (prev && prev.view !== this.state.view && this.lastSvg) {
-      if (this.svgRef2.current) this.svgRef2.current.innerHTML = this.lastSvg;
-      if (this.svgRef.current) this.svgRef.current.innerHTML = this.lastSvg;
+  componentDidUpdate() {
+    for (const r of [this.svgRef2, this.svgRef]) {
+      const el = r.current;
+      if (el && this.lastSvg && el._svg !== this.lastSvg) { el.innerHTML = this.lastSvg; el._svg = this.lastSvg; }
     }
   }
 
@@ -1044,8 +1038,9 @@ class Component extends DCLogic {
 
   componentDidMount() {
     window.__formgen = this;
-    const hv = { '#erstellen': 'create', '#galerie': 'gallery', '#sammelkarten': 'cards' }[location.hash];
-    if (hv) { this.setState({ view: hv }); if (hv === 'cards') setTimeout(() => this.loadPool && this.loadPool(), 0); }
+    const hv = { '#erstellen': 'create', '#galerie': 'create', '#sammelkarten': 'create' }[location.hash];
+    if (hv) this.setState({ view: hv });
+    if (location.hash === '#spieler') { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} setTimeout(() => this.logout(), 0); }
     this.loadGallery('new');
     this.checkServer();
     const url = new URL('./linegen.js', document.baseURI).href;
@@ -1091,8 +1086,7 @@ class Component extends DCLogic {
       try {
         const out = this.engine.update(this.state.params, { wire: this.state.wire, lines3d: this.state.lines3d });
         this.lastSvg = out.svg;
-        if (this.svgRef.current) this.svgRef.current.innerHTML = out.svg;
-        if (this.svgRef2.current) this.svgRef2.current.innerHTML = out.svg;
+        for (const r of [this.svgRef, this.svgRef2]) if (r.current) { r.current.innerHTML = out.svg; r.current._svg = out.svg; }
       } catch (e) { console.error(e); }
     };
     this.raf = requestAnimationFrame(run);
@@ -1417,7 +1411,7 @@ class Component extends DCLogic {
     const likedCount = uid => db.likes.filter(l => { const i = db.items.find(x => x.id === l.item_id); return l.user_id !== uid && i && i.user_id === uid; }).length;
     const out = i => ({ id: i.id, created: i.created, name: i.name, model: i.model, version: 1, params: i.params, likes: i.likes, user_id: i.user_id, user_name: uname(i.user_id), icon: i.icon ? 1 : 0, god: i.god ? 1 : 0 });
     const stats = uid => ({
-      earned: likedCount(uid) + ((db.users.find(u => u.id === uid) || {}).bonus || 0),
+      earned: likedCount(uid) + ((db.users.find(u => u.id === uid) || {}).bonus || 0) + (db.ledger || []).filter(l => l.user_id === uid).reduce((n, l) => n + l.amount, 0),
       spent: db.cards.filter(c => c.user_id === uid && !c.caught).length * Component.CARD_COST,
     });
     if (p === '/api/users') return { users: db.users.map(pub).sort((a, b) => a.name.localeCompare(b.name)) };
@@ -1625,10 +1619,18 @@ class Component extends DCLogic {
       this.setState({ srv: 'off', lgLoading: false, lgErr: e instanceof TypeError ? 'Server nicht erreichbar.' : 'Server-Fehler: ' + e.message });
     }
   };
+  fgMenuVals() {
+    const s = this.state, close = fn => () => { this.setState({ fgMenu: false }); fn(); };
+    return {
+      fgMenuOpen: !!s.fgMenu, fgMenuToggle: () => this.setState({ fgMenu: !s.fgMenu }), fgMenuClose: () => this.setState({ fgMenu: false }),
+      mLogout: close(() => this.logout()), mAdmin: close(() => { this.setState({ view: 'admin' }); setTimeout(() => this.loadAdmin(), 0); }), mDev: close(() => this.setState({ view: 'dev' })),
+      fgSegBg: s.view === 'create' ? 'var(--color-text)' : 'transparent', fgSegFg: s.view === 'create' ? '#fbfaf8' : 'var(--color-text)',
+    };
+  }
   setAuth(user, token) {
     this.storeAuth(user, token);
     this.clearCardCache();
-    this.setState({ user, token, authMode: this.modeKey(), guest: false, lgPin: '', lgPinNew: '', lgName: '', lgErr: '', lgBusy: false, lgNew: false, lgSel: null, cards: [], reveal: null });
+    this.setState({ view: 'create', user, token, authMode: this.modeKey(), guest: false, lgPin: '', lgPinNew: '', lgName: '', lgErr: '', lgBusy: false, lgNew: false, lgSel: null, cards: [], reveal: null });
     setTimeout(() => { this.loadGallery(); this.afterServer(); }, 0);
   }
   logout = () => {
@@ -2054,7 +2056,7 @@ class Component extends DCLogic {
       pStatus: s.pLoading ? 'lädt …' : PD.error || s.pMsg || '',
       pStats: [['Wesen geteilt', PD.stats.items], ['Likes bekommen', PD.stats.liked], ['Karten gezogen', PD.stats.cards], ['Ikonen', PD.stats.icons], ['Godlike', PD.stats.gods]].map(([k, v]) => ({ k, v: v == null ? '–' : String(v) })),
       pEmpty: isPlayerView && !s.pLoading && !!s.pData && !(PD.cards || []).length,
-      pBack: () => this.setState(st => ({ view: st.prevView && st.prevView !== 'player' ? st.prevView : 'gallery', reveal: null })),
+      pBack: () => this.setState(st => ({ view: st.prevView && !['player', 'gallery', 'cards'].includes(st.prevView) ? st.prevView : 'admin', reveal: null })),
       tabCardsCls: s.view === 'cards' ? 'btn btn-primary' : 'btn btn-secondary',
       goCards: () => { this.setState({ view: 'cards' }); this.loadPool(); },
       cCards: showList.map(g => {
@@ -2132,7 +2134,7 @@ class Component extends DCLogic {
       lgName: s.lgName, onLgName: e => this.setState({ lgName: e.target.value.slice(0, 24), lgErr: '' }),
       lgPinNew: s.lgPinNew, onLgPinNew: e => this.setState({ lgPinNew: e.target.value, lgErr: '' }), lgNewKey: e => { if (e.key === 'Enter') this.lgCreate(); },
       lgCreate: this.lgCreate, lgErr: s.lgErr, lgOff: s.srv === 'off', lgRetry: this.checkServer, lgGuest: () => this.setState({ guest: true }), lgTest: this.testMode(),
-      userName: s.user ? s.user.name : 'Gast', openMe: () => { if (this.state.user) this.openPlayer(this.state.user.id, this.state.user.name); }, logout: this.logout, logoutLabel: s.user ? 'Wechseln' : 'Anmelden', showLogout: s.srv !== 'old',
+      userName: s.user ? s.user.name : 'Gast', openMe: () => { const u = this.state.user; if (u && u.admin) this.openPlayer(u.id, u.name); else location.href = 'abenteuer.html#team'; }, logout: this.logout, logoutLabel: s.user ? 'Wechseln' : 'Anmelden', showLogout: s.srv !== 'old',
     };
     return {
       ...cardVals,
@@ -2164,6 +2166,7 @@ class Component extends DCLogic {
       })),
       undo: this.undo, undoOff: !(s.hist && s.hist.length), undoLabel: s.hist && s.hist.length ? `Zurück (${s.hist.length})` : 'Zurück',
       setEye1: () => this.setExtra('eyeCount', 1), setEye2: () => this.setExtra('eyeCount', 2),
+      ...this.fgMenuVals(),
       isSimple: s.view !== 'dev', isCreate: s.view === 'create' || (s.view === 'admin' && !isAdminUser) || (s.view === 'player' && !s.player), isGallery: s.view === 'gallery',
       devDisplay: s.view === 'dev' ? 'flex' : 'none',
       tabCreateCls: s.view === 'create' ? 'btn btn-primary' : 'btn btn-secondary',
