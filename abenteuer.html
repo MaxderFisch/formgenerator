@@ -179,14 +179,14 @@
 
     <sc-if value="{{ shopOn }}" hint-placeholder-val="{{ false }}">
       <div onClick="{{ shopClose }}" style="position:absolute;inset:0;z-index:6;overflow:auto;background:rgba(32,30,29,.6);display:flex;padding:16px;box-sizing:border-box">
-        <div onClick="{{ revealStop }}" style="margin:auto;width:min(380px,100%);background:#fbfaf8;border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px">
+        <div onClick="{{ revealStop }}" style="margin:auto;width:min(560px,100%);background:#fbfaf8;border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
             <span style="font-family:var(--font-heading);font-weight:800;font-size:26px;line-height:1">Kartenladen</span>
             <button class="btn btn-ghost btn-icon" onClick="{{ shopClose }}" aria-label="Schließen" style="width:36px;height:36px;padding:0;justify-content:center;font-size:22px">×</button>
           </div>
           <div style="display:flex;align-items:baseline;gap:10px">
             <span style="font-family:var(--font-heading);font-weight:800;font-size:56px;line-height:.9">{{ shopAvail }}</span>
-            <span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">Galerie-Likes</span>
+            <span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">Likes</span>
           </div>
           <div style="height:6px;background:var(--color-neutral-300)"><div style="height:100%;width:{{ shopProg }};background:var(--color-accent)"></div></div>
           <sc-if value="{{ shopHasLine }}" hint-placeholder-val="{{ false }}">
@@ -199,6 +199,25 @@
           <button class="btn btn-secondary" onClick="{{ shopHeal }}" style="justify-content:flex-start">Team heilen</button>
           <sc-if value="{{ shopHasMsg }}" hint-placeholder-val="{{ false }}">
             <span style="font-size:14px;font-weight:700;color:var(--color-accent-700)">{{ shopMsg }}</span>
+          </sc-if>
+          <sc-if value="{{ sellOn }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px;border-top:2px solid var(--color-text);padding-top:12px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                <span style="font-family:var(--font-heading);font-weight:800;font-size:18px">Deine Karten verkaufen</span>
+                <span style="font-size:12px;font-weight:700;color:var(--color-neutral-700)">{{ sellCount }}</span>
+              </div>
+              <span style="font-size:12px;font-weight:600;color:var(--color-neutral-700)">{{ sellPrices }}</span>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;max-height:min(42vh,320px);overflow:auto">
+                <sc-for list="{{ sellRows }}" as="c" hint-placeholder-count="6">
+                  <div style="display:flex;flex-direction:column;border:2px solid var(--color-text);min-width:0;background:#fbfaf8">
+                    <div style="display:flex;justify-content:space-between;gap:4px;padding:3px 6px;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:{{ c.tierBg }};color:#201e1d;border-bottom:2px solid var(--color-text)"><span>{{ c.tier }}</span><span>{{ c.inTeam }}</span></div>
+                    <div style="aspect-ratio:1;background:{{ c.bgFull }}"></div>
+                    <span style="padding:4px 6px;font-size:12px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.name }}</span>
+                    <button class="{{ c.cls }}" onClick="{{ c.go }}" disabled="{{ sellOff }}" style="justify-content:flex-start;padding:5px 8px;font-size:12px;font-weight:700">{{ c.label }}</button>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
           </sc-if>
         </div>
       </div>
@@ -1273,6 +1292,7 @@ class Component extends DCLogic {
   static GOD_RING = 'radial-gradient(circle at 50% 55%, rgba(0,0,0,0) 0 31%, #ec3013 31% 35%, rgba(0,0,0,0) 35%), repeating-conic-gradient(from 0deg at 50% 55%, rgba(251,250,248,.14) 0deg 5deg, rgba(251,250,248,0) 5deg 14deg)';
   static RAYS_GOLD = 'repeating-conic-gradient(from 0deg,rgba(242,207,91,.45) 0deg 7.5deg,rgba(236,48,19,.28) 7.5deg 15deg)';
   static CARD_COST = 3;
+  static SELL = [1, 2, 5, 10, 20, 40, 80];
   static CARD_TIERS = [
     { name: 'Papier', img: 'linear-gradient(#fbfaf8,#fbfaf8)' },
     { name: 'Bronze', img: 'linear-gradient(135deg,#6e3f1a 0%,#b5753f 30%,#f0c08e 50%,#b5753f 70%,#6e3f1a 100%)' },
@@ -1496,7 +1516,7 @@ class Component extends DCLogic {
   state = {
     tab: 'pfad', loading: true, note: 'Karten werden geladen …', cards: [], arts: {}, hint: '', frame: 0,
     ...this.fromSave({}),
-    dialog: null, spot: null, battle: null, pick: null, menu: false, pad: false, banner: null, panel: null, reveal: null, inside: null, gl: null, gal: null, tmSort: 'new', shopBusy: false, shopMsg: '', galTick: 0, toast: '', pvMe: 0, askReset: false, vpW: 0, vpH: 0, mgView: null, pop: null, block: '',
+    dialog: null, spot: null, battle: null, pick: null, menu: false, pad: false, banner: null, panel: null, reveal: null, inside: null, gl: null, gal: null, tmSort: 'new', shopBusy: false, shopMsg: '', sellArm: null, galTick: 0, toast: '', pvMe: 0, askReset: false, vpW: 0, vpH: 0, mgView: null, pop: null, block: '',
     mpOn: true, mpStatus: 'off', mpAwayTxt: '', mpT: 0, mpMsgs: [], mpNotes: [], mpDuel: null, mpWin: null, mpChat: null, mpStake: 0, dgPhase: null, dgFinal: 0,
   };
 
@@ -1537,6 +1557,7 @@ class Component extends DCLogic {
     this.setState({ cards, arts, prog, team, gl: gl || null, loading: false, note, tab: location.hash === '#team' ? 'team' : this.state.tab }, () => { this.save(); if (this.state.tab === 'pfad') this.bioBanner(); });
     this.drawRest();
     this.mpInit();
+    this.migrateLikes();
   }
   componentWillUnmount() {
     this.mpBye();
@@ -2036,7 +2057,8 @@ class Component extends DCLogic {
     if (!fresh.length) return;
     const bag = { ...s.bag }; let likes = 0;
     for (const q of fresh) { likes += q.likes || 0; for (const [id, n] of Object.entries(q.items || {})) bag[id] = (bag[id] || 0) + n; }
-    this.setState({ qdone: [...s.qdone, ...fresh.map(q => q.id)], bag, likes: s.likes + likes }, () => this.save());
+    this.setState({ qdone: [...s.qdone, ...fresh.map(q => q.id)], bag, ...this.lkPatch(s, likes) }, () => this.save());
+    this.walletSend(likes, 'quest');
     for (const q of fresh) this.hint('Quest erledigt: ' + q.title + ' · ' + this.rewardTxt(q), 3200);
   }
   boat(d) {
@@ -2099,7 +2121,8 @@ class Component extends DCLogic {
     if (C.gives === 'boot') parts.push('ein Boot');
     const tip = C.gives === 'boot' ? ' Lauf am Steg einfach ins Wasser, dann fährst du los.' : C.scrolls ? ' Attacken bringst du deinen Karten im Beutel bei.' : '';
     const keys = C.gives && !s.keys.includes(C.gives) ? [...s.keys, C.gives] : s.keys;
-    this.setState({ bag, keys, scrolls: [...s.scrolls, ...(C.scrolls || [])], chests: [...s.chests, key], likes: s.likes + (C.likes || 0), dialog: { who: 'Truhe', text: 'Du findest: ' + parts.join(', ') + '.' + tip, btn: 'Weiter', next: null } }, () => this.save());
+    this.setState({ bag, keys, scrolls: [...s.scrolls, ...(C.scrolls || [])], chests: [...s.chests, key], ...this.lkPatch(s, C.likes || 0), dialog: { who: 'Truhe', text: 'Du findest: ' + parts.join(', ') + '.' + tip, btn: 'Weiter', next: null } }, () => this.save());
+    this.walletSend(C.likes || 0, 'chest');
   }
   spring() {
     const prog = { ...this.state.prog };
@@ -2263,7 +2286,8 @@ class Component extends DCLogic {
     if (!t) { await this.setB({ msg: 'Gewonnen!' }); await this.sleep(800); return this.endBattle(); }
     const bag = { ...this.state.bag }, parts = [];
     for (const [id, n] of Object.entries(t.reward || {})) { bag[id] = (bag[id] || 0) + n; parts.push(`${n}× ${Component.ITEMS[id].name}`); }
-    await new Promise(r => this.setState(s => ({ bag, likes: s.likes + t.likes, beaten: [...s.beaten, t.id] }), r));
+    await new Promise(r => this.setState(s => ({ bag, ...this.lkPatch(s, t.likes), beaten: [...s.beaten, t.id] }), r));
+    this.walletSend(t.likes, 'trainer');
     await this.setB({ msg: `Du hast ${t.name} besiegt! +${t.likes} Likes${parts.length ? ' · ' + parts.join(', ') : ''}` });
     await this.sleep(1800);
     this.endBattle({ who: t.name, text: t.after });
@@ -2545,10 +2569,70 @@ class Component extends DCLogic {
     else if (ch === 'B') this.hint('Eine Bank. Von hier sieht man alle Bilder.', 2200);
   }
   openPanel(kind) {
-    this.setState({ panel: { kind }, shopMsg: '' });
+    this.setState({ panel: { kind }, shopMsg: '', sellArm: null });
     if (kind === 'gal' && !(this.state.gal && this.state.gal.items.length)) this.galLoad('top');
   }
-  closePanel = () => this.setState({ panel: null });
+  closePanel = () => this.setState({ panel: null, sellArm: null });
+  lkAvail(st) { st = st || this.state; return st.gl ? Math.max(0, st.gl.earned - st.gl.spent) : st.likes; }
+  lkPatch(st, n) { return st.gl ? { gl: n >= 0 ? { ...st.gl, earned: st.gl.earned + n } : { ...st.gl, spent: st.gl.spent - n } } : { likes: Math.max(0, st.likes + n) }; }
+  async walletCall(n, why) {
+    if (this.testMode()) {
+      const db = this.testDb(), me = this.testMe(db);
+      if (!db || !me) throw new Error('nicht angemeldet');
+      if (n) { db.ledger = db.ledger || []; db.ledger.push({ user_id: me.id, amount: n, duel_id: why === 'migrate' ? -2 : -1, created: Date.now() }); this.tPut(db); }
+      return this.tStats(db, me.id);
+    }
+    const j = await this.apiCall('/api/wallet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ delta: n, why }) });
+    return { earned: j.earned || 0, spent: j.spent || 0 };
+  }
+  walletSend(n, why) {
+    if (!n || !this.state.gl) return;
+    this._wp = (this._wp || 0) + 1;
+    this.walletCall(n, why).then(g => { if (--this._wp === 0 && !this.dead) this.setState({ gl: g }); })
+      .catch(e => { this._wp--; console.warn(e); this.hint('Likes nicht gespeichert: ' + e.message, 3600); this.walletCall(0, 'sync').then(g => { if (!this.dead) this.setState({ gl: g }); }).catch(() => {}); });
+  }
+  async migrateLikes() {
+    const n = this.state.likes;
+    if (!(n > 0) || !this.state.gl) return;
+    try { const g = await this.walletCall(n, 'migrate'); if (!this.dead) this.setState({ likes: 0, gl: g }, () => { this.save(); this.hint(n + ' Likes aufs gemeinsame Konto übertragen', 3200); }); }
+    catch (e) { console.warn(e); }
+  }
+  sellAct(uid) {
+    if (this.state.shopBusy) return;
+    if (this.state.sellArm !== uid) { this.setState({ sellArm: uid, shopMsg: '' }); return; }
+    this.sellDo(uid);
+  }
+  tSell(id) {
+    const C = Component, db = this.testDb(), me = this.testMe(db);
+    if (!db || !me) throw new Error('nicht angemeldet');
+    db.cards = db.cards || [];
+    const i = db.cards.findIndex(c => c.id === id && c.user_id === me.id);
+    if (i < 0) throw new Error('Karte nicht gefunden');
+    const c = db.cards[i], card = this.state.cards.find(x => x.uid === 'c' + id), price = C.SELL[card ? card.tier : 0] || 1;
+    db.cards.splice(i, 1);
+    db.ledger = db.ledger || [];
+    db.ledger.push({ user_id: me.id, amount: price - (c.caught ? 0 : C.CARD_COST), duel_id: -3, created: Date.now() });
+    this.tPut(db);
+    return { gl: this.tStats(db, me.id), price };
+  }
+  async sellDo(uid) {
+    const s = this.state, c = s.cards.find(x => x.uid === uid);
+    if (!c || s.shopBusy || String(uid).startsWith('demo') || !s.gl) return;
+    this.setState({ shopBusy: true, sellArm: null });
+    let gl, price;
+    try {
+      const id = Number(String(uid).slice(1));
+      if (!this.testMode()) { const j = await this.apiCall('/api/sell', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ card_id: id }) }); gl = { earned: j.earned || 0, spent: j.spent || 0 }; price = j.price; }
+      else { const r = this.tSell(id); gl = r.gl; price = r.price; }
+    } catch (e) { this.setState({ shopBusy: false, shopMsg: 'Fehler: ' + e.message }); return; }
+    this.setState(st => {
+      const prog = { ...st.prog }, arts = { ...st.arts }; delete prog[uid]; delete arts[uid];
+      const left = st.cards.filter(x => x.uid !== uid);
+      let team = st.team.filter(x => x !== uid);
+      if (!team.length) team = left.slice(0, 3).map(x => x.uid);
+      return { shopBusy: false, gl, cards: left, prog, arts, team, flags: { ...st.flags, starter: true }, shopMsg: c.name + ' verkauft: +' + price + ' Likes.' };
+    }, () => this.save());
+  }
   wearAcc(id, on) {
     const s = this.state, A = Component.ACC, it = A.find(a => a.id === id);
     if (!it) return [...s.worn];
@@ -2559,8 +2643,10 @@ class Component extends DCLogic {
     const s = this.state, it = Component.ACC.find(a => a.id === id);
     if (!it) return;
     if (s.owned.includes(id)) { this.setState({ worn: this.wearAcc(id, !s.worn.includes(id)), shopMsg: '' }, () => this.save()); return; }
-    if (s.likes < it.price) { this.setState({ shopMsg: 'Dir fehlen noch ' + (it.price - s.likes) + ' Likes für ' + it.name + '.' }); return; }
-    this.setState({ likes: s.likes - it.price, owned: [...s.owned, id], worn: this.wearAcc(id, true), shopMsg: it.name + ' gekauft und angezogen.' }, () => this.save());
+    const have = this.lkAvail(s);
+    if (have < it.price) { this.setState({ shopMsg: 'Dir fehlen noch ' + (it.price - have) + ' Likes für ' + it.name + '.' }); return; }
+    this.setState({ ...this.lkPatch(s, -it.price), owned: [...s.owned, id], worn: this.wearAcc(id, true), shopMsg: it.name + ' gekauft und angezogen.' }, () => this.save());
+    this.walletSend(-it.price, 'shop');
   }
   shopHeal = fromMachine => {
     const prog = { ...this.state.prog };
@@ -2627,7 +2713,7 @@ class Component extends DCLogic {
   };
   shopStarter = async () => {
     const s = this.state;
-    if (s.shopBusy || s.reveal || s.cards.some(c => !String(c.uid).startsWith('demo'))) return;
+    if (s.shopBusy || s.reveal || (s.flags || {}).starter || s.cards.some(c => !String(c.uid).startsWith('demo'))) return;
     this.setState({ shopBusy: true, shopMsg: '' });
     try {
       const items = (await this.prizeItems()).filter(it => !it.icon && !it.god), low = items.filter(it => this.itemTier(it) <= 2), pool = (low.length >= 3 ? low : items).slice(), pick = [];
@@ -2955,11 +3041,14 @@ class Component extends DCLogic {
       });
     }
     const avail = gl ? Math.max(0, gl.earned - gl.spent) : 0, need = Math.max(0, cost - avail), canN = Math.floor(avail / cost);
-    const noCards = !s.cards.some(c => !String(c.uid).startsWith('demo')), starter = !!gl && noCards;
+    const sellList = P && P.kind === 'shop' && gl ? s.cards.filter(c => !String(c.uid).startsWith('demo')).sort((a, b) => a.tier - b.tier || String(a.name).localeCompare(b.name)) : [];
+    const noCards = !s.cards.some(c => !String(c.uid).startsWith('demo')), starter = !!gl && noCards && !(s.flags || {}).starter;
     Object.assign(out, {
       storeOn: !!(P && P.kind === 'store'), storeKicker: 'Inselladen · ' + C.isle(s.isle).name, storeClose: this.closePanel,
-      storeLikes: s.likes, storeMsg: s.shopMsg, storeHasMsg: !!s.shopMsg, storeYou: this.human({ dir: 'down', frame: 0, coat: '#2f5f8f', cap: '#ec3013', pack: true, fx: s.worn }),
-      storeRows: C.ACC.map(a => { const own = s.owned.includes(a.id), wr = s.worn.includes(a.id), can = s.likes >= a.price; return { name: a.name, text: a.text, price: a.price + ' Likes', own, img: this.human({ dir: 'down', frame: 0, coat: '#2f5f8f', cap: '#ec3013', pack: false, fx: [a.id] }), label: own ? (wr ? 'Ausziehen' : 'Anziehen') : 'Kaufen', cls: own ? (wr ? 'btn btn-secondary' : 'btn btn-primary') : (can ? 'btn btn-primary' : 'btn btn-secondary'), off: !own && !can, go: () => this.accAct(a.id), tag: wr ? 'Getragen' : own ? 'Gekauft' : '' }; }),
+      storeLikes: this.lkAvail(s), storeMsg: s.shopMsg, storeHasMsg: !!s.shopMsg, storeYou: this.human({ dir: 'down', frame: 0, coat: '#2f5f8f', cap: '#ec3013', pack: true, fx: s.worn }),
+      storeRows: C.ACC.map(a => { const own = s.owned.includes(a.id), wr = s.worn.includes(a.id), can = this.lkAvail(s) >= a.price; return { name: a.name, text: a.text, price: a.price + ' Likes', own, img: this.human({ dir: 'down', frame: 0, coat: '#2f5f8f', cap: '#ec3013', pack: false, fx: [a.id] }), label: own ? (wr ? 'Ausziehen' : 'Anziehen') : 'Kaufen', cls: own ? (wr ? 'btn btn-secondary' : 'btn btn-primary') : (can ? 'btn btn-primary' : 'btn btn-secondary'), off: !own && !can, go: () => this.accAct(a.id), tag: wr ? 'Getragen' : own ? 'Gekauft' : '' }; }),
+      sellOn: sellList.length > 0, sellOff: s.shopBusy, sellCount: sellList.length + (sellList.length === 1 ? ' Karte' : ' Karten'), sellPrices: C.TIERS.map((x, i) => x[0] + ' ' + C.SELL[i]).join(' · ') + ' Likes',
+      sellRows: sellList.map(c => { const p = C.SELL[c.tier] || 1, arm = s.sellArm === c.uid; return { name: c.name, tier: C.TIERS[c.tier][0], tierBg: C.TIERS[c.tier][1], inTeam: s.team.includes(c.uid) ? 'Team' : '', bgFull: (s.arts[c.uid] || 'none') + ' center / contain no-repeat, ' + c.color, label: arm ? 'Wirklich? +' + p : 'Verkaufen · +' + p, cls: arm ? 'btn btn-primary' : 'btn btn-secondary', go: () => this.sellAct(c.uid) }; }),
       shopOn: !!(P && P.kind === 'shop'), shopKicker: 'Kartenladen · ' + C.isle(s.isle).name,
       shopLine: !gl ? 'Zum Ziehen erst anmelden.' : starter ? 'Deine ersten 3 Karten gehen aufs Haus.' : need ? 'Noch ' + need + (need === 1 ? ' Like' : ' Likes') + ' bis zur nächsten Karte' : '', shopHasLine: !gl || starter || need > 0,
       shopClerk: this.human({ dir: 'down', frame: 0, coat: '#ec3013', cap: '#fbfaf8' }),
@@ -3115,7 +3204,7 @@ class Component extends DCLogic {
     const s = this.state, w = s.wheel, C = Component; if (!w || w.busy || w.prize || this.ws || w.pool !== 'ok') return;
     const free = ((s.flags || {}).wfree || 0) > 0;
     this.wAudio();
-    if (!free && s.likes < 1) { this.wSfx('nope'); this.setState(st => ({ wheel: { ...st.wheel, line: 'Keine Likes mehr? Besieg ein paar Trainer und komm wieder. Ich warte hier.' } })); return; }
+    if (!free && this.lkAvail(s) < 1) { this.wSfx('nope'); this.setState(st => ({ wheel: { ...st.wheel, line: 'Keine Likes mehr? Besieg ein paar Trainer und komm wieder. Ich warte hier.' } })); return; }
     const G = this.wheelGeo(), pool = this._pool || {}, n = G.segs.length;
     const ok = g => { const K = C.WK[g.k]; return !K.tier || (pool[K.tier] && pool[K.tier].length > 0); };
     let th = 0, seg = null;
@@ -3136,7 +3225,8 @@ class Component extends DCLogic {
     this.wMode = 'spin';
     this.wSfx('start');
     const spinL = ['Jaaa, dreh dich, mein Schätzchen!', 'Ich hab ein gutes Gefühl bei dem hier!', 'Gold, Gold, Gold …', 'Psst, das Rad hört zu.', 'Komm schon, komm schon …'];
-    this.setState(st => ({ likes: free ? st.likes : st.likes - 1, flags: { ...st.flags, spins: ((st.flags || {}).spins || 0) + 1, wfree: free ? (st.flags.wfree || 1) - 1 : ((st.flags || {}).wfree || 0) }, wheel: { ...st.wheel, busy: true, line: spinL[Math.floor(Math.random() * spinL.length)] } }), () => this.save());
+    if (!free) this.walletSend(-1, 'wheel');
+    this.setState(st => ({ ...(free ? {} : this.lkPatch(st, -1)), flags: { ...st.flags, spins: ((st.flags || {}).spins || 0) + 1, wfree: free ? (st.flags.wfree || 1) - 1 : ((st.flags || {}).wfree || 0) }, wheel: { ...st.wheel, busy: true, line: spinL[Math.floor(Math.random() * spinL.length)] } }), () => this.save());
     if (!free) this.pulseLikes(0.9);
   };
   wLoop = t => {
@@ -3193,11 +3283,12 @@ class Component extends DCLogic {
     }
     if (K.likes) {
       const hi = K.likes >= 10;
+      this.walletSend(K.likes, 'wheel');
       this.wFlash(hi ? 0.7 : 0.35); this.wSfx(hi ? 'bigcoins' : 'coins');
       this.wConfetti(hi ? 110 : 50, ['#ec3013', '#f6c4b8', '#fbfaf8', '#f2cf5b']);
       if (hi) { this.wRain(90, ['#ec3013', '#f2cf5b', '#fbfaf8']); const root = this.wRootRef.current; if (root) root.animate([{ transform: 'translate(0,0)' }, { transform: 'translate(-6px,3px)' }, { transform: 'translate(5px,-4px)' }, { transform: 'translate(0,0)' }], { duration: 360 }); }
       setTimeout(() => this.pulseLikes(1.35), 60);
-      return this.wFinish({ k, title: '+' + K.likes + ' LIKES', bg: K.bg, fg: K.fg }, hi ? `WAS?! ${K.likes} Likes auf einen Schlag! Das Rad ist in Spendierlaune!` : `Ha! ${K.likes} Likes zurück. Mehr Likes, mehr Drehs!`, st => ({ likes: st.likes + K.likes }));
+      return this.wFinish({ k, title: '+' + K.likes + ' LIKES', bg: K.bg, fg: K.fg }, hi ? `WAS?! ${K.likes} Likes auf einen Schlag! Das Rad ist in Spendierlaune!` : `Ha! ${K.likes} Likes zurück. Mehr Likes, mehr Drehs!`, st => this.lkPatch(st, K.likes));
     }
     if (K.free) {
       this.wFlash(0.35); this.wSfx('free'); this.wConfetti(44, ['#e0b48a', '#f2cf5b', '#fbfaf8']);
@@ -3221,7 +3312,8 @@ class Component extends DCLogic {
     try { if (!it) throw new Error('kein Wesen gefunden'); raw = await this.claimItem(it.id, it.ticket); f = this.foeFromItem(it, K.tier >= 4 ? 8 : 7); }
     catch (e) {
       if (rays) rays.style.background = C.RAYS;
-      return this.wFinish({ k: 'niete', title: 'FEHLER', bg: '#5a514d', fg: '#fbfaf8' }, 'Mist, da klemmt was (' + e.message + '). Dein Like bekommst du zurück.', st => ({ likes: ws.free ? st.likes : st.likes + 1 }));
+      return this.wFinish({ k: 'niete', title: 'FEHLER', bg: '#5a514d', fg: '#fbfaf8' }, 'Mist, da klemmt was (' + e.message + '). Dein Like bekommst du zurück.', st => (ws.free ? {} : this.lkPatch(st, 1)));
+      if (!ws.free) this.walletSend(1, 'wheel');
     }
     const inTeam = await this.addCard(raw, f, 'Glücksrad', false), card = this.cardFrom(raw);
     await this.sleep(god ? 2700 : 1300);
@@ -3350,8 +3442,8 @@ class Component extends DCLogic {
     return {
       wheelOn: true, wGrad: G.grad, wBig: G.big, decoRef: this.decoRef, glowRef: this.glowRef, wSegs: G.labels, wBulbs: G.bulbs, wLine: W.line, wManImg: this.oldMan('sit'),
       wHasFree: free > 0, wFreeTxt: free === 1 ? '1 Freidreh übrig' : free + ' Freidrehs übrig',
-      wSpinLabel: W.busy ? 'Dreht …' : loading ? 'Rad wird geölt …' : free > 0 ? 'Gratis drehen' : s.likes < 1 ? 'Keine Likes mehr' : 'Drehen · 1 Like',
-      wSpinOff: !!W.busy || loading || !!P || (free < 1 && s.likes < 1), wBusy: !!W.busy,
+      wSpinLabel: W.busy ? 'Dreht …' : loading ? 'Rad wird geölt …' : free > 0 ? 'Gratis drehen' : this.lkAvail(s) < 1 ? 'Keine Likes mehr' : 'Drehen · 1 Like',
+      wSpinOff: !!W.busy || loading || !!P || (free < 1 && this.lkAvail(s) < 1), wBusy: !!W.busy,
       wHist: W.hist.map(chip), wOdds: odds,
       wResTitle: res.title, wResBg: res.bg, wResFg: res.fg,
       wHasPrize: !!P, wPrizeHead: P ? (P.tier >= 6 ? 'GODLIKE!!!' : P.tier === 5 ? 'IKONE!!!' : P.tier === 4 ? 'HOLO-WESEN!' : 'GOLD-WESEN!') : '', wPrizeName: P ? P.name : '', wPrizeTier: P ? C.TIERS[P.tier][0] : '',
@@ -4409,7 +4501,7 @@ class Component extends DCLogic {
     const hdir = s.dir === 'left' || s.dir === 'right' ? 'side' : s.dir;
     const d = s.dialog;
     return {
-      likes: s.likes, note: s.note, loading: s.loading,
+      likes: this.lkAvail(s), note: s.note, loading: s.loading,
       tQuest: tabCls('quest'), goQuest: goTab('quest'), isQuest: tab === 'quest' && ready, questCols, hasTrack: !!tq, trackTitle: tq ? tq.title : '', trackText: tq ? tq.text : '',
       hasHint: !!s.hint, hint: s.hint, hintL: ['0%', '50%', '100%'][hSide], hintTx: ['translateX(0)', 'translateX(-50%)', 'translateX(-100%)'][hSide], hintTop: hBelow ? '125%' : 'auto', hintBot: hBelow ? 'auto' : '175%',
       isleName: D.name, keyRows: s.keys.includes('boot') ? [{ name: 'Boot', text: 'Setzt du automatisch ein, sobald du ins Wasser läufst.' }] : [],
