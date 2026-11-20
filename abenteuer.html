@@ -262,6 +262,52 @@
       </div>
     </sc-if>
 
+    <sc-if value="{{ towerOn }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ towerClose }}" style="position:absolute;inset:0;z-index:6;overflow:auto;background:rgba(32,30,29,.6);display:flex;padding:16px;box-sizing:border-box">
+        <div onClick="{{ revealStop }}" style="margin:auto;width:min(420px,100%);background:#fbfaf8;border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ towerKicker }}</span>
+              <span style="font-family:var(--font-heading);font-weight:800;font-size:26px;line-height:1">Der Turm</span>
+            </div>
+            <button class="btn btn-ghost btn-icon" onClick="{{ towerClose }}" aria-label="Schließen" style="width:36px;height:36px;padding:0;justify-content:center;font-size:22px">×</button>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:12px;border-top:2px solid var(--color-text);border-bottom:2px solid var(--color-text);padding:10px 0">
+            <span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">Etage</span>
+            <span style="font-family:var(--font-heading);font-weight:800;font-size:56px;line-height:.9">{{ towerNext }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <sc-for list="{{ towerInfo }}" as="l" hint-placeholder-count="3">
+              <span style="font-size:14px;font-weight:700">{{ l }}</span>
+            </sc-for>
+            <span style="font-size:12.5px;line-height:1.4;color:var(--color-neutral-700);padding-top:4px">{{ towerBest }}. Dein Team wird vor jedem Kampf geheilt.</span>
+          </div>
+          <sc-if value="{{ towerHasMsg }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:14px;font-weight:700;color:var(--color-accent-700)">{{ towerMsg }}</span>
+          </sc-if>
+          <sc-if value="{{ towerNoTeam }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:13px;font-weight:600;color:var(--color-neutral-700)">Du brauchst mindestens eine Karte im Team.</span>
+          </sc-if>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onClick="{{ towerGo }}" disabled="{{ towerGoOff }}" style="justify-content:flex-start">Etage betreten</button>
+            <button class="btn btn-secondary" onClick="{{ towerClose }}" style="justify-content:flex-start">Zurück</button>
+          </div>
+          <div style="display:flex;flex-direction:column;border-top:2px solid var(--color-text);padding-top:12px;gap:6px">
+            <span style="font-family:var(--font-heading);font-weight:800;font-size:18px">Rangliste</span>
+            <div style="display:grid;grid-template-columns:32px 1fr auto;gap:0 10px;padding:4px 8px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700);border-bottom:2px solid var(--color-text)"><span>#</span><span>Name</span><span>Etagen</span></div>
+            <div style="max-height:min(34vh,240px);overflow:auto;display:flex;flex-direction:column">
+              <sc-for list="{{ towerRows }}" as="r" hint-placeholder-count="0">
+                <div style="display:grid;grid-template-columns:32px 1fr auto;gap:0 10px;align-items:baseline;padding:6px 8px;border-bottom:1px solid var(--color-neutral-300);background:{{ r.bg }};font-size:14px;font-weight:{{ r.fw }}"><span>{{ r.rank }}</span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.name }}</span><span style="font-family:var(--font-heading);font-weight:800;font-size:16px">{{ r.floor }}</span></div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ towerHasRankMsg }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:13px;font-weight:600;color:var(--color-neutral-700)">{{ towerRankMsg }}</span>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
     <sc-if value="{{ galOn }}" hint-placeholder-val="{{ false }}">
       <div style="position:absolute;inset:0;z-index:6;overflow:auto;background:var(--color-bg)">
         <div style="max-width:1280px;margin:0 auto;padding:16px 20px 32px;display:flex;flex-direction:column;gap:16px">
@@ -629,7 +675,7 @@
                     <button class="btn btn-secondary" onClick="{{ bCatch }}" disabled="{{ catchOff }}" style="justify-content:flex-start">Fangen</button>
                     <button class="btn btn-secondary" onClick="{{ bBagOpen }}" style="justify-content:flex-start">Beutel</button>
                     <button class="btn btn-secondary" onClick="{{ bTeamOpen }}" style="justify-content:flex-start">Team</button>
-                    <button class="btn btn-ghost" onClick="{{ bRun }}" style="justify-content:flex-start;grid-column:1 / -1">Fliehen</button>
+                    <button class="btn btn-ghost" onClick="{{ bRun }}" style="justify-content:flex-start;grid-column:1 / -1">{{ bRunLabel }}</button>
                   </div>
                   <sc-if value="{{ catchOff }}" hint-placeholder-val="{{ false }}">
                     <span style="font-size:12px;color:var(--color-neutral-700)">{{ catchOffTxt }}</span>
@@ -935,7 +981,8 @@
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-secondary" onClick="{{ pwChat }}" style="justify-content:flex-start">Chatten</button>
-          <button class="btn btn-primary" onClick="{{ pwDuel }}" disabled="{{ pwDuelOff }}" style="justify-content:flex-start">Herausfordern</button>
+          <button class="btn btn-secondary" onClick="{{ pwDuel }}" disabled="{{ pwDuelOff }}" style="justify-content:flex-start">Schnapp-Duell</button>
+          <button class="btn btn-primary" onClick="{{ pwPvp }}" disabled="{{ pwPvpOff }}" style="justify-content:flex-start">Kartenkampf</button>
           <button class="btn btn-ghost" onClick="{{ pwClose }}" style="justify-content:flex-start">Schließen</button>
         </div>
       </div>
@@ -984,7 +1031,7 @@
         <div style="margin:auto;width:min(940px,100%);background:var(--color-bg);border:2px solid var(--color-text);box-shadow:var(--shadow-lg);display:flex;flex-direction:column">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:2px solid var(--color-text)">
             <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
-              <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Schnapp-Duell</span>
+              <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ dgKicker }}</span>
               <span style="font-family:var(--font-heading);font-size:24px;font-weight:800;line-height:1.1;overflow-wrap:anywhere">Du gegen {{ dgOpp }}</span>
             </div>
             <sc-if value="{{ dgCanCancel }}" hint-placeholder-val="{{ false }}">
@@ -996,14 +1043,14 @@
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))">
               <div style="padding:16px;display:flex;flex-direction:column;gap:18px;border-right:2px solid var(--color-text)">
                 <div style="display:flex;flex-direction:column;gap:10px">
-                  <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">So geht’s · 30 Sekunden</span>
-                  <span style="font-size:15px;line-height:1.45;text-wrap:pretty">Aus 9 Löchern springen Wesen. Tipp sie an, bevor sie wieder abtauchen. Ihr beide bekommt genau dieselben Wesen zur selben Zeit.</span>
+                  <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ dgRuleKicker }}</span>
+                  <span style="font-size:15px;line-height:1.45;text-wrap:pretty">{{ dgRuleText }}</span>
                   <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
                     <sc-for list="{{ dgRules }}" as="r" hint-placeholder-count="4">
                       <div style="display:flex;align-items:center;gap:8px"><span style="flex:none;min-width:44px;height:32px;padding:0 6px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;background:{{ r.bg }};color:{{ r.fg }};font-weight:800;font-size:14px">{{ r.pts }}</span><span style="font-size:13px;font-weight:700;line-height:1.3">{{ r.text }}</span></div>
                     </sc-for>
                   </div>
-                  <span style="font-size:13px;line-height:1.4;color:var(--color-neutral-700);text-wrap:pretty">Mehr Punkte gewinnt den Einsatz des anderen. Gleichstand: jeder bekommt seinen Einsatz zurück. Wer vorher geht, verliert. Tastatur: Q W E · A S D · Y X C</span>
+                  <span style="font-size:13px;line-height:1.4;color:var(--color-neutral-700);text-wrap:pretty">{{ dgRuleNote }}</span>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:10px;border-top:2px solid var(--color-text);padding-top:14px">
                   <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
@@ -1293,6 +1340,14 @@ class Component extends DCLogic {
   static RAYS_GOLD = 'repeating-conic-gradient(from 0deg,rgba(242,207,91,.45) 0deg 7.5deg,rgba(236,48,19,.28) 7.5deg 15deg)';
   static CARD_COST = 3;
   static SELL = [1, 2, 5, 10, 20, 40, 80];
+  static pvpRng(seed, turn, tag) {
+    let h = (Math.imul(seed | 0, 2654435761) ^ Math.imul(turn + 1, 40503) ^ Math.imul(tag + 1, 69069)) >>> 0;
+    return () => { h = (h + 0x6D2B79F5) >>> 0; let x = h; x = Math.imul(x ^ (x >>> 15), x | 1); x ^= x + Math.imul(x ^ (x >>> 7), x | 61); return ((x ^ (x >>> 14)) >>> 0) / 4294967296; };
+  }
+  static kampfPower(sn) { return sn.reduce((n, u) => n + u.at.reduce((m, id) => m + (((Component.ATT[id] || {}).heal) ? 0 : ((Component.ATT[id] || {}).kraft || 0)), 0), 0); }
+  static towerCount(n) { return n >= 15 ? 3 : n >= 6 ? 2 : 1; }
+  static towerLv(n, i) { return Math.round(2 + n * 1.3 + i * 0.6 + (n % 10 === 0 ? 3 : 0)); }
+  static towerReward(n) { return { likes: Math.min(400, Math.round(2 + n * 1.2 + n * n * 0.06)), items: n % 10 === 0 ? { supertrank: 2, riechsalz: 1 } : n % 5 === 0 ? { supertrank: 1 } : {} }; }
   static CARD_TIERS = [
     { name: 'Papier', img: 'linear-gradient(#fbfaf8,#fbfaf8)' },
     { name: 'Bronze', img: 'linear-gradient(135deg,#6e3f1a 0%,#b5753f 30%,#f0c08e 50%,#b5753f 70%,#6e3f1a 100%)' },
@@ -1315,6 +1370,8 @@ class Component extends DCLogic {
   static CARD_GOD_RAYS_BG = 'repeating-conic-gradient(from 0deg, rgba(251,250,248,.5) 0deg 4deg, rgba(251,250,248,0) 4deg 14deg, rgba(236,48,19,.6) 14deg 16deg, rgba(251,250,248,0) 16deg 30deg)';
   static STAT_NAMES = [['Arschfix', 'Arschfix-Skill'], ['Chill', 'Chill-Skill'], ['Gurke', 'Gurkenresonanz']];
   static ROOMS = {
+    tower: { name: 'Turm', w: 9, h: 8, start: [4, 6], npc: { x: 4, y: 1, coat: '#4a4f66', cap: '#f2cf5b' }, info: 'Turmwächter: Etagen besteigen',
+      map: ['WWWWWWWWW', 'W..KNK..W', 'W.......W', 'WP.....PW', 'W..T.T..W', 'W.......W', 'W.......W', 'WWWWEWWWW'] },
     store: { name: 'Inselladen', w: 11, h: 8, start: [5, 6], npc: { x: 5, y: 1, coat: '#3f7fa8', cap: '#fbfaf8' }, info: 'Tresen: Accessoires kaufen',
       map: ['WWWWWWWWWWW', 'WRR..N..RRW', 'W..KKKKK..W', 'W.........W', 'WP.......PW', 'W..T...T..W', 'W.........W', 'WWWWWEWWWWW'] },
     shop: { name: 'Kartenladen', w: 11, h: 8, start: [5, 6], npc: { x: 5, y: 1, coat: '#ec3013', cap: '#fbfaf8' }, info: 'Tresen: Karten · Gerät: heilen',
@@ -1357,7 +1414,7 @@ class Component extends DCLogic {
         arena: { b: 'arena', x0: 53, y0: 34, y1: 42, gates: [[52, 38], [53, 38], [52, 39], [53, 39], [58, 33], [59, 33], [58, 34], [59, 34]] },
         nodes: { ...C.NODES, ...C.HEIM_X.nodes }, edges: C.EDGES, extra: C.HEIM_X.edges, dock: { x: 30, y0: 43, y1: 46, b: 'see' },
         springs: C.SPRINGS, chests: [...C.CHESTS, ...C.HEIM_X.chests], trainers: [...C.TRAINERS, ...C.HEIM_X.trainers], start: 'S',
-        houses: [{ kind: 'shop', x: 2, y: 16, node: 'S' }, { kind: 'gal', x: 8, y: 16, node: 'S' }], exit: { dy: 1, to: 'glut', y: 0 }, exits: [{ dy: 1, to: 'glut', y: 0 }, { dx: 1, to: 'mond', x: 0 }], bossInfo: 'Hier wartet die Hüterin. Dahinter liegen zwei Truhen.' },
+        houses: [{ kind: 'shop', x: 2, y: 16, node: 'S' }, { kind: 'gal', x: 8, y: 16, node: 'S' }, { kind: 'tower', x: 12, y: 16, node: 'A' }], exit: { dy: 1, to: 'glut', y: 0 }, exits: [{ dy: 1, to: 'glut', y: 0 }, { dx: 1, to: 'mond', x: 0 }], bossInfo: 'Hier wartet die Hüterin. Dahinter liegen zwei Truhen.' },
       glut: { id: 'glut', name: 'Glutinsel', seed: 'welt-2', pre: 'glut:', land: [10, 53], sea: [0, 9], coast: [10, 13, -1],
         bios: ['strand', 'dschungel', 'moor', 'vulkan'], open: 'strand', count: { strand: 7, dschungel: 7, moor: 7, vulkan: 6 },
         arena: { b: 'tempel', x0: 50, y0: 43, y1: 52, gates: [[49, 47], [50, 47], [49, 48], [50, 48], [56, 42], [57, 42], [56, 43], [57, 43]] },
@@ -1461,6 +1518,7 @@ class Component extends DCLogic {
     pilz: { sky: '#e5d9e3', hill: '#b79ab5', ground: '#a58fa5', floor: '#d6c6d2', ring: '#b9a3b6', stone: '#c2453a', line: '#8a2c24', shape: 'mush', tuft: '#8a5aa8' },
     ruine: { sky: '#e8e6dc', hill: '#b9b5a0', ground: '#b4b09c', floor: '#d8d4c2', ring: '#bdb8a2', stone: '#d6d2c0', line: '#9a9684', shape: 'column', tuft: '#9a9684' },
     schnee: { sky: '#e6eef3', hill: '#c9dae4', ground: '#e8f0f4', floor: '#f6fafc', ring: '#c4d6e0', stone: '#e8f1f5', line: '#7c9aa8', shape: 'pine', peaks: true, tuft: '#a9c4d2' },
+    turm: { sky: '#2b3045', hill: '#454c6a', ground: '#5b6380', floor: '#7d86a6', ring: '#656e8e', stone: '#b9bfd4', line: '#8089a8', shape: 'column', tuft: '#9aa3c0' },
     mond: { sky: '#242a45', hill: '#3c4466', ground: '#59618a', floor: '#8a92b5', ring: '#6c7498', stone: '#c5cbe0', line: '#8d95b8', shape: 'column', flags: true, dark: true, tuft: '#c5cbe0' },
   };
   static DEMO = [['Bohnito', 'bohne'], ['Tropfine', 'tropfen'], ['Kieselkurt', 'kiesel'], ['Hornhilde', 'horn']];
@@ -1516,7 +1574,7 @@ class Component extends DCLogic {
   state = {
     tab: 'pfad', loading: true, note: 'Karten werden geladen …', cards: [], arts: {}, hint: '', frame: 0,
     ...this.fromSave({}),
-    dialog: null, spot: null, battle: null, pick: null, menu: false, pad: false, banner: null, panel: null, reveal: null, inside: null, gl: null, gal: null, tmSort: 'new', shopBusy: false, shopMsg: '', sellArm: null, galTick: 0, toast: '', pvMe: 0, askReset: false, vpW: 0, vpH: 0, mgView: null, pop: null, block: '',
+    dialog: null, spot: null, battle: null, pick: null, menu: false, pad: false, banner: null, panel: null, reveal: null, inside: null, gl: null, gal: null, tmSort: 'new', shopBusy: false, shopMsg: '', sellArm: null, tRank: null, galTick: 0, toast: '', pvMe: 0, askReset: false, vpW: 0, vpH: 0, mgView: null, pop: null, block: '',
     mpOn: true, mpStatus: 'off', mpAwayTxt: '', mpT: 0, mpMsgs: [], mpNotes: [], mpDuel: null, mpWin: null, mpChat: null, mpStake: 0, dgPhase: null, dgFinal: 0,
   };
 
@@ -1907,7 +1965,7 @@ class Component extends DCLogic {
     const vals = [val(a), val(c), val(g)];
     return { ovr, vals: tier === 6 ? vals.map(v => Math.max(v, 96)) : vals };
   }
-  maxKp(c, lv) { const b = 40 + Math.round(c.st.ovr / 2) + (lv - 1) * 4; return c.tier === 6 ? Math.round(b * 1.8) : b; }
+  maxKp(c, lv) { const b = 40 + Math.round(c.st.ovr / 2) + (lv - 1) * 6; return c.tier === 6 ? Math.round(b * 1.8) : b; }
   need(lv) { return 20 * lv; }
   meStats(uid) {
     const s = this.state, c = s.cards.find(x => x.uid === uid), p = s.prog[uid];
@@ -1932,9 +1990,9 @@ class Component extends DCLogic {
     const T = Component.TYPES, d = (T.indexOf(dt) - T.indexOf(at) + 7) % 7;
     return d === 1 || d === 2 ? 1.5 : d === 5 || d === 6 ? 0.67 : 1;
   }
-  dmg(A, att, def) {
-    const eff = this.eff(A.typ, def.typ), stab = A.typ === att.typ ? 1.25 : 1, crit = Math.random() < (att.g || 40) / 450;
-    const d = A.kraft * (0.6 + att.a / 120) * (1.15 - def.c / 250) * eff * stab * (1 + 0.07 * (att.lv - 1)) * (0.85 + Math.random() * 0.15) * (crit ? 1.5 : 1);
+  dmg(A, att, def, rnd) {
+    const R = rnd || Math.random, eff = this.eff(A.typ, def.typ), stab = A.typ === att.typ ? 1.25 : 1, crit = R() < (att.g || 40) / 450;
+    const d = A.kraft * (0.6 + att.a / 120) * (1.15 - def.c / 250) * eff * stab * (1 + (att.uid ? 0.09 : 0.07) * (att.lv - 1)) * (0.85 + R() * 0.15) * (crit ? 1.5 : 1);
     return { d: Math.max(1, Math.round(d)), eff, crit };
   }
   save() {
@@ -2144,22 +2202,23 @@ class Component extends DCLogic {
     const rnd = this.rng('trainer-' + t.id);
     await this.startBattle(t.boss ? 'boss' : 'trainer', t.team.map(([m, lv]) => this.makeFoe(m, lv, rnd)), t, this.cell(t.x, t.y).b);
   }
-  async startBattle(kind, foes, t, bio) {
-    const mi = this.aliveIdx(); if (mi < 0) return;
+  async startBattle(kind, foes, t, bio, extra) {
+    const mi = extra && extra.mi != null ? extra.mi : this.aliveIdx(); if (mi < 0) return;
     this.turnBusy = true;
     if (this._vp) await this.go(this._vp, [{ opacity: 1 }, { opacity: 0.15 }, { opacity: 1 }, { opacity: 0.15 }, { opacity: 1 }], { duration: 560 });
-    await new Promise(r => this.setState({ battle: { kind, foes, fi: 0, mi, tid: t ? t.id : null, bio, phase: 'busy', msg: '', meIn: false, foeIn: false } }, r));
+    await new Promise(r => this.setState({ battle: { kind, foes, fi: 0, mi, tid: t ? t.id : null, who: t ? t.name : 'Der Turm', bio, phase: 'busy', msg: '', meIn: false, foeIn: false, ...(extra || {}) } }, r));
     await this.raf(); await this.raf();
     const st = this.stageRef.current;
     if (st) { const top = st.getBoundingClientRect().top + window.scrollY - 12; if (Math.abs(window.scrollY - top) > 40) window.scrollTo({ top, behavior: 'smooth' }); }
     const f = foes[0];
     await this.enter('foe');
-    await this.setB({ msg: kind === 'wild' ? `Ein wildes ${f.name} (${Component.TN[f.typ]}, ${Component.TIERS[f.tier || 0][0]}) springt aus dem ${(Component.BIO[bio] || Component.BIO.wiese).enc}!` : `${t.name} schickt ${f.name} (${Component.TN[f.typ]}) in den Kampf!` });
+    await this.setB({ msg: kind === 'wild' ? `Ein wildes ${f.name} (${Component.TN[f.typ]}, ${Component.TIERS[f.tier || 0][0]}) springt aus dem ${(Component.BIO[bio] || Component.BIO.wiese).enc}!` : kind === 'pvp' ? f.name + ' (' + Component.TN[f.typ] + ') von ' + extra.who + ' tritt an!' : kind === 'tower' ? `Etage ${extra.floor}: ${f.name} (${Component.TN[f.typ]}) tritt an!` : `${t.name} schickt ${f.name} (${Component.TN[f.typ]}) in den Kampf!` });
     await this.sleep(1300);
     const me = this.meStats(this.state.team[mi]);
     await this.setB({ msg: `Los, ${me.name}!` });
     await this.enter('me');
     await this.sleep(450);
+    if (extra && extra.hold) return;
     this.turnBusy = false;
     this.menu();
   }
@@ -2191,6 +2250,7 @@ class Component extends DCLogic {
   };
   async turn(action) {
     const B = () => this.state.battle, foe = () => B().foes[B().fi], me = () => this.meStats(this.state.team[B().mi]);
+    if (B().kind === 'pvp') return this.kampfTurn(action);
     if (action.type === 'run') {
       if (B().kind !== 'wild') { await this.setB({ msg: 'Vor einem Trainer läuft man nicht weg!' }); await this.sleep(1100); return this.menu(); }
       await this.setB({ msg: 'Du bist entkommen.' }); await this.sleep(800); return this.endBattle();
@@ -2227,7 +2287,7 @@ class Component extends DCLogic {
     if (Math.random() < 0.3) return opts[Math.floor(Math.random() * opts.length)];
     return opts.reduce((best, id) => { const v = A[id].kraft * this.eff(A[id].typ, me.typ) * (A[id].typ === f.typ ? 1.25 : 1); return v > best[1] ? [id, v] : best; }, [opts[0], -1])[0];
   }
-  async attack(side, id) {
+  async attack(side, id, pre) {
     const A = Component.ATT[id]; if (!A) return;
     const b = this.state.battle, foe = b.foes[b.fi], me = this.meStats(this.state.team[b.mi]);
     const att = side === 'me' ? me : foe, def = side === 'me' ? foe : me;
@@ -2236,15 +2296,15 @@ class Component extends DCLogic {
     await this.sleep(420);
     await this.fx(A, fromEl, toEl);
     if (A.heal) {
-      const amt = Math.min(att.maxKp - att.kp, Math.round(att.maxKp * A.heal));
-      await this.setKp(side, att.kp + amt);
+      const amt = pre ? pre.heal : Math.min(att.maxKp - att.kp, Math.round(att.maxKp * A.heal));
+      await this.setKp(side, pre ? pre.attKp : att.kp + amt);
       this.float(fromEl, '+' + amt, '#2f7d3b');
       await this.setB({ msg: `${att.name} hält ein Nickerchen und erholt sich.` });
       await this.sleep(1000);
       return;
     }
-    const r = this.dmg(A, att, def);
-    await this.setKp(side === 'me' ? 'foe' : 'me', Math.max(0, def.kp - r.d));
+    const r = pre ? { d: pre.d, eff: pre.eff, crit: pre.crit } : this.dmg(A, att, def);
+    await this.setKp(side === 'me' ? 'foe' : 'me', Math.max(0, pre ? pre.defKp : def.kp - r.d));
     this.float(toEl, '−' + r.d, '#ec3013');
     await this.hit(toEl, r.eff > 1 || r.crit);
     const notes = [];
@@ -2261,28 +2321,34 @@ class Component extends DCLogic {
       await new Promise(r => this.setState(s => { const b = s.battle; if (!b) return null; const foes = b.foes.slice(); foes[b.fi] = { ...foes[b.fi], kp: v }; return { battle: { ...b, foes } }; }, r));
     }
   }
-  async gainEp(uid, ep) {
-    const m = this.meStats(uid); if (!m) return;
-    await this.setB({ msg: `${m.name} bekommt ${ep} EP.` });
-    await this.sleep(800);
-    let lv = m.lv, cur = m.ep + ep, up = 0;
-    while (cur >= this.need(lv)) { cur -= this.need(lv); lv++; up++; }
-    const kp = m.kp + up * 4;
-    await new Promise(r => this.setState(s => ({ prog: { ...s.prog, [uid]: { ...s.prog[uid], lv, ep: cur, kp } } }), r));
-    if (up) { await this.setB({ msg: `${m.name} erreicht Stufe ${lv}!` }); await this.sleep(1100); }
+  async gainTeamEp(base) {
+    const s = this.state, act = s.team[s.battle ? s.battle.mi : 0], half = Math.round(base / 2), prog = { ...s.prog }, ups = [];
+    for (const u of s.team) {
+      const m = this.meStats(u), p = prog[u]; if (!m || !p) continue;
+      let lv = m.lv, cur = m.ep + (u === act ? base : half), up = 0;
+      while (cur >= this.need(lv)) { cur -= this.need(lv); lv++; up++; }
+      prog[u] = { ...p, lv, ep: cur, kp: p.kp == null ? null : p.kp > 0 ? p.kp + up * 6 : 0 };
+      if (up) ups.push(m.name + ' erreicht Stufe ' + lv + '!');
+    }
+    const am = this.meStats(act);
+    await this.setB({ msg: s.team.length > 1 ? 'Dein Team bekommt EP: ' + (am ? am.name : '') + ' ' + base + ', die anderen je ' + half + '.' : (am ? am.name : 'Deine Karte') + ' bekommt ' + base + ' EP.' });
+    await this.sleep(900);
+    await new Promise(r => this.setState({ prog }, r));
+    for (const m of ups) { await this.setB({ msg: m }); await this.sleep(1100); }
   }
   async foeDown() {
     const b = this.state.battle, f = b.foes[b.fi], t = this.world().trainers.find(x => x.id === b.tid);
     await this.setB({ msg: `${f.name} ist erschöpft!` });
     await this.leave('foe', true);
     await this.sleep(300);
-    await this.gainEp(this.state.team[b.mi], Math.round(f.lv * (b.kind === 'wild' ? 8 : 12)));
+    await this.gainTeamEp(f.ep != null ? f.ep : Math.round(f.lv * (b.kind === 'wild' ? 8 : 12)));
     if (b.fi + 1 < b.foes.length) {
       const nx = b.foes[b.fi + 1];
-      await this.setB({ fi: b.fi + 1, msg: `${t.name} schickt ${nx.name} (${Component.TN[nx.typ]})!` });
+      await this.setB({ fi: b.fi + 1, msg: `${b.who} schickt ${nx.name} (${Component.TN[nx.typ]})!` });
       await this.enter('foe'); await this.sleep(700);
       return this.menu();
     }
+    if (b.kind === 'tower') return this.towerWin(b);
     if (!t) { await this.setB({ msg: 'Gewonnen!' }); await this.sleep(800); return this.endBattle(); }
     const bag = { ...this.state.bag }, parts = [];
     for (const [id, n] of Object.entries(t.reward || {})) { bag[id] = (bag[id] || 0) + n; parts.push(`${n}× ${Component.ITEMS[id].name}`); }
@@ -2299,6 +2365,13 @@ class Component extends DCLogic {
     await this.sleep(400);
     if (this.aliveIdx() >= 0) { await this.setB({ phase: 'force', msg: 'Welche Karte soll weiterkämpfen?' }); return; }
     await this.setB({ msg: 'Alle Karten im Team sind erschöpft …' }); await this.sleep(1400);
+    if (b.kind === 'tower') {
+      await this.setB({ msg: 'Der Turmwächter trägt dein Team nach unten und heilt es.' }); await this.sleep(1500);
+      const pr = { ...this.state.prog };
+      for (const u of Object.keys(pr)) pr[u] = { ...pr[u], kp: null };
+      await new Promise(r => this.setState({ prog: pr }, r));
+      return this.endTower('Etage ' + b.floor + ' nicht geschafft. Dein Team ist wieder fit.');
+    }
     await this.setB({ msg: 'Du läufst zurück zum Start. Dein Team ruht sich aus.' }); await this.sleep(1500);
     const prog = { ...this.state.prog };
     for (const u of Object.keys(prog)) prog[u] = { ...prog[u], kp: null };
@@ -2476,6 +2549,12 @@ class Component extends DCLogic {
         + `<rect x='16' y='3' width='28' height='13' fill='#fbfaf8' stroke='${I}' stroke-width='2'/><rect x='24' y='6' width='12' height='8' fill='#c99528' stroke='${I}' stroke-width='1.5'/><path d='M24 9.5H36' stroke='${I}' stroke-width='1.2'/>`
         + `<rect x='8' y='48' width='12' height='12' fill='#94bfdc' stroke='${I}' stroke-width='2'/><rect x='41' y='48' width='12' height='12' fill='#94bfdc' stroke='${I}' stroke-width='2'/>`
         + `<rect x='23' y='52' width='14' height='27' fill='#3f7fa8' stroke='${I}' stroke-width='2'/><circle cx='34' cy='66' r='1.4' fill='#f2cf5b'/><rect x='42' y='64' width='11' height='11' fill='#b5753f' stroke='${I}' stroke-width='1.6'/><path d='M42 69.5H53' stroke='${I}' stroke-width='1.2'/>`
+      : kind === 'tower'
+      ? `<rect x='12' y='24' width='36' height='55' fill='#cfc9bc' stroke='${I}' stroke-width='2'/><path d='M12 38H48M12 52H48M12 66H48M24 24V38M36 38V52M24 52V66M36 66V79' stroke='#a9a396' stroke-width='1.4'/>`
+        + `<rect x='8' y='14' width='44' height='12' fill='#bdb7aa' stroke='${I}' stroke-width='2'/>` + [8, 20, 32, 44].map(x => `<rect x='${x}' y='7' width='8' height='8' fill='#bdb7aa' stroke='${I}' stroke-width='2'/>`).join('')
+        + `<path d='M30 7V0' stroke='${I}' stroke-width='1.6'/><path d='M30 0L40 3L30 6Z' fill='#ec3013' stroke='${I}' stroke-width='1'/>`
+        + `<rect x='28' y='29' width='4' height='9' fill='${I}'/><rect x='28' y='43' width='4' height='9' fill='${I}'/>`
+        + `<path d='M23 79V66Q23 57 30 57Q37 57 37 66V79Z' fill='#3f4a7a' stroke='${I}' stroke-width='2'/><circle cx='34' cy='68' r='1.4' fill='#f2cf5b'/>`
       : kind === 'shop'
       ? `<rect x='4' y='30' width='52' height='49' fill='#fbfaf8' stroke='${I}' stroke-width='2'/><path d='M4 43H56' stroke='#ec3013' stroke-width='5'/><path d='M1 32L8 12H52L59 32Z' fill='#ec3013' stroke='${I}' stroke-width='2' stroke-linejoin='round'/><path d='M6 22H54' stroke='#b8240e' stroke-width='1.6'/>`
         + `<rect x='17' y='1' width='26' height='16' fill='#fbfaf8' stroke='${I}' stroke-width='2'/><rect x='22' y='4' width='8' height='11' fill='#f2cf5b' stroke='${I}' stroke-width='1.5' transform='rotate(-12 26 9.5)'/><rect x='30' y='4' width='8' height='11' fill='#9aeeff' stroke='${I}' stroke-width='1.5' transform='rotate(10 34 9.5)'/>`
@@ -2491,7 +2570,7 @@ class Component extends DCLogic {
   roomSvg(kind) {
     this._rs = this._rs || {};
     if (this._rs[kind]) return this._rs[kind];
-    const R = Component.ROOMS[kind], I = '#201e1d', shop = kind === 'shop' || kind === 'store', ac = kind === 'store' ? '#3f7fa8' : '#ec3013', fl = shop ? ['#efe9df', '#e2d8c6'] : ['#d6bb8a', '#cdb07c'];
+    const R = Component.ROOMS[kind], I = '#201e1d', shop = kind === 'shop' || kind === 'store' || kind === 'tower', ac = kind === 'store' ? '#3f7fa8' : kind === 'tower' ? '#3f4a7a' : '#ec3013', fl = kind === 'tower' ? ['#d3cdc0', '#c6bfb0'] : shop ? ['#efe9df', '#e2d8c6'] : ['#d6bb8a', '#cdb07c'];
     let s = '';
     R.map.forEach((row, y) => [...row].forEach((ch, x) => {
       const X = x * 40, Y = y * 40, r = (a, b, w, h, f, sw) => `<rect x='${X + a}' y='${Y + b}' width='${w}' height='${h}' fill='${f}'${sw ? ` stroke='${I}' stroke-width='${sw}'` : ''}/>`;
@@ -2529,6 +2608,7 @@ class Component extends DCLogic {
     this.showBanner(Component.isle(this.state.isle).name, R.name, R.info);
     this.save();
     if (h.kind === 'gal') this.galLoad('top');
+    if (h.kind === 'tower') this.towerLoad();
   }
   async goOut() {
     const I = this.state.inside;
@@ -2561,6 +2641,9 @@ class Component extends DCLogic {
       else if (ch === 'H') this.shopHeal(true);
       else if (ch === 'R') this.hint('Regale voller Kartenpacks. Kim verkauft sie am Tresen.', 2200);
       else if (ch === 'T') this.hint('Ein Tisch mit Probekarten. Lieber nicht anfassen.', 2200);
+    } else if (kind === 'tower') {
+      if (ch === 'K' || ch === 'N') this.openPanel('tower');
+      else if (ch === 'T') this.hint('Ein Tisch voller Karten und Kreide. Hier plant der Turmwächter die Etagen.', 2400);
     } else if (kind === 'store') {
       if (ch === 'K' || ch === 'N') this.openPanel('store');
       else if (ch === 'R') this.hint('Regale voller Accessoires. Verkauft wird am Tresen.', 2200);
@@ -2571,6 +2654,7 @@ class Component extends DCLogic {
   openPanel(kind) {
     this.setState({ panel: { kind }, shopMsg: '', sellArm: null });
     if (kind === 'gal' && !(this.state.gal && this.state.gal.items.length)) this.galLoad('top');
+    if (kind === 'tower') this.towerLoad();
   }
   closePanel = () => this.setState({ panel: null, sellArm: null });
   lkAvail(st) { st = st || this.state; return st.gl ? Math.max(0, st.gl.earned - st.gl.spent) : st.likes; }
@@ -3044,6 +3128,13 @@ class Component extends DCLogic {
     const sellList = P && P.kind === 'shop' && gl ? s.cards.filter(c => !String(c.uid).startsWith('demo')).sort((a, b) => a.tier - b.tier || String(a.name).localeCompare(b.name)) : [];
     const noCards = !s.cards.some(c => !String(c.uid).startsWith('demo')), starter = !!gl && noCards && !(s.flags || {}).starter;
     Object.assign(out, {
+      towerOn: !!(P && P.kind === 'tower'), towerKicker: 'Turm · ' + C.isle(s.isle).name, towerClose: this.closePanel, towerGo: this.towerStart, towerGoOff: !s.team.length || !!s.battle,
+      towerNext: String(((s.flags || {}).tfloor || 0) + 1), towerBest: ((s.flags || {}).tfloor || 0) > 0 ? 'Höchste geschaffte Etage: ' + s.flags.tfloor : 'Noch keine Etage geschafft',
+      towerInfo: (() => { const n = ((s.flags || {}).tfloor || 0) + 1, k = C.towerCount(n), R = C.towerReward(n), l0 = C.towerLv(n, 0), l1 = C.towerLv(n, k - 1); return [k + (k === 1 ? ' Gegner' : ' Gegner') + ' · Stufe ' + (l1 > l0 ? l0 + '–' + l1 : l0), '+' + R.likes + ' Likes' + Object.entries(R.items).map(([id, c]) => ' · ' + c + '× ' + C.ITEMS[id].name).join(''), 'EP für dein ganzes Team']; })(),
+      towerMsg: s.shopMsg, towerHasMsg: !!s.shopMsg, towerNoTeam: !s.team.length,
+      towerRows: ((s.tRank && s.tRank.rows) || []).map((r, i) => { const me = Number(r.id) === Number(this.meId()); return { rank: i + 1, name: r.name, floor: r.floor, bg: me ? 'var(--color-accent-100)' : 'transparent', fw: me ? '800' : '600' }; }),
+      towerRankMsg: s.tRank && s.tRank.error ? 'Rangliste nicht geladen: ' + s.tRank.error : s.tRank && s.tRank.loading && !s.tRank.rows.length ? 'lädt …' : s.tRank && !s.tRank.loading && !s.tRank.rows.length ? 'Noch niemand eingetragen.' : '',
+      towerHasRankMsg: !!s.tRank && (!!s.tRank.error || !s.tRank.rows.length),
       storeOn: !!(P && P.kind === 'store'), storeKicker: 'Inselladen · ' + C.isle(s.isle).name, storeClose: this.closePanel,
       storeLikes: this.lkAvail(s), storeMsg: s.shopMsg, storeHasMsg: !!s.shopMsg, storeYou: this.human({ dir: 'down', frame: 0, coat: '#2f5f8f', cap: '#ec3013', pack: true, fx: s.worn }),
       storeRows: C.ACC.map(a => { const own = s.owned.includes(a.id), wr = s.worn.includes(a.id), can = this.lkAvail(s) >= a.price; return { name: a.name, text: a.text, price: a.price + ' Likes', own, img: this.human({ dir: 'down', frame: 0, coat: '#2f5f8f', cap: '#ec3013', pack: false, fx: [a.id] }), label: own ? (wr ? 'Ausziehen' : 'Anziehen') : 'Kaufen', cls: own ? (wr ? 'btn btn-secondary' : 'btn btn-primary') : (can ? 'btn btn-primary' : 'btn btn-secondary'), off: !own && !can, go: () => this.accAct(a.id), tag: wr ? 'Getragen' : own ? 'Gekauft' : '' }; }),
@@ -3470,6 +3561,237 @@ class Component extends DCLogic {
     await this.sleep(2200);
     this.endBattle();
   }
+  pvpClean(sn) {
+    const C = Component;
+    if (!sn || typeof sn !== 'object') return null;
+    const ok = (v, lo, hi) => { v = Number(v); return Number.isFinite(v) && v >= lo && v <= hi ? Math.round(v) : null; };
+    const lv = ok(sn.lv, 1, 999), mk = ok(sn.mk, 10, 20000), a = ok(sn.a, 1, 400), c = ok(sn.c, 1, 400), g = ok(sn.g, 1, 400), t = ok(sn.t, 0, 6);
+    const at = Array.isArray(sn.at) ? sn.at.filter(id => C.ATT[id]).slice(0, 4) : [];
+    if ([lv, mk, a, c, g, t].some(v => v == null) || !C.TYPES.includes(sn.m) || !at.length || !sn.p || typeof sn.p !== 'object') return null;
+    return { n: String(sn.n || 'Wesen').slice(0, 30), m: sn.m, p: sn.p, t, lv, mk, a, c, g, at };
+  }
+  kampfClean(arr) {
+    if (!Array.isArray(arr) || !arr.length) return null;
+    const out = arr.slice(0, 3).map(x => this.pvpClean(x));
+    return out.every(Boolean) ? out : null;
+  }
+  pvpFoe(sn) { return { uid: 'opp', params: sn.p, tier: sn.t, name: sn.n, typ: sn.m, lv: sn.lv, maxKp: sn.mk, kp: sn.mk, a: sn.a, c: sn.c, g: sn.g, attacks: sn.at.slice(), art: this.draw(sn.p) }; }
+  kampfSnap() {
+    const s = this.state, out = [], uids = [];
+    for (const u of s.team.slice(0, 3)) {
+      const c = s.cards.find(x => x.uid === u), m = this.meStats(u);
+      if (!c || !m) continue;
+      out.push({ n: c.name, m: c.model, p: c.p, t: c.tier, lv: m.lv, mk: m.maxKp, a: m.a, c: m.c, g: m.g, at: m.attacks.slice(0, 4) });
+      uids.push(u);
+    }
+    this._kUids = uids;
+    return JSON.stringify(out);
+  }
+  kampfInit(snaps, seed) {
+    const C = Component, mk = list => list.map(u => ({ ...u, typ: u.m, uid: 'k', kp: u.mk, maxKp: u.mk, attacks: u.at, name: u.n }));
+    const hp = { a: snaps.a.reduce((n, u) => n + u.mk, 0), b: snaps.b.reduce((n, u) => n + u.mk, 0) }, pw = { a: C.kampfPower(snaps.a), b: C.kampfPower(snaps.b) };
+    const next = hp.a !== hp.b ? (hp.a < hp.b ? 'a' : 'b') : pw.a !== pw.b ? (pw.a < pw.b ? 'a' : 'b') : (C.pvpRng(seed, 0, 0)() < 0.5 ? 'a' : 'b');
+    return { team: { a: mk(snaps.a), b: mk(snaps.b) }, at: { a: 0, b: 0 }, next, force: null, winner: null, seed };
+  }
+  kampfApply(S, entry, n) {
+    const C = Component, who = entry[0], act = String(entry[1]), o = who === 'a' ? 'b' : 'a';
+    if (S.winner || (who !== 'a' && who !== 'b')) return null;
+    const alive = (side, i) => !!S.team[side][i] && S.team[side][i].kp > 0, kind = act.slice(0, 2), arg = act.slice(2);
+    if (S.force) {
+      const k = Number(arg);
+      if (who !== S.force || kind !== 's:' || !alive(who, k)) return null;
+      S.at[who] = k; S.force = null;
+      return { type: 'switch', who, idx: k, forced: true };
+    }
+    if (who !== S.next) return null;
+    if (kind === 's:') {
+      const k = Number(arg);
+      if (!alive(who, k) || k === S.at[who]) return null;
+      S.at[who] = k; S.next = o;
+      return { type: 'switch', who, idx: k, forced: false };
+    }
+    if (kind !== 'a:') return null;
+    const att = S.team[who][S.at[who]], def = S.team[o][S.at[o]];
+    let id = arg; if (!att.attacks.includes(id) || !C.ATT[id]) id = att.attacks[0];
+    const A = C.ATT[id], ev = { type: 'attack', who, id, d: 0, heal: 0, eff: 1, crit: false, ko: false, attKp: att.kp, defKp: def.kp };
+    if (A.heal) { ev.heal = Math.min(att.maxKp - att.kp, Math.round(att.maxKp * A.heal)); att.kp += ev.heal; ev.attKp = att.kp; S.next = o; return ev; }
+    const r = this.dmg(A, att, def, C.pvpRng(S.seed, n, who === 'a' ? 1 : 2));
+    ev.d = r.d; ev.eff = r.eff; ev.crit = r.crit; def.kp = Math.max(0, def.kp - r.d); ev.defKp = def.kp;
+    if (def.kp <= 0) {
+      ev.ko = true;
+      if (S.team[o].some(u => u.kp > 0)) { S.force = o; S.next = o; } else S.winner = who;
+    } else S.next = o;
+    return ev;
+  }
+  async kampfBegin(nd) {
+    if (this._pv || this.turnBusy || this.state.battle || (this._kDone && this._kDone.has(nd.id))) return;
+    const P = this._pv = { id: nd.id, ready: false };
+    let bt = null;
+    try { bt = (await this.mpCall('/api/mp/duel', { act: 'bget', id: nd.id })).battle; } catch (e) { this._pv = null; return; }
+    const X = nd.mine ? 'a' : 'b', O = X === 'a' ? 'b' : 'a', s = this.state;
+    let snaps = null;
+    try { snaps = { a: this.kampfClean(JSON.parse(bt.snap_a)), b: this.kampfClean(JSON.parse(bt.snap_b)) }; } catch (e) {}
+    const uids = (this._kUids || []).filter(u => s.cards.some(c => c.uid === u) && s.prog[u]);
+    if (!snaps || !snaps.a || !snaps.b || !uids.length || uids.length !== snaps[X].length) {
+      this._kDone = this._kDone || new Set(); this._kDone.add(nd.id); this._pv = null;
+      this.mpCall('/api/mp/duel', { act: 'bforfeit', id: nd.id }).then(j => { if (j.duel) this.mpDuelSync([j.duel]); }).catch(() => {});
+      this.mpInfo('Kartenkampf abgebrochen: Dein Team oder die Daten des Gegners sind ungültig.');
+      return;
+    }
+    if (nd.stake > 0) { this._kStakes = this._kStakes || {}; this._kStakes[nd.id] = nd.stake; this.mpGl(-nd.stake); }
+    const restore = {}; for (const u of uids) restore[u] = s.prog[u].kp;
+    Object.assign(P, { ready: true, X, O, seed: nd.seed, snaps, uids, S: this.kampfInit(snaps, nd.seed), n: 0, hist: Array.isArray(bt.hist) ? bt.hist : [], oppName: nd.opp.name, restore, restoreTeam: s.team.slice(), ask: false });
+    await new Promise(r => this.setState(st => { const prog = { ...st.prog }; for (const u of uids) prog[u] = { ...prog[u], kp: null }; return { team: uids.slice(), prog, panel: null, mpWin: null, mpChat: null }; }, r));
+    await this.startBattle('pvp', snaps[O].map(u => this.pvpFoe(u)), null, 'turm', { mi: 0, who: P.oppName, hold: true });
+    await this.kampfAdvance();
+  }
+  kampfSet(bt) { const P = this._pv; if (P && bt && Array.isArray(bt.hist) && bt.hist.length > P.hist.length) P.hist = bt.hist; }
+  async kampfAdvance() {
+    const P = this._pv;
+    for (;;) {
+      if (!P || this._pv !== P) return;
+      while (P.n < P.hist.length) {
+        const ev = this.kampfApply(P.S, P.hist[P.n], P.n); P.n++;
+        if (ev) await this.kampfShow(ev);
+        if (P.S.winner) return this.kampfFinish(P.S.winner === P.X ? 'me' : 'opp');
+      }
+      if ((P.S.force || P.S.next) === P.X) {
+        if (P.S.force) await this.setB({ phase: 'force', msg: 'Welche Karte soll weiterkämpfen?' }); else this.menu();
+        this.turnBusy = false;
+        return;
+      }
+      this.turnBusy = true;
+      await this.setB({ phase: 'busy', msg: P.oppName + ' ist am Zug …' });
+      const r = await this.kampfWait();
+      if (r !== 'ok') return this.kampfFinish(r.winner, r.note, true);
+    }
+  }
+  async kampfWait() {
+    const P = this._pv, t0 = Date.now(); let claimed = false;
+    for (;;) {
+      if (this.dead) return { winner: 'none', note: '' };
+      if (P.hist.length > P.n) return 'ok';
+      await this.sleep(650);
+      try {
+        const j = await this.mpCall('/api/mp/duel', { act: 'bget', id: P.id });
+        this.kampfSet(j.battle);
+        if (P.hist.length > P.n) return 'ok';
+        const d = j.duel;
+        if (d && (d.state === 'done' || d.state === 'cancel')) { this.mpDuelSync([d]); return { winner: !d.winner ? 'none' : d.winner === (P.X === 'a' ? d.a : d.b) ? 'me' : 'opp', note: d.note || '' }; }
+      } catch (e) { if (Date.now() - t0 > 120000) return { winner: 'none', note: 'Verbindung verloren.' }; }
+      if (!claimed && Date.now() - t0 > 60000) {
+        claimed = true;
+        try { const j = await this.mpCall('/api/mp/duel', { act: 'bclaim', id: P.id }); this.kampfSet(j.battle); if (j.duel) this.mpDuelSync([j.duel]); } catch (e) {}
+      }
+    }
+  }
+  async kampfShow(ev) {
+    const P = this._pv, mine = ev.who === P.X, C = Component;
+    if (ev.type === 'switch') {
+      const b = this.state.battle;
+      if (mine) {
+        const old = this.meStats(this.state.team[b.mi]), nw = this.meStats(this.state.team[ev.idx]);
+        if (!ev.forced && old && old.kp > 0) { await this.setB({ msg: 'Zurück, ' + old.name + '!' }); await this.leave('me'); }
+        await this.setB({ mi: ev.idx, msg: 'Los, ' + nw.name + '!' }); await this.enter('me'); await this.sleep(400);
+      } else {
+        const old = b.foes[b.fi], nw = b.foes[ev.idx];
+        if (!ev.forced && old && old.kp > 0) { await this.setB({ msg: P.oppName + ' ruft ' + old.name + ' zurück!' }); await this.leave('foe'); }
+        await this.setB({ fi: ev.idx, msg: P.oppName + ' schickt ' + nw.name + ' (' + C.TN[nw.typ] + ')!' }); await this.enter('foe'); await this.sleep(500);
+      }
+      return;
+    }
+    await this.attack(mine ? 'me' : 'foe', ev.id, ev);
+    if (ev.ko) {
+      const b = this.state.battle, dn = mine ? b.foes[b.fi].name : this.meStats(this.state.team[b.mi]).name;
+      await this.setB({ msg: dn + ' ist erschöpft!' });
+      await this.leave(mine ? 'foe' : 'me', true);
+    }
+  }
+  async kampfTurn(action) {
+    const P = this._pv, b = this.state.battle;
+    if (!P || !b) return;
+    if (action.type === 'run') {
+      if (!P.ask) { P.ask = true; await this.setB({ msg: 'Wirklich aufgeben? Drück „Aufgeben“ noch einmal.' }); await this.sleep(900); return this.kampfAdvance(); }
+      try { const j = await this.mpCall('/api/mp/duel', { act: 'bforfeit', id: P.id }); if (j.duel) this.mpDuelSync([j.duel]); } catch (e) {}
+      return this.kampfFinish('opp', '', true);
+    }
+    P.ask = false;
+    const mine = (P.S.force || P.S.next) === P.X;
+    let a = '';
+    if (action.type === 'attack') a = 'a:' + action.id;
+    else if (action.type === 'switch') a = 's:' + action.idx;
+    if (!a || !mine || (P.S.force && a.charAt(0) !== 's')) { await this.setB({ msg: !a ? 'Im Kartenkampf sind nur Attacken und Wechsel erlaubt.' : 'Du musst erst ein Wesen einwechseln.' }); await this.sleep(1000); return this.kampfAdvance(); }
+    try {
+      const j = await this.mpCall('/api/mp/duel', { act: 'bact', id: P.id, n: P.hist.length, a });
+      this.kampfSet(j.battle);
+      const d = j.duel;
+      if (d && (d.state === 'done' || d.state === 'cancel') && P.hist.length <= P.n) { this.mpDuelSync([d]); return this.kampfFinish(!d.winner ? 'none' : d.winner === (P.X === 'a' ? d.a : d.b) ? 'me' : 'opp', d.note || '', true); }
+    } catch (e) { await this.setB({ msg: 'Fehler: ' + e.message }); await this.sleep(1400); return this.kampfAdvance(); }
+    await this.kampfAdvance();
+  }
+  async kampfFinish(winner, note, noEp) {
+    const P = this._pv, b = this.state.battle;
+    if (!P) return this.endBattle();
+    this._pv = null; this._kDone = this._kDone || new Set(); this._kDone.add(P.id);
+    if (winner === 'me' || winner === 'opp') {
+      try { const j = await this.mpCall('/api/mp/duel', { act: 'bend', id: P.id, winner: winner === 'me' ? P.X : P.O }); if (j.duel) this.mpDuelSync([j.duel]); } catch (e) {}
+    }
+    const txt = winner === 'me' ? 'Du hast gegen ' + P.oppName + ' gewonnen!' : winner === 'opp' ? P.oppName + ' hat gewonnen.' : (note || 'Der Kampf wurde beendet.');
+    await this.setB({ msg: txt }); await this.sleep(1500);
+    if (!noEp && b && (winner === 'me' || winner === 'opp')) {
+      const avg = Math.round(b.foes.reduce((n, f) => n + f.lv, 0) / b.foes.length);
+      await this.gainTeamEp(Math.round(avg * 12 * b.foes.length * (winner === 'me' ? 1 : 0.5)));
+    }
+    this._pv = null;
+    await new Promise(r => this.setState(st => { const prog = { ...st.prog }; for (const u of P.uids) if (prog[u]) prog[u] = { ...prog[u], kp: P.restore[u] }; return { prog, team: P.restoreTeam.filter(u => st.cards.some(c => c.uid === u)) }; }, r));
+    this.turnBusy = false;
+    this.endBattle({ who: 'Kartenkampf', text: txt });
+  }
+  towerFoes(n) {
+    const C = Component, rnd = this.rng('turm-' + n), k = 1 + Math.max(0, n - 25) * 0.03, boss = n % 10 === 0, foes = [];
+    for (let i = 0; i < C.towerCount(n); i++) {
+      const f = this.makeFoe(C.TYPES[Math.floor(rnd() * C.TYPES.length)], C.towerLv(n, i), rnd);
+      f.maxKp = Math.round(f.maxKp * k * (boss ? 1.25 : 1)); f.kp = f.maxKp; f.a = Math.round(f.a * k); f.c = Math.round(f.c * k);
+      f.ep = Math.round(f.lv * 10 * (1 + n * 0.04));
+      foes.push(f);
+    }
+    return foes;
+  }
+  towerStart = async () => {
+    const s = this.state;
+    if (s.battle || this.turnBusy || !s.team.length) return;
+    const n = ((s.flags || {}).tfloor || 0) + 1, prog = { ...s.prog };
+    for (const u of s.team) if (prog[u]) prog[u] = { ...prog[u], kp: null };
+    await new Promise(r => this.setState({ prog, panel: null, shopMsg: '' }, r));
+    await this.startBattle('tower', this.towerFoes(n), null, 'turm', { floor: n });
+  };
+  async towerWin(b) {
+    const C = Component, n = b.floor, R = C.towerReward(n), bag = { ...this.state.bag }, parts = [];
+    for (const [id, k] of Object.entries(R.items)) { bag[id] = (bag[id] || 0) + k; parts.push(k + '× ' + C.ITEMS[id].name); }
+    await new Promise(r => this.setState(s => ({ bag, ...this.lkPatch(s, R.likes), flags: { ...s.flags, tfloor: Math.max((s.flags || {}).tfloor || 0, n) } }), r));
+    this.walletSend(R.likes, 'tower');
+    const txt = '+' + R.likes + ' Likes' + (parts.length ? ' · ' + parts.join(', ') : '');
+    await this.setB({ msg: 'Etage ' + n + ' geschafft! ' + txt });
+    await this.sleep(1800);
+    this.endTower('Etage ' + n + ' geschafft: ' + txt + '. Als Nächstes wartet Etage ' + (n + 1) + '.');
+  }
+  endTower(msg) { this.setState({ battle: null, dialog: null, panel: { kind: 'tower' }, shopMsg: msg }, () => { this.save(); this.towerLoad(); }); }
+  tTower(mine) {
+    const db = this.testDb(), me = this.testMe(db);
+    if (!db || !me) throw new Error('nicht angemeldet');
+    db.tower = db.tower || {};
+    db.tower[me.id] = Math.max(db.tower[me.id] || 0, mine);
+    this.tPut(db);
+    return { rows: Object.entries(db.tower).map(([id, f]) => ({ id: Number(id), name: ((db.users || []).find(u => u.id === Number(id)) || {}).name || 'Spieler', floor: f })).sort((a, b) => b.floor - a.floor).slice(0, 50) };
+  }
+  async towerLoad() {
+    const mine = (this.state.flags || {}).tfloor || 0;
+    this.setState(s => ({ tRank: { loading: true, rows: (s.tRank && s.tRank.rows) || [], error: '' } }));
+    try {
+      const j = this.testMode() ? this.tTower(mine) : await this.apiCall('/api/tower', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ floor: mine }) });
+      if (!this.dead) this.setState({ tRank: { loading: false, rows: j.rows || [], error: '' } });
+    } catch (e) { if (!this.dead) this.setState(s => ({ tRank: { loading: false, rows: (s.tRank && s.tRank.rows) || [], error: e.message } })); }
+  }
   endBattle(dialog) { this.setState({ battle: null, dialog: dialog ? { ...dialog, btn: 'Weiter', next: null } : null }, () => this.save()); }
 
   // ---------- Animationen ----------
@@ -3843,7 +4165,7 @@ class Component extends DCLogic {
   mpBody() {
     const s = this.state, d = s.mpDuel;
     this.mpPush();
-    const body = { isle: s.isle, x: s.pos[0], y: s.pos[1], dir: String(s.dir || 'down')[0], seq: this.mpSeq, trail: this.mpTrail.slice(-12), inside: !!s.inside, lastMsg: this.mpLastMsg,
+    const body = { isle: s.isle, x: s.pos[0], y: s.pos[1], dir: String(s.dir || 'down')[0], seq: this.mpSeq, trail: this.mpTrail.slice(-12), inside: !!s.inside, fx: (s.worn || []).join(','), lastMsg: this.mpLastMsg,
       busy: s.battle ? 'kampf' : (d && (d.state === 'lobby' || d.state === 'play')) || s.dgPhase ? 'duell' : '' };
     if (this.dg && d && d.state === 'play' && d.id === this.dg.id) body.live = { id: d.id, score: this.dg.score };
     return body;
@@ -3888,7 +4210,7 @@ class Component extends DCLogic {
         if (!last || last[0] !== p.x || last[1] !== p.y) r.q.push([p.x, p.y, p.dir, p.seq]);
         r.seq = p.seq;
       }
-      r.name = p.name; r.inside = !!p.inside; r.busy = p.busy || '';
+      r.name = p.name; r.inside = !!p.inside; r.busy = p.busy || ''; r.fx = typeof p.fx === 'string' ? p.fx.split(',').filter(Boolean) : [];
     }
     for (const id of Object.keys(R)) if (!seen.has(Number(id))) delete R[id];
     for (const d of j.duels || []) { this.mpNames[d.a] = d.a_name; this.mpNames[d.b] = d.b_name; }
@@ -3972,7 +4294,7 @@ class Component extends DCLogic {
   // ---------- Duell: Einladung, Einsatz, Spiel ----------
   mpNorm(d) {
     const a = d.a === this.mpMe, X = a ? 'a' : 'b', Y = a ? 'b' : 'a';
-    return { id: d.id, state: d.state, mine: a, opp: { id: a ? d.b : d.a, name: a ? d.b_name : d.a_name }, cap: d.cap || 0, myStake: d['stake_' + X] || 0, oppStake: d['stake_' + Y] || 0, myOk: !!d['ok_' + X], oppOk: !!d['ok_' + Y],
+    return { id: d.id, game: d.game === 'kampf' ? 'kampf' : 'schnapp', state: d.state, mine: a, opp: { id: a ? d.b : d.a, name: a ? d.b_name : d.a_name }, cap: d.cap || 0, myStake: d['stake_' + X] || 0, oppStake: d['stake_' + Y] || 0, myOk: !!d['ok_' + X], oppOk: !!d['ok_' + Y],
       stake: d.stake || 0, seed: d.seed, startAt: d.start_at, oppLive: d['live_' + Y] || 0, myScore: d['score_' + X], oppScore: d['score_' + Y], winner: d.winner, note: d.note || '' };
   }
   mpDuelSync(list) {
@@ -3994,6 +4316,13 @@ class Component extends DCLogic {
       return;
     }
     if (nd.state === 'done') {
+      if (nd.game === 'kampf') {
+        this.mpDoneIds.add(nd.id);
+        const st = (this._kStakes || {})[nd.id];
+        if (st !== undefined) { delete this._kStakes[nd.id]; if (st > 0) this.mpGl(nd.winner === this.mpMe ? 2 * st : nd.winner === 0 ? st : 0); }
+        if (cur && cur.id === nd.id) this.setState({ mpDuel: null, dgPhase: null });
+        return;
+      }
       const g = this.dg;
       if (!g || g.id !== nd.id) { this.mpDoneIds.add(nd.id); if (cur && cur.id === nd.id) this.setState({ mpDuel: null, dgPhase: null }); return; }
       if (g.raf) cancelAnimationFrame(g.raf);
@@ -4004,6 +4333,7 @@ class Component extends DCLogic {
     }
     if (nd.state === 'play') {
       this.setState({ mpDuel: nd });
+      if (nd.game === 'kampf') { if (!this._pv) this.kampfBegin(nd); return; }
       if (!this.dg || this.dg.id !== nd.id) this.dgStart(nd);
       return;
     }
@@ -4020,17 +4350,19 @@ class Component extends DCLogic {
     if (this.testMode()) { const db = this.testDb(), me = this.testMe(db); if (me) this.setState({ gl: this.tStats(db, me.id) }); return; }
     if (delta) this.setState(s => (s.gl ? { gl: { ...s.gl, earned: s.gl.earned + delta } } : null));
   }
-  mpInvite = async id => {
+  mpInvite = async (id, game) => {
     const s = this.state;
     if (s.mpDuel) { this.mpInfo('Du hast schon ein offenes Duell.'); return; }
     if (s.battle) return;
+    if (game === 'kampf' && !s.team.length) { this.mpInfo('Du brauchst mindestens eine Karte im Team.'); return; }
     this.setState({ mpWin: null });
-    try { const j = await this.mpCall('/api/mp/duel', { act: 'invite', to: id }); if (j.duel) this.mpDuelSync([j.duel]); this.mpTick(); }
+    try { const j = await this.mpCall('/api/mp/duel', { act: 'invite', to: id, game: game === 'kampf' ? 'kampf' : 'schnapp' }); if (j.duel) this.mpDuelSync([j.duel]); this.mpTick(); }
     catch (e) { this.mpInfo(e.message); }
   };
   mpAnswer = async yes => {
     const d = this.state.mpDuel; if (!d) return;
     if (yes && this.state.battle) { this.mpInfo('Erst den Kampf beenden.'); return; }
+    if (yes && d.game === 'kampf' && !this.state.team.length) { this.mpInfo('Du brauchst mindestens eine Karte im Team.'); return; }
     try { const j = await this.mpCall('/api/mp/duel', { act: 'answer', id: d.id, yes: !!yes }); if (j.duel) this.mpDuelSync([j.duel]); this.mpTick(); }
     catch (e) { this.mpInfo(e.message); }
   };
@@ -4052,7 +4384,7 @@ class Component extends DCLogic {
   dgOk = () => {
     const s = this.state, d = s.mpDuel; if (!d) return;
     clearTimeout(this.stakeT); this.mpStakeDirty = true;
-    if (d.myOk && d.myStake === s.mpStake) this.dgAct('stake', { stake: s.mpStake }); else this.dgAct('ok', { stake: s.mpStake });
+    if (d.myOk && d.myStake === s.mpStake) this.dgAct('stake', { stake: s.mpStake }); else this.dgAct('ok', { stake: s.mpStake, ...(d.game === 'kampf' ? { snap: this.kampfSnap() } : {}) });
   };
   dgMatch = () => { const d = this.state.mpDuel; if (!d) return; const v = Math.min(d.cap, d.oppStake); clearTimeout(this.stakeT); this.mpStakeDirty = true; this.setState({ mpStake: v }); this.dgAct('stake', { stake: v }); };
   dgCancel = () => this.dgAct('cancel');
@@ -4154,7 +4486,7 @@ class Component extends DCLogic {
   mpTestMe() { const u = this.testMe(this.testDb()); return u ? { id: u.id, name: u.name } : { id: 999999, name: 'Gast' }; }
   mpTestAvail(uid) { if (uid === Component.BOT.id) return 999; const db = this.testDb(); if (!db || !db.users || !db.users.some(u => u.id === uid)) return 30; const st = this.tStats(db, uid); return Math.max(0, st.earned - st.spent); }
   mpTestLedger(uid, amount) { const db = this.testDb(); if (!db || !db.users || !db.users.some(u => u.id === uid)) return; db.ledger = db.ledger || []; db.ledger.push({ user_id: uid, amount, created: Date.now() }); this.tPut(db); }
-  mpNewDuel(h, a, b, now) { const d = { id: ++h.seq.duel, a, b, game: 'schnapp', state: 'invite', cap: 0, stake_a: 0, stake_b: 0, ok_a: 0, ok_b: 0, stake: 0, seed: 0, start_at: 0, live_a: 0, live_b: 0, score_a: null, score_b: null, winner: 0, note: '', created: now, updated: now }; h.duels.push(d); return d; }
+  mpNewDuel(h, a, b, now, game) { const d = { id: ++h.seq.duel, a, b, game: game === 'kampf' ? 'kampf' : 'schnapp', state: 'invite', cap: 0, stake_a: 0, stake_b: 0, ok_a: 0, ok_b: 0, stake: 0, seed: 0, start_at: 0, live_a: 0, live_b: 0, score_a: null, score_b: null, winner: 0, note: '', created: now, updated: now }; h.duels.push(d); return d; }
   mpBotSpot(cx, cy, r0, r1) {
     for (let k = 0; k < 90; k++) {
       const x = cx + Math.round((Math.random() * 2 - 1) * r1), y = cy + Math.round((Math.random() * 2 - 1) * r1), dd = Math.abs(x - cx) + Math.abs(y - cy);
@@ -4177,6 +4509,50 @@ class Component extends DCLogic {
     if (!this.state.mpOn) this.mpInfo('Online sichtbar ist aus. Im Menü einschalten.');
     this.mpTick();
   }
+  kLocalFinish(h, d, winner, note, now) {
+    if (d.state !== 'play') return;
+    Object.assign(d, { state: 'done', winner, note, updated: now });
+    if (d.stake > 0) { if (winner) this.mpTestLedger(winner, 2 * d.stake); else { this.mpTestLedger(d.a, d.stake); this.mpTestLedger(d.b, d.stake); } }
+  }
+  kLocalOut(h, d, now) {
+    const bt = h.bt && h.bt.id === d.id ? h.bt : null, show = d.state === 'play' || d.state === 'done';
+    return bt ? { snap_a: show ? bt.snap_a : null, snap_b: show ? bt.snap_b : null, hist: bt.hist.map(x => x.slice()), updated: bt.updated, now } : { snap_a: null, snap_b: null, hist: [], updated: 0, now };
+  }
+  kLocalAct(h, d, X, b, me, now) {
+    const bt = h.bt;
+    if (d.game !== 'kampf') throw new Error('Das ist kein Kartenkampf.');
+    if (!bt || bt.id !== d.id) throw new Error('Kampfdaten fehlen.');
+    if (b.act === 'bact' && d.state === 'play') {
+      if (b.n === bt.hist.length && /^[as]:[a-z0-9_-]{1,24}$/.test(String(b.a))) { bt.hist.push([X, String(b.a)]); bt.updated = now; d.updated = now; bt.botAt = now + 900; }
+    } else if (b.act === 'bend' && d.state === 'play') {
+      if (bt.hist.length >= 1 && (b.winner === 'a' || b.winner === 'b')) this.kLocalFinish(h, d, b.winner === 'a' ? d.a : d.b, '', now);
+    } else if (b.act === 'bforfeit' && d.state === 'play') this.kLocalFinish(h, d, X === 'a' ? d.b : d.a, me.name + ' hat aufgegeben.', now);
+    else if (b.act === 'bclaim' && d.state === 'play' && now - bt.updated > 60000) this.kLocalFinish(h, d, me.id, 'Der Gegner hat zu lange gebraucht.', now);
+  }
+  kbotSnap(h, d, X) {
+    if (h.bt && h.bt.id === d.id && h.bt['snap_' + X]) return;
+    const C = Component, tm = this.state.team.map(u => this.meStats(u)).filter(Boolean), lv = Math.max(2, Math.round(tm.reduce((n, m) => n + m.lv, 0) / Math.max(1, tm.length))), snaps = [];
+    for (let i = 0; i < Math.max(1, Math.min(3, tm.length)); i++) {
+      const model = C.TYPES[Math.floor(Math.random() * C.TYPES.length)], f = this.makeFoe(model, lv, Math.random, 'Kikis ' + C.TN[model]);
+      snaps.push({ n: f.name, m: model, p: this.full(model, f.params), t: f.tier || 0, lv: f.lv, mk: f.maxKp, a: f.a, c: f.c, g: f.g, at: f.attacks.slice() });
+    }
+    if (!h.bt || h.bt.id !== d.id) h.bt = { id: d.id, hist: [], updated: Date.now() };
+    h.bt['snap_' + X] = JSON.stringify(snaps);
+  }
+  kbotPlay(h, d, X, now) {
+    const bt = h.bt;
+    if (!bt || bt.id !== d.id || !bt.snap_a || !bt.snap_b || now < (bt.botAt || 0)) return;
+    let snaps; try { snaps = { a: this.kampfClean(JSON.parse(bt.snap_a)), b: this.kampfClean(JSON.parse(bt.snap_b)) }; } catch (e) { return; }
+    if (!snaps.a || !snaps.b) return;
+    const S = this.kampfInit(snaps, d.seed);
+    bt.hist.forEach((en, n) => this.kampfApply(S, en, n));
+    if (S.winner || (S.force || S.next) !== X) return;
+    const me = S.team[X][S.at[X]];
+    let act;
+    if (S.force) { const k = S.team[X].findIndex(u => u.kp > 0); act = 's:' + k; }
+    else { const atk = me.attacks.filter(id => !Component.ATT[id].heal), pool = atk.length && (Math.random() < 0.85 || atk.length === me.attacks.length) ? atk : me.attacks; act = 'a:' + pool[Math.floor(Math.random() * pool.length)]; }
+    bt.hist.push([X, act]); bt.updated = now; d.updated = now; bt.botAt = now + 1200;
+  }
   mpLocal(path, b) {
     const C = Component, BOT = C.BOT, now = Date.now(), h = this.mpHub(), me = this.mpTestMe(), tdb = this.testDb() || {};
     const name = id => id === BOT.id ? BOT.name : id === me.id ? me.name : ((tdb.users || []).find(u => u.id === id) || h.pres[id] || {}).name || 'Spieler ' + id;
@@ -4188,10 +4564,12 @@ class Component extends DCLogic {
     const accept = d => { if (d.state !== 'invite') return; Object.assign(d, { state: 'lobby', cap: Math.min(this.mpTestAvail(d.a), this.mpTestAvail(d.b), C.DUEL_MAX), updated: now }); };
     const start = d => {
       if (d.state !== 'lobby' || !d.ok_a || !d.ok_b || d.stake_a !== d.stake_b) return;
+      if (d.game === 'kampf' && !(h.bt && h.bt.id === d.id && h.bt.snap_a && h.bt.snap_b)) return;
       const st = d.stake_a;
       if (st > 0) { const va = this.mpTestAvail(d.a), vb = this.mpTestAvail(d.b), poor = va < st ? name(d.a) : vb < st ? name(d.b) : ''; if (poor) { Object.assign(d, { ok_a: 0, ok_b: 0, cap: Math.min(va, vb, C.DUEL_MAX), note: poor + ' hat nicht mehr genug Likes.', updated: now }); return; } }
       Object.assign(d, { state: 'play', stake: st, seed: 1 + Math.floor(Math.random() * 2147483646), start_at: now + C.DUEL_LEAD, note: '', live_a: 0, live_b: 0, updated: now });
       if (st > 0) { this.mpTestLedger(d.a, -st); this.mpTestLedger(d.b, -st); }
+      if (d.game === 'kampf') { h.bt.hist = []; h.bt.updated = now; h.bt.botAt = 0; }
     };
     const finish = (d, force) => {
       const na = d.score_a == null, nb = d.score_b == null;
@@ -4203,16 +4581,16 @@ class Component extends DCLogic {
     const tidy = d => {
       if (d.state === 'invite' && now - d.created > 45000) cancel(d, 'Keine Antwort.');
       else if (d.state === 'lobby' && now - d.updated > 15000) { const g = !online(d.a) ? name(d.a) : !online(d.b) ? name(d.b) : ''; if (g) cancel(d, g + ' ist nicht mehr da.'); }
-      else if (d.state === 'play' && now > d.start_at + C.DUEL_MS + 20000) finish(d, true);
+      else if (d.state === 'play' && d.game !== 'kampf' && now > d.start_at + C.DUEL_MS + 20000) finish(d, true);
     };
     // Bot Kiki: läuft in deiner Nähe herum, antwortet im Chat, nimmt Duelle an
-    if (path === '/api/mp/sync') h.pres[me.id] = { id: me.id, name: me.name, isle: ['glut', 'mond'].includes(b.isle) ? b.isle : 'heim', x: b.x, y: b.y, dir: b.dir, seq: b.seq, trail: b.trail || [], inside: b.inside ? 1 : 0, busy: b.busy || '', seen: now };
+    if (path === '/api/mp/sync') h.pres[me.id] = { id: me.id, name: me.name, isle: ['glut', 'mond'].includes(b.isle) ? b.isle : 'heim', x: b.x, y: b.y, dir: b.dir, seq: b.seq, trail: b.trail || [], inside: b.inside ? 1 : 0, busy: b.busy || '', fx: b.fx || '', seen: now };
     const bot = h.bot || (h.bot = { seq: 0, trail: [], next: 0, tgt: null, pend: [] }), mine = h.pres[me.id];
     if (mine && mine.isle === this.state.isle && path === '/api/mp/sync') {
       let bp = h.pres[BOT.id];
       if (!bp || bp.isle !== mine.isle || Math.abs(bp.x - mine.x) + Math.abs(bp.y - mine.y) > 24) {
         const sp = this.mpBotSpot(mine.x, mine.y, 4, 7) || [mine.x, mine.y];
-        bp = h.pres[BOT.id] = { id: BOT.id, name: BOT.name, isle: mine.isle, x: sp[0], y: sp[1], dir: 'd', seq: ++bot.seq, trail: [], inside: 0, busy: '', seen: now };
+        bp = h.pres[BOT.id] = { id: BOT.id, name: BOT.name, isle: mine.isle, x: sp[0], y: sp[1], dir: 'd', seq: ++bot.seq, trail: [], inside: 0, busy: '', fx: 'krone,umhang,brille', seen: now };
         bot.trail = []; bot.tgt = null;
       }
       const busy = h.duels.some(d => (d.a === BOT.id || d.b === BOT.id) && (d.state === 'lobby' || d.state === 'play'));
@@ -4242,9 +4620,10 @@ class Component extends DCLogic {
       else if (d.state === 'lobby') {
         const want = Math.min(d['stake_' + Y], d.cap);
         if (d['stake_' + X] !== want) { d.botAt = d.botAt || now + 1100; if (now >= d.botAt) { d.botAt = 0; d['stake_' + X] = want; d['ok_' + X] = 0; d.updated = now; } }
-        else if (!d['ok_' + X]) { d.botAt = d.botAt || now + 900; if (now >= d.botAt) { d.botAt = 0; d['ok_' + X] = 1; d.updated = now; start(d); } }
+        else if (!d['ok_' + X]) { d.botAt = d.botAt || now + 900; if (now >= d.botAt) { d.botAt = 0; if (d.game === 'kampf') this.kbotSnap(h, d, X); d['ok_' + X] = 1; d.updated = now; start(d); } }
         else start(d);
       } else if (d.state === 'play') {
+        if (d.game === 'kampf') { this.kbotPlay(h, d, X, now); continue; }
         const sc = this.mpBotScore(d.seed, now - d.start_at);
         if (d['score_' + X] == null) d['live_' + X] = sc;
         if (now >= d.start_at + C.DUEL_MS + 600 && d['score_' + X] == null) { d['score_' + X] = this.mpBotScore(d.seed, C.DUEL_MS + 1000); finish(d, false); }
@@ -4254,7 +4633,7 @@ class Component extends DCLogic {
     if (path === '/api/mp/sync') {
       if (b.live) { const d = h.duels.find(x => x.id === b.live.id && x.state === 'play'); if (d) { if (d.a === me.id && d.score_a == null) d.live_a = b.live.score; if (d.b === me.id && d.score_b == null) d.live_b = b.live.score; } }
       for (const d of h.duels) if (d.a === me.id || d.b === me.id) tidy(d);
-      const players = Object.values(h.pres).filter(p => p.id !== me.id && p.seen > now - C.MP_SEEN).map(p => ({ id: p.id, name: p.name, isle: p.isle, x: p.x, y: p.y, dir: p.dir, seq: p.seq, trail: p.trail, inside: p.inside, busy: p.busy }));
+      const players = Object.values(h.pres).filter(p => p.id !== me.id && p.seen > now - C.MP_SEEN).map(p => ({ id: p.id, name: p.name, isle: p.isle, x: p.x, y: p.y, dir: p.dir, seq: p.seq, trail: p.trail, inside: p.inside, busy: p.busy, fx: p.fx || '' }));
       const msgs = h.msgs.filter(m => (m.to_id === me.id || m.from_id === me.id) && (b.lastMsg > 0 ? m.id > b.lastMsg : m.created > now - 1800000)).slice(-50);
       const duels = h.duels.filter(d => (d.a === me.id || d.b === me.id) && (isOpen(d) || d.updated > now - 20000)).sort((x, y) => y.id - x.id).slice(0, 4).map(row);
       out = { now, me: me.id, players, msgs, duels };
@@ -4281,13 +4660,13 @@ class Component extends DCLogic {
           if (x.state === 'invite' && x.a === to && x.b === me.id) { accept(x); res = x; break; }
           fail(x.a === me.id || x.b === me.id ? 'Du hast schon ein offenes Duell.' : name(to) + ' ist gerade in einem anderen Duell.');
         }
-        out = { duel: row(res || this.mpNewDuel(h, me.id, to, now)) };
+        out = { duel: row(res || this.mpNewDuel(h, me.id, to, now, b.game)) };
       } else {
         const d = h.duels.find(x => x.id === b.id);
         if (!d || (d.a !== me.id && d.b !== me.id)) fail('Duell nicht gefunden.');
         const X = d.a === me.id ? 'a' : 'b';
         if (b.act === 'answer') { if (X === 'b' && d.state === 'invite') { if (b.yes) accept(d); else cancel(d, me.name + ' hat abgelehnt.'); } }
-        else if (b.act === 'stake' || b.act === 'ok') { if (d.state === 'lobby') { Object.assign(d, { ['stake_' + X]: Math.max(0, Math.min(d.cap, Math.round(Number(b.stake) || 0))), ['ok_' + X]: b.act === 'ok' ? 1 : 0, note: '', updated: now }); if (b.act === 'ok') start(d); } }
+        else if (b.act === 'stake' || b.act === 'ok') { if (d.state === 'lobby') { if (b.act === 'ok' && d.game === 'kampf') { if (!b.snap) fail('Dein Team fehlt oder ist ungültig.'); if (!h.bt || h.bt.id !== d.id) h.bt = { id: d.id, hist: [], updated: now }; h.bt['snap_' + X] = String(b.snap); } Object.assign(d, { ['stake_' + X]: Math.max(0, Math.min(d.cap, Math.round(Number(b.stake) || 0))), ['ok_' + X]: b.act === 'ok' ? 1 : 0, note: '', updated: now }); if (b.act === 'ok') start(d); } }
         else if (b.act === 'cancel') cancel(d, me.name + (d.state === 'invite' && X === 'b' ? ' hat abgelehnt.' : ' hat abgebrochen.'));
         else if (b.act === 'score') {
           if (d.state === 'play') {
@@ -4296,8 +4675,9 @@ class Component extends DCLogic {
             if (d['score_' + X] == null) Object.assign(d, { ['score_' + X]: v, ['live_' + X]: v, updated: now });
             finish(d, false);
           }
-        } else fail('Unbekannte Aktion');
-        out = { duel: row(d) };
+        } else if (['bget', 'bact', 'bend', 'bforfeit', 'bclaim'].includes(b.act)) this.kLocalAct(h, d, X, b, me, now);
+        else fail('Unbekannte Aktion');
+        out = { duel: row(d), battle: d.game === 'kampf' ? this.kLocalOut(h, d, now) : undefined };
       }
     } else fail('Nicht gefunden');
     h.duels = h.duels.filter(d => isOpen(d) || d.updated > now - 600000);
@@ -4343,7 +4723,7 @@ class Component extends DCLogic {
       const n = Math.abs(Number(r.id) || 0), hd = r.dir === 'l' || r.dir === 'r' ? 'side' : r.dir === 'u' ? 'up' : 'down', sea = (this.cell(r.x, r.y) || {}).t === 'sea', bb = this.mpBubbles[r.id];
       return {
         l: px(r.x), t: py(r.y), tr: r.jump ? 'none' : 'left .14s linear, top .14s linear',
-        sprite: sea ? this.boat(hd) : this.human({ dir: hd, frame: r.frame || 0, coat: C.MP_COATS[n % C.MP_COATS.length], cap: C.MP_CAPS[(n * 3 + 1) % C.MP_CAPS.length], pack: true }),
+        sprite: sea ? this.boat(hd) : this.human({ dir: hd, frame: r.frame || 0, coat: C.MP_COATS[n % C.MP_COATS.length], cap: C.MP_CAPS[(n * 3 + 1) % C.MP_CAPS.length], pack: true, fx: r.fx || [] }),
         flip: r.dir === 'l' ? 'scaleX(-1)' : 'none', label: r.name + (r.busy === 'kampf' ? ' · Kampf' : r.busy === 'duell' ? ' · Duell' : ''),
         hasBubble: !!bb, bubble: bb ? bb.text : '', open: e => { if (e && e.stopPropagation) e.stopPropagation(); this.mpClick(r.id); },
       };
@@ -4351,7 +4731,7 @@ class Component extends DCLogic {
     const notes = [];
     if (d && d.state === 'invite') {
       if (d.mine) notes.push({ key: 'dw', kicker: 'Herausforderung', text: 'Warte auf ' + d.opp.name + ' …', bar: 'var(--color-text)', btns: [{ label: 'Zurückziehen', cls: 'btn btn-secondary', go: () => this.dgAct('cancel') }] });
-      else notes.push({ key: 'di', kicker: 'Herausforderung', text: d.opp.name + ' fordert dich zum Schnapp-Duell heraus.', bar: 'var(--color-accent)', btns: [{ label: 'Annehmen', cls: 'btn btn-primary', go: () => this.mpAnswer(true) }, { label: 'Ablehnen', cls: 'btn btn-secondary', go: () => this.mpAnswer(false) }] });
+      else notes.push({ key: 'di', kicker: 'Herausforderung', text: d.opp.name + ' fordert dich zum ' + (d.game === 'kampf' ? 'Kartenkampf (3 gegen 3)' : 'Schnapp-Duell') + ' heraus.', bar: 'var(--color-accent)', btns: [{ label: 'Annehmen', cls: 'btn btn-primary', go: () => this.mpAnswer(true) }, { label: 'Ablehnen', cls: 'btn btn-secondary', go: () => this.mpAnswer(false) }] });
     }
     for (const n of s.mpNotes) notes.push(n.kind === 'msg'
       ? { key: n.key, kicker: n.name + ' schreibt', text: n.text, bar: 'var(--color-accent)', btns: [{ label: 'Antworten', cls: 'btn btn-primary', go: () => this.mpOpenChat(n.from) }, { label: 'Ok', cls: 'btn btn-ghost', go: () => this.mpDrop(n.key) }] }
@@ -4383,10 +4763,14 @@ class Component extends DCLogic {
       chatListRef: this.chatListRef, chatInRef: this.chatInRef, lobbyListRef: this.lobbyListRef, lobbyInRef: this.lobbyInRef, chatKey: this.chatKey, lobbyKey: this.lobbyKey,
       chatClose: () => this.setState({ mpChat: null }), chatSendBtn: () => this.mpSend(s.mpChat, this.chatInRef), lobbySend: () => d && this.mpSend(d.opp.id, this.lobbyInRef),
       pwOn: !!w && showMap, pwName: w ? w.name : '', pwInfo: w ? C.isle(w.isle).name + ' · ' + (w.busy === 'kampf' ? 'gerade im Kampf' : w.busy === 'duell' ? 'gerade im Duell' : 'online') : '',
-      pwDuelOff: !w || !!w.busy || !!d, pwChat: () => w && this.mpOpenChat(w.id), pwDuel: () => w && this.mpInvite(w.id), pwClose: () => this.setState({ mpWin: null }),
+      pwDuelOff: !w || !!w.busy || !!d, pwChat: () => w && this.mpOpenChat(w.id), pwDuel: () => w && this.mpInvite(w.id), pwClose: () => this.setState({ mpWin: null }), pwPvp: () => w && this.mpInvite(w.id, 'kampf'), pwPvpOff: !w || !!w.busy || !!d || !s.team.length,
       awayOn: ready && s.mpOn && s.mpStatus === 'away', awayTxt: s.mpAwayTxt, mpBack: this.mpBack, mpSolo: this.mpSolo,
       dgOn: !!ph, dgOpp: d ? d.opp.name : '', dgLobby: ph === 'lobby', dgPrep: ph === 'prep', dgGame: ph === 'game', dgWait: ph === 'wait', dgResult: ph === 'result', dgCanCancel: ph === 'lobby', dgCancel: this.dgCancel,
-      dgRules: rules, dgCap: d ? d.cap : 0, dgNoCap: !d || d.cap <= 0, dgStake: s.mpStake, dgSlide: this.dgSlide, dgStakeTxt: s.mpStake === 0 ? 'Nur zum Spaß' : s.mpStake + ' Likes',
+      dgKicker: d && d.game === 'kampf' ? 'Kartenkampf · 3 gegen 3' : 'Schnapp-Duell',
+      dgRuleKicker: d && d.game === 'kampf' ? 'So geht’s · Team gegen Team' : 'So geht’s · 30 Sekunden',
+      dgRuleText: d && d.game === 'kampf' ? 'Dein ganzes Team kämpft gegen das ganze Team des anderen, so wie gegen einen Trainer. Ihr greift abwechselnd an. Einwechseln ist erlaubt, Items nicht.' : 'Aus 9 Löchern springen Wesen. Tipp sie an, bevor sie wieder abtauchen. Ihr beide bekommt genau dieselben Wesen zur selben Zeit.',
+      dgRuleNote: d && d.game === 'kampf' ? 'Wer gewinnt, bekommt den Einsatz des anderen. Aufgeben zählt als verloren. Dein Team bleibt danach unverändert, nur EP kommen dazu.' : 'Mehr Punkte gewinnt den Einsatz des anderen. Gleichstand: jeder bekommt seinen Einsatz zurück. Wer vorher geht, verliert. Tastatur: Q W E · A S D · Y X C',
+      dgRules: d && d.game === 'kampf' ? [{ bg: '#201e1d', fg: '#fbfaf8', pts: '3 : 3', text: 'Ganzes Team kämpft' }, { bg: '#201e1d', fg: '#fbfaf8', pts: 'Start', text: 'Wer insgesamt weniger KP hat, fängt an' }, { bg: '#201e1d', fg: '#fbfaf8', pts: '↔', text: 'Abwechselnd je eine Attacke' }, { bg: '#201e1d', fg: '#fbfaf8', pts: 'Aus', text: 'Keine Items' }] : rules, dgCap: d ? d.cap : 0, dgNoCap: !d || d.cap <= 0, dgStake: s.mpStake, dgSlide: this.dgSlide, dgStakeTxt: s.mpStake === 0 ? 'Nur zum Spaß' : s.mpStake + ' Likes',
       dgCapTxt: !d ? '' : d.cap <= 0 ? 'Einer von euch hat gerade keine Likes frei. Ihr spielt nur zum Spaß.' : 'Höchstens ' + d.cap + '. Mehr Likes hat einer von euch gerade nicht frei.',
       dgOppTxt: d ? d.opp.name + ': ' + (d.oppStake === 0 ? 'nur zum Spaß' : d.oppStake + ' Likes') : '', dgOppState: d && d.oppOk ? 'einverstanden' : 'überlegt noch', dgOppCol: d && d.oppOk ? 'var(--color-accent-700)' : 'var(--color-neutral-700)',
       dgStatus: !d ? '' : d.note ? d.note : iOk && d.oppOk && same ? 'Gleich geht’s los …' : !same ? 'Ihr müsst denselben Einsatz wählen.' : iOk ? 'Warte, bis ' + d.opp.name + ' einverstanden ist.' : d.oppOk ? d.opp.name + ' ist einverstanden. Jetzt du.' : 'Beide müssen auf „Einverstanden“ drücken.',
@@ -4525,10 +4909,10 @@ class Component extends DCLogic {
       mgDots: s.mgView ? Array.from({ length: s.mgView.need }, (_, i) => ({ bg: i < s.mgView.hits ? '#f2cf5b' : '#fbfaf8' })) : [],
       mgLives: s.mgView ? Array.from({ length: s.mgView.maxLives }, (_, i) => ({ bg: i < s.mgView.lives ? 'var(--color-accent)' : '#fbfaf8' })) : [],
       mgSlow: s.mgView ? (s.mgView.slow >= 5 ? `Geschwächt: Zeiger ${s.mgView.slow} % langsamer, Feld größer` : 'Volle KP: Zeiger auf vollem Tempo. Erst schwächen macht es leichter.') : '',
-      bCatchPh: ph === 'catch', catchOff: !!b && (b.kind !== 'wild' || !(foe && foe.itemId)), catchOffTxt: b && b.kind !== 'wild' ? 'Wesen von Trainern kann man nicht fangen.' : 'Nur Wesen aus der Galerie kann man fangen.', hasBlock: !!s.block, block: s.block, bCatch: () => this.act({ type: 'catch' }),
+      bCatchPh: ph === 'catch', catchOff: !!b && (b.kind !== 'wild' || !(foe && foe.itemId)), catchOffTxt: b && b.kind === 'pvp' ? 'Karten von Spielern kann man nicht fangen.' : b && b.kind !== 'wild' ? 'Wesen von Trainern kann man nicht fangen.' : 'Nur Wesen aus der Galerie kann man fangen.', hasBlock: !!s.block, block: s.block, bCatch: () => this.act({ type: 'catch' }),
       bMsg: b ? b.msg : '', bMenu: ph === 'menu', bAtk: ph === 'atk', bBag: ph === 'bag', bTeam: ph === 'team' || ph === 'force', bBusy: ph === 'busy', bCanBack: ph === 'team',
       atkBtns, bagBtns, teamBtns,
-      bFight: () => this.setB({ phase: 'atk' }), bBagOpen: () => this.setB({ phase: 'bag' }), bTeamOpen: () => this.setB({ phase: 'team' }), bBack: () => this.setB({ phase: 'menu' }), bRun: () => this.act({ type: 'run' }),
+      bFight: () => this.setB({ phase: 'atk' }), bBagOpen: () => (b && b.kind === 'pvp' ? this.setB({ msg: 'Im Kartenkampf gibt es keine Items.' }) : this.setB({ phase: 'bag' })), bRunLabel: b && b.kind === 'pvp' ? 'Aufgeben' : 'Fliehen', bTeamOpen: () => this.setB({ phase: 'team' }), bBack: () => this.setB({ phase: 'menu' }), bRun: () => this.act({ type: 'run' }),
       mapClick: this.mapClick, mapCursor: d ? 'pointer' : 'default',
       noDialog: !d, popOpen: !!s.pop, popTeam: s.pop === 'team', popSteuer: s.pop === 'steuer', popGebiete: s.pop === 'gebiete', popLegende: s.pop === 'legende',
       popBtns: [['team', 'Team'], ['steuer', 'Steuerung'], ['gebiete', 'Gebiete'], ['legende', 'Legende']].map(([k, label]) => ({ label, cls: s.pop === k ? 'btn btn-primary' : 'btn btn-secondary', bg: s.pop === k ? 'var(--color-accent)' : '#fbfaf8', go: () => this.setState({ pop: s.pop === k ? null : k }) })),
