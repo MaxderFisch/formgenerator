@@ -48,7 +48,7 @@
   </header>
 
   <main style="flex:1;min-height:0;position:relative">
-    <sc-if value="{{ fxPage }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="{{ fxPageKind }}" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+    <sc-if value="{{ fxPage }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js?v=mwx7ytml" effect="{{ fxPageKind }}" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
     <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
       <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--color-accent-700)">Wesen werden gezeichnet …</div>
     </sc-if>
@@ -64,7 +64,7 @@
 
     <sc-if value="{{ showMap }}" hint-placeholder-val="{{ false }}">
       <div ref="{{ vpRef }}" onClick="{{ mapClick }}" onPointerDown="{{ tDown }}" onPointerMove="{{ tMove }}" onPointerUp="{{ tUp }}" onPointerCancel="{{ tUp }}" style="cursor:{{ mapCursor }};position:absolute;inset:0;overflow:hidden;background:var(--fg-sea,#5a6070);touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none">
-        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="waves" ox="{{ fxOx }}" oy="{{ fxOy }}" level="1.6" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js?v=mwx7ytml" effect="waves" ox="{{ fxOx }}" oy="{{ fxOy }}" level="1.6" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
         <div style="position:absolute;left:0;top:0;width:{{ layerW }};height:{{ layerH }};transform:{{ layerT }};transition:transform .14s linear;background-image:{{ mapImg }};background-size:100% 100%;background-repeat:no-repeat">
           <sc-for list="{{ chests }}" as="c" hint-placeholder-count="0">
             <div style="position:absolute;left:{{ c.l }};top:{{ c.t }};width:1.5625%;height:1.8519%;background-image:{{ c.img }};background-size:100% 100%"></div>
@@ -149,7 +149,7 @@
 
     <sc-if value="{{ showIn }}" hint-placeholder-val="{{ false }}">
       <div ref="{{ vpRef }}" onClick="{{ mapClick }}" onPointerDown="{{ tDown }}" onPointerMove="{{ tMove }}" onPointerUp="{{ tUp }}" onPointerCancel="{{ tUp }}" style="position:absolute;inset:0;overflow:hidden;background:var(--fg-room,#2a2827);cursor:{{ mapCursor }};touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none">
-        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="grid" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js?v=mwx7ytml" effect="grid" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
         <div style="position:absolute;left:{{ inL }};top:{{ inT }};width:{{ inW }};height:{{ inH }};background-image:{{ inImg }};background-size:100% 100%;box-shadow:0 24px 60px rgba(0,0,0,.45)">
           <sc-for list="{{ inArts }}" as="a" hint-placeholder-count="0">
             <div style="position:absolute;left:{{ a.l }};top:{{ a.t }};width:{{ a.w }};height:{{ a.h }};background-color:{{ a.bg }};background-image:{{ a.art }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;z-index:1"></div>
@@ -174,7 +174,7 @@
       <div style="position:absolute;left:0;right:0;top:{{ bnTop }};z-index:5;display:flex;justify-content:center;pointer-events:none;padding:0 12px">
         <div ref="{{ bannerRef }}" style="max-width:min(100%,440px);background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:5px solid var(--color-accent);box-shadow:var(--shadow-md);padding:8px 18px 10px;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
           <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ bnKicker }}</span>
-          <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="{{ bnTitle }}" size="24" hint-size="160px,24px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:24px;line-height:1.05">{{ bnTitle }}</span></sc-if>
+          <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js?v=mwx7ytml" text="{{ bnTitle }}" size="24" hint-size="160px,24px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:24px;line-height:1.05">{{ bnTitle }}</span></sc-if>
           <sc-if value="{{ hasBnSub }}" hint-placeholder-val="{{ false }}">
             <span style="font-size:12px;line-height:1.4;color:var(--color-neutral-800)">{{ bnSub }}</span>
           </sc-if>
@@ -184,14 +184,14 @@
 
     <sc-if value="{{ shopOn }}" hint-placeholder-val="{{ false }}">
       <div onClick="{{ shopClose }}" style="position:absolute;inset:0;z-index:6;overflow:auto;background:var(--fg-dim,rgba(32,30,29,.6));display:flex;padding:16px;box-sizing:border-box">
-        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="aurora" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js?v=mwx7ytml" effect="aurora" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
         <div onClick="{{ revealStop }}" style="position:relative;margin:auto;width:min(560px,100%);background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
             <span style="font-family:var(--font-heading);font-weight:800;font-size:26px;line-height:1">Kartenladen</span>
             <button class="btn btn-ghost btn-icon" onClick="{{ shopClose }}" aria-label="Schließen" style="width:36px;height:36px;padding:0;justify-content:center;font-size:22px">×</button>
           </div>
           <div style="display:flex;align-items:baseline;gap:10px">
-            <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="{{ shopAvail }}" size="56" hint-size="80px,46px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:56px;line-height:.9">{{ shopAvail }}</span></sc-if>
+            <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js?v=mwx7ytml" text="{{ shopAvail }}" size="56" hint-size="80px,46px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:56px;line-height:.9">{{ shopAvail }}</span></sc-if>
             <span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">Likes</span>
           </div>
           <div style="height:6px;background:var(--color-neutral-300)"><div style="height:100%;width:{{ shopProg }};background:var(--color-accent)"></div></div>
@@ -231,7 +231,7 @@
 
     <sc-if value="{{ storeOn }}" hint-placeholder-val="{{ false }}">
       <div onClick="{{ storeClose }}" style="position:absolute;inset:0;z-index:6;overflow:auto;background:var(--fg-dim,rgba(32,30,29,.6));display:flex;padding:16px;box-sizing:border-box">
-        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="aurora" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js?v=mwx7ytml" effect="aurora" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
         <div onClick="{{ revealStop }}" style="position:relative;margin:auto;width:min(760px,100%);background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
             <div style="display:flex;flex-direction:column;gap:4px">
@@ -243,7 +243,7 @@
           <div style="display:flex;align-items:center;gap:16px;border-top:2px solid var(--color-text);border-bottom:2px solid var(--color-text);padding:10px 0">
             <div style="flex:none;width:52px;height:68px;background:{{ storeYou }} center / contain no-repeat"></div>
             <div style="display:flex;align-items:baseline;gap:8px">
-              <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="{{ storeLikes }}" size="44" hint-size="70px,38px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:44px;line-height:.9">{{ storeLikes }}</span></sc-if>
+              <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js?v=mwx7ytml" text="{{ storeLikes }}" size="44" hint-size="70px,38px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:44px;line-height:.9">{{ storeLikes }}</span></sc-if>
               <span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">Likes</span>
             </div>
           </div>
@@ -271,7 +271,7 @@
 
     <sc-if value="{{ towerOn }}" hint-placeholder-val="{{ false }}">
       <div onClick="{{ towerClose }}" style="position:absolute;inset:0;z-index:6;overflow:auto;background:var(--fg-dim,rgba(32,30,29,.6));display:flex;padding:16px;box-sizing:border-box">
-        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="topo" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js?v=mwx7ytml" effect="topo" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
         <div onClick="{{ revealStop }}" style="position:relative;margin:auto;width:min(420px,100%);background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
             <div style="display:flex;flex-direction:column;gap:4px">
@@ -282,7 +282,7 @@
           </div>
           <div style="display:flex;align-items:baseline;gap:12px;border-top:2px solid var(--color-text);border-bottom:2px solid var(--color-text);padding:10px 0">
             <span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">Etage</span>
-            <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="{{ towerNext }}" size="56" hint-size="80px,46px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:56px;line-height:.9">{{ towerNext }}</span></sc-if>
+            <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js?v=mwx7ytml" text="{{ towerNext }}" size="56" hint-size="80px,46px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:56px;line-height:.9">{{ towerNext }}</span></sc-if>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px">
             <sc-for list="{{ towerInfo }}" as="l" hint-placeholder-count="3">
@@ -318,12 +318,12 @@
 
     <sc-if value="{{ galOn }}" hint-placeholder-val="{{ false }}">
       <div style="position:absolute;inset:0;z-index:6;background:var(--color-bg)">
-        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="grid" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js?v=mwx7ytml" effect="grid" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
       <div style="position:absolute;inset:0;overflow:auto">
         <div style="max-width:1280px;margin:0 auto;padding:16px 20px 32px;display:flex;flex-direction:column;gap:16px">
           <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;border-bottom:2px solid var(--color-text);padding-bottom:12px">
             <div style="display:flex;align-items:baseline;gap:10px">
-              <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="Galerie" size="32" hint-size="120px,30px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:32px;line-height:1">Galerie</span></sc-if>
+              <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js?v=mwx7ytml" text="Galerie" size="32" hint-size="120px,30px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:32px;line-height:1">Galerie</span></sc-if>
               <span style="font-size:13px;color:var(--color-neutral-700)">{{ galStatus }}</span>
             </div>
             <div style="display:flex;align-items:center;gap:6px">
@@ -395,7 +395,7 @@
 
     <sc-if value="{{ revealOn }}" hint-placeholder-val="{{ false }}">
       <div onClick="{{ revealClose }}" style="position:fixed;inset:0;z-index:50;background:var(--fg-dim2,rgba(32,30,29,.84));display:flex;padding:var(--space-6);overflow:auto">
-        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="burst" level="{{ rvFxLv }}" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js?v=mwx7ytml" effect="burst" level="{{ rvFxLv }}" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
         <div ref="{{ rvFxRef }}" style="position:fixed;inset:0;pointer-events:none;opacity:0"></div>
         <div onClick="{{ revealStop }}" style="position:relative;z-index:1;margin:auto;display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-4);width:min(330px, 100%, calc((100vh - 260px) * 0.6))">
           <div ref="{{ rvRaysRef }}" style="position:absolute;left:50%;top:38%;width:1000px;height:1000px;margin:-500px 0 0 -500px;pointer-events:none;opacity:0;z-index:-1;background:repeating-conic-gradient(from 0deg, rgba(255,224,150,.42) 0deg 6deg, rgba(255,224,150,0) 6deg 18deg);-webkit-mask:radial-gradient(circle, #000 0%, transparent 60%);mask:radial-gradient(circle, #000 0%, transparent 60%)"></div>
@@ -605,7 +605,7 @@
         <div style="flex:1;min-width:0;container-type:size;display:flex;align-items:center;justify-content:center">
         <div ref="{{ stageRef }}" style="width:{{ stageW }};border:2px solid var(--color-text);background:var(--fg-paper,#fbfaf8);box-sizing:border-box">
           <div ref="{{ arenaRef }}" style="position:relative;aspect-ratio:16/9;overflow:hidden;background-color:var(--fg-arena,#eceae2);background-image:{{ arenaBg }};background-size:cover;background-position:center">
-            <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="pixel" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div><div style="position:absolute;inset:0;pointer-events:none;background-image:{{ arenaBgM }};background-size:cover;background-position:center;filter:grayscale(1) contrast(1.08) brightness(.92)"></div></sc-if>
+            <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js?v=mwx7ytml" effect="pixel" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div><div style="position:absolute;inset:0;pointer-events:none;background-image:{{ arenaBgM }};background-size:cover;background-position:center;filter:grayscale(1) contrast(1.08) brightness(.92)"></div></sc-if>
             <div ref="{{ foeRef }}" style="position:absolute;left:62.4%;bottom:38%;width:19%;opacity:{{ foeOp }}">
               <div style="aspect-ratio:3/4;background-image:{{ foeArt }};background-size:contain;background-repeat:no-repeat;background-position:center bottom"></div>
             </div>
@@ -811,7 +811,7 @@
         <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px;border-bottom:2px solid var(--color-text);padding-bottom:10px">
           <div style="display:flex;flex-direction:column;gap:4px">
             <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
-              <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="Team" size="28" hint-size="80px,26px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:28px;line-height:1">Team</span></sc-if>
+              <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js?v=mwx7ytml" text="Team" size="28" hint-size="80px,26px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:28px;line-height:1">Team</span></sc-if>
               <span style="font-size:13px;color:var(--color-neutral-700)">{{ tmStatus }}</span>
             </div>
             
@@ -1029,7 +1029,7 @@
       <div style="position:fixed;inset:0;z-index:66;background:var(--fg-dim,rgba(32,30,29,.6));display:flex;align-items:center;justify-content:center;padding:16px">
         <div style="width:min(440px,100%);box-sizing:border-box;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:5px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:20px 22px;display:flex;flex-direction:column;align-items:flex-start;gap:14px">
           <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Offline</span>
-          <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="Bist du noch da?" size="28" hint-size="240px,28px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-size:28px;font-weight:800;line-height:1.1">Bist du noch da?</span></sc-if>
+          <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js?v=mwx7ytml" text="Bist du noch da?" size="28" hint-size="240px,28px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-size:28px;font-weight:800;line-height:1.1">Bist du noch da?</span></sc-if>
           <span style="font-size:15px;line-height:1.45;text-wrap:pretty">{{ awayTxt }}</span>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-primary" onClick="{{ mpBack }}" style="justify-content:flex-start">Wieder online</button>
@@ -1041,7 +1041,7 @@
 
     <sc-if value="{{ dgOn }}" hint-placeholder-val="{{ false }}">
       <div style="position:fixed;inset:0;z-index:70;background:var(--fg-dim2,rgba(32,30,29,.88));display:flex;overflow:auto;padding:12px;box-sizing:border-box">
-        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="threads" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js?v=mwx7ytml" effect="threads" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
         <div style="position:relative;margin:auto;width:min(940px,100%);background:var(--color-bg);border:2px solid var(--color-text);box-shadow:var(--shadow-lg);display:flex;flex-direction:column">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:2px solid var(--color-text)">
             <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
@@ -1149,7 +1149,7 @@
           <sc-if value="{{ dgResult }}" hint-placeholder-val="{{ false }}">
             <div style="padding:28px 20px 20px;display:flex;flex-direction:column;gap:14px;align-items:flex-start">
               <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Ergebnis</span>
-              <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="{{ dgResTitle }}" size="{{ dgResSize }}" tone="{{ dgResTone }}" hint-size="300px,70px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-size:clamp(48px,9vw,88px);font-weight:800;line-height:.95;color:{{ dgResCol }}">{{ dgResTitle }}</span></sc-if>
+              <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js?v=mwx7ytml" text="{{ dgResTitle }}" size="{{ dgResSize }}" tone="{{ dgResTone }}" hint-size="300px,70px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-size:clamp(48px,9vw,88px);font-weight:800;line-height:.95;color:{{ dgResCol }}">{{ dgResTitle }}</span></sc-if>
               <div style="display:flex;gap:28px;flex-wrap:wrap;align-items:flex-end">
                 <div style="display:flex;flex-direction:column;gap:4px">
                   <span style="font-size:12px;font-weight:800;color:var(--color-neutral-700)">{{ dgResWho }}</span>
@@ -1671,10 +1671,10 @@ class Component extends DCLogic {
     document.body.appendChild(this.canvas);
     try {
       const [lg, df] = await Promise.all([
-        import(new URL('./linegen.js', document.baseURI).href),
-        import(new URL('./wesen-defaults.js', document.baseURI).href),
+        import(new URL('./linegen.js?v=mwx7ytml', document.baseURI).href),
+        import(new URL('./wesen-defaults.js?v=mwx7ytml', document.baseURI).href),
       ]);
-      import(new URL('./kupfer.js', document.baseURI).href).then(k => { this.kupfer = k; }).catch(e => console.error(e));
+      import(new URL('./kupfer.js?v=mwx7ytml', document.baseURI).href).then(k => { this.kupfer = k; }).catch(e => console.error(e));
       if (this.dead) return;
       this.D = df.DEFAULTS; this.M = df.MODELS;
       this.engine = lg.createEngine(this.canvas);

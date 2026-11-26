@@ -256,6 +256,7 @@ function darken(hex, t) {
   const f = v => clamp(Math.round(mx - (mx - v) * sat), 0, 255);
   return '#' + ((1 << 24) | (f(r) << 16) | (f(g) << 8) | f(b)).toString(16).slice(1);
 }
+export const LG_VERSION = 2;
 export function createEngine(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));

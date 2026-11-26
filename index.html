@@ -21,14 +21,14 @@
   <script>try { if (localStorage.getItem('formgen.design') === 'mono') document.documentElement.dataset.design = 'mono'; } catch (e) {}</script>
 </helmet>
 <div style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)">
-  <sc-if value="{{ fxCreate }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="vwaves" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+  <sc-if value="{{ fxCreate }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js?v=mwx7ytml" effect="vwaves" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
   <sc-if value="{{ needLogin }}" hint-placeholder-val="{{ false }}">
     <div style="position:fixed;inset:0;z-index:100;background:var(--color-bg);overflow:auto">
-      <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;top:0;bottom:0;right:0;left:max(0px, calc(50% - 60px));pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="orb" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+      <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;top:0;bottom:0;right:0;left:max(0px, calc(50% - 60px));pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js?v=mwx7ytml" effect="orb" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
       <div style="position:relative;max-width:560px;margin:0 auto;padding:12vh var(--space-6) var(--space-8);display:flex;flex-direction:column;gap:var(--space-6)">
         <div style="display:flex;flex-direction:column;gap:var(--space-2)">
           <div style="font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--color-accent-700)">Formgenerator</div>
-          <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><h1 style="margin:0;line-height:0"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="Wer spielt?" size="48" hint-size="280px,44px"></x-import></h1></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><h1 style="margin:0;font-family:var(--font-heading);font-weight:800;font-size:48px;line-height:1;letter-spacing:-0.02em">Wer spielt?</h1></sc-if>
+          <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><h1 style="margin:0;line-height:0"><x-import component-from-global-scope="mono-metal" from="./fx.js?v=mwx7ytml" text="Wer spielt?" size="48" hint-size="280px,44px"></x-import></h1></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><h1 style="margin:0;font-family:var(--font-heading);font-weight:800;font-size:48px;line-height:1;letter-spacing:-0.02em">Wer spielt?</h1></sc-if>
         </div>
         <sc-if value="{{ lgLoading }}" hint-placeholder-val="{{ false }}">
           <div style="font-size:14px;color:var(--color-neutral-700)">Spieler werden geladen …</div>
@@ -182,7 +182,7 @@
         </div>
         <div style="flex:1 1 360px;max-width:calc((100vh - 240px) * 0.75);min-width:200px;display:flex;flex-direction:column;gap:var(--space-3)">
           <div style="position:relative;padding:var(--fg-frame-pad,0px)">
-            <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none"><x-import component-from-global-scope="mono-frame" from="./fx.js" thick="18" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+            <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none"><x-import component-from-global-scope="mono-frame" from="./fx.js?v=mwx7ytml" thick="18" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
             <div ref="{{ svgRef2 }}" style="width:100%;aspect-ratio:3/4;background:var(--fg-stage,var(--color-surface))"></div>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3)">
@@ -1064,10 +1064,11 @@ class Component extends DCLogic {
     if (location.hash === '#spieler') { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} setTimeout(() => this.logout(), 0); }
     this.loadGallery('new');
     this.checkServer();
-    import(new URL('./kupfer.js', document.baseURI).href).then(k => { if (this.dead) return; this.kupfer = k; this.forceUpdate(); }).catch(e => console.error(e));
-    const url = new URL('./linegen.js', document.baseURI).href;
+    import(new URL('./kupfer.js?v=mwx7ytml', document.baseURI).href).then(k => { if (this.dead) return; this.kupfer = k; this.forceUpdate(); }).catch(e => console.error(e));
+    const url = new URL('./linegen.js?v=mwx7ytml', document.baseURI).href;
     import(url).then(mod => {
       if (this.dead) return;
+      if ((mod.LG_VERSION || 0) < 2) this.setState({ fxWarn: 'Alte linegen.js geladen – bitte ersetzen' });
       this.engine = mod.createEngine(this.canvasRef.current);
       const box = this.canvasRef.current.parentElement;
       this.ro = new ResizeObserver(() => { this.engine.resize(box.clientWidth, box.clientHeight); this.schedule(); });
@@ -2207,7 +2208,7 @@ class Component extends DCLogic {
       fxRoll: this.fxRoll, fxOff: this.fxOff, fxOn: !!s.fxSeed,
       fxSet2d: () => this.setState({ fx2d: true, shareMsg: '' }), fxSet3d: () => this.setState({ fx2d: false, shareMsg: '' }),
       fx2dStyle: segStyle(!!s.fx2d), fx3dStyle: segStyle(!s.fx2d),
-      fxLabel: s.fxSeed ? (this.kupfer ? this.kupfer.fxName(s.fxSeed) : '…') : 'Effekt würfeln',
+      fxLabel: s.fxWarn && s.fxSeed ? s.fxWarn : s.fxSeed ? (this.kupfer ? this.kupfer.fxName(s.fxSeed) : '…') : 'Effekt würfeln',
       onName: e => this.setState({ name: e.target.value.slice(0, 40) }),
       rollName: () => this.setState({ name: this.randomName() }),
       roll: this.roll, svgRef2: this.svgRef2,
