@@ -17,13 +17,15 @@
     body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); }
     a { color: var(--color-accent-700); }
     a:hover { color: var(--color-accent); }
+    html[data-design="mono"] { color-scheme: dark; --color-bg: #0b0b0b; --color-surface: #161616; --color-text: #f2f0ee; --color-divider: color-mix(in srgb, #f2f0ee 34%, transparent); --color-neutral-100: #161515; --color-neutral-200: #1f1e1e; --color-neutral-300: #2e2c2c; --color-neutral-400: #454242; --color-neutral-500: #646060; --color-neutral-600: #858181; --color-neutral-700: #a6a2a1; --color-neutral-800: #c7c3c2; --color-neutral-900: #e4e1e0; --color-accent-100: #2a100b; --color-accent-200: #3e150d; --color-accent-300: #5e1b0f; --color-accent-400: #ff563c; --color-accent-500: #ff6a52; --color-accent-600: #ff563c; --color-accent-700: #ff8a75; --color-accent-800: #ffb4a6; --color-accent-900: #ffd9d1; --shadow-sm: 0 0 0 1px rgba(255,255,255,.06); --shadow-md: 0 0 0 1px rgba(255,255,255,.08), 0 8px 24px rgba(0,0,0,.5); --shadow-lg: 0 0 0 1px rgba(255,255,255,.1), 0 18px 48px rgba(0,0,0,.65); --fg-paper: #121212; --fg-white: #050505; --fg-sea: #050505; --fg-mini: #0b0b0b; --fg-room: #050505; --fg-dim: rgba(4,4,4,.8); --fg-dim2: rgba(4,4,4,.9); --fg-cream: #1c1c1c; --fg-arena: #050505; }
   </style>
+  <script>try { if (localStorage.getItem('formgen.design') === 'mono') document.documentElement.dataset.design = 'mono'; } catch (e) {}</script>
 </helmet>
 <div style="height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)">
   <header style="flex:none;position:relative;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-bottom:2px solid var(--color-divider);background:var(--color-bg)">
     <nav style="display:flex;border:2px solid var(--color-text)">
       <a href="index.html#erstellen" style="padding:6px 12px;font-size:14px;font-weight:700;text-decoration:none;color:var(--color-text)" style-hover="background:var(--color-accent-100)">Erstellen</a>
-      <span style="padding:6px 12px;font-size:14px;font-weight:700;background:var(--color-text);color:#fbfaf8">Abenteuer</span>
+      <span style="padding:6px 12px;font-size:14px;font-weight:700;background:var(--color-text);color:var(--fg-paper,#fbfaf8)">Abenteuer</span>
     </nav>
     <div style="display:flex;align-items:center;gap:10px">
       <sc-if value="{{ offMap }}" hint-placeholder-val="{{ false }}">
@@ -37,7 +39,7 @@
     </div>
     <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
       <div onClick="{{ closeMenu }}" style="position:fixed;inset:0;z-index:39"></div>
-      <div style="position:absolute;right:16px;top:calc(100% + 6px);z-index:40;width:230px;background:#fbfaf8;border:2px solid var(--color-text);box-shadow:var(--shadow-lg);display:flex;flex-direction:column">
+      <div style="position:absolute;right:16px;top:calc(100% + 6px);z-index:40;width:230px;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);box-shadow:var(--shadow-lg);display:flex;flex-direction:column">
         <sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="5">
           <button onClick="{{ m.go }}" style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 14px;border:none;border-top:{{ m.bt }};background:{{ m.bg }};color:var(--color-text);font:inherit;font-size:15px;font-weight:700;text-align:left;cursor:pointer" style-hover="background:var(--color-accent-100)"><span>{{ m.label }}</span><span style="font-size:12px;color:var(--color-neutral-700)">{{ m.note }}</span></button>
         </sc-for>
@@ -46,13 +48,14 @@
   </header>
 
   <main style="flex:1;min-height:0;position:relative">
+    <sc-if value="{{ fxPage }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="{{ fxPageKind }}" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
     <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
       <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--color-accent-700)">Wesen werden gezeichnet …</div>
     </sc-if>
 
     <sc-if value="{{ hasBlock }}" hint-placeholder-val="{{ false }}">
       <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box">
-        <div style="max-width:460px;display:flex;flex-direction:column;align-items:flex-start;gap:14px;background:#fbfaf8;border:2px solid var(--color-text);border-top:4px solid var(--color-accent);padding:20px 22px">
+        <div style="max-width:460px;display:flex;flex-direction:column;align-items:flex-start;gap:14px;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:4px solid var(--color-accent);padding:20px 22px">
           <span style="font-size:17px;font-weight:600;line-height:1.45;text-wrap:pretty">{{ block }}</span>
           <a class="btn btn-primary" href="index.html#spieler" style="text-decoration:none;justify-content:flex-start">Anmelden</a>
         </div>
@@ -60,7 +63,8 @@
     </sc-if>
 
     <sc-if value="{{ showMap }}" hint-placeholder-val="{{ false }}">
-      <div ref="{{ vpRef }}" onClick="{{ mapClick }}" onPointerDown="{{ tDown }}" onPointerMove="{{ tMove }}" onPointerUp="{{ tUp }}" onPointerCancel="{{ tUp }}" style="cursor:{{ mapCursor }};position:absolute;inset:0;overflow:hidden;background:#5a6070;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none">
+      <div ref="{{ vpRef }}" onClick="{{ mapClick }}" onPointerDown="{{ tDown }}" onPointerMove="{{ tMove }}" onPointerUp="{{ tUp }}" onPointerCancel="{{ tUp }}" style="cursor:{{ mapCursor }};position:absolute;inset:0;overflow:hidden;background:var(--fg-sea,#5a6070);touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none">
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="waves" ox="{{ fxOx }}" oy="{{ fxOy }}" level="1.6" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
         <div style="position:absolute;left:0;top:0;width:{{ layerW }};height:{{ layerH }};transform:{{ layerT }};transition:transform .14s linear;background-image:{{ mapImg }};background-size:100% 100%;background-repeat:no-repeat">
           <sc-for list="{{ chests }}" as="c" hint-placeholder-count="0">
             <div style="position:absolute;left:{{ c.l }};top:{{ c.t }};width:1.5625%;height:1.8519%;background-image:{{ c.img }};background-size:100% 100%"></div>
@@ -70,7 +74,7 @@
               <div style="position:absolute;left:4%;right:4%;bottom:-6%;height:26%;background:rgba(32,30,29,.25);border-radius:50%"></div>
               <div style="position:absolute;left:-12%;right:-12%;bottom:2%;height:140%;background-image:{{ m.sprite }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;transform:{{ m.flip }};opacity:{{ m.op }}"></div>
               <sc-if value="{{ m.bubble }}" hint-placeholder-val="{{ false }}">
-                <div style="position:absolute;left:50%;bottom:165%;transform:translateX(-50%);background:#fbfaf8;border:2px solid var(--color-text);color:var(--color-accent);font-family:var(--font-heading);font-weight:800;font-size:20px;line-height:1;padding:2px 8px">!</div>
+                <div style="position:absolute;left:50%;bottom:165%;transform:translateX(-50%);background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);color:var(--color-accent);font-family:var(--font-heading);font-weight:800;font-size:20px;line-height:1;padding:2px 8px">!</div>
               </sc-if>
             </div>
           </sc-for>
@@ -88,9 +92,9 @@
               <div style="position:absolute;left:-12%;right:-12%;bottom:2%;height:140%;background-image:{{ o.sprite }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;transform:{{ o.flip }}"></div>
               <div style="position:absolute;left:50%;bottom:150%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none">
                 <sc-if value="{{ o.hasBubble }}" hint-placeholder-val="{{ false }}">
-                  <div style="width:max-content;max-width:200px;background:#fbfaf8;border:2px solid var(--color-text);padding:4px 8px;font-size:12px;font-weight:600;line-height:1.3;text-wrap:pretty;overflow-wrap:anywhere">{{ o.bubble }}</div>
+                  <div style="width:max-content;max-width:200px;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);padding:4px 8px;font-size:12px;font-weight:600;line-height:1.3;text-wrap:pretty;overflow-wrap:anywhere">{{ o.bubble }}</div>
                 </sc-if>
-                <div style="white-space:nowrap;background:var(--color-text);color:#fbfaf8;padding:1px 6px;font-size:11px;font-weight:800;line-height:1.4">{{ o.label }}</div>
+                <div style="white-space:nowrap;background:var(--color-text);color:var(--fg-paper,#fbfaf8);padding:1px 6px;font-size:11px;font-weight:800;line-height:1.4">{{ o.label }}</div>
               </div>
             </div>
           </sc-for>
@@ -98,19 +102,19 @@
             <div style="position:absolute;left:4%;right:4%;bottom:-6%;height:26%;background:rgba(32,30,29,.25);border-radius:50%"></div>
             <div style="position:absolute;left:-12%;right:-12%;bottom:2%;height:140%;background-image:{{ plImg }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;transform:{{ plFlip }}"></div>
             <sc-if value="{{ hasHint }}" hint-placeholder-val="{{ false }}">
-              <div style="position:absolute;left:{{ hintL }};top:{{ hintTop }};bottom:{{ hintBot }};transform:{{ hintTx }};width:max-content;max-width:260px;box-sizing:border-box;background:var(--color-text);color:#fbfaf8;border-bottom:3px solid var(--color-accent);padding:6px 10px;font-size:13px;font-weight:700;line-height:1.35;pointer-events:none;z-index:3">{{ hint }}</div>
+              <div style="position:absolute;left:{{ hintL }};top:{{ hintTop }};bottom:{{ hintBot }};transform:{{ hintTx }};width:max-content;max-width:260px;box-sizing:border-box;background:var(--color-text);color:var(--fg-paper,#fbfaf8);border-bottom:3px solid var(--color-accent);padding:6px 10px;font-size:13px;font-weight:700;line-height:1.35;pointer-events:none;z-index:3">{{ hint }}</div>
             </sc-if>
           </div>
         </div>
 
         <sc-if value="{{ hasTrack }}" hint-placeholder-val="{{ false }}">
-          <button onClick="{{ goQuest }}" style="position:absolute;left:12px;top:12px;z-index:3;max-width:min(45%,300px);display:flex;align-items:center;gap:8px;padding:6px 10px;background:#fbfaf8;border:2px solid var(--color-text);font:inherit;font-size:13px;font-weight:800;color:var(--color-text);cursor:pointer;text-align:left" style-hover="background:var(--color-accent-100)">
+          <button onClick="{{ goQuest }}" style="position:absolute;left:12px;top:12px;z-index:3;max-width:min(45%,300px);display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);font:inherit;font-size:13px;font-weight:800;color:var(--color-text);cursor:pointer;text-align:left" style-hover="background:var(--color-accent-100)">
             <span style="flex:none;width:8px;height:8px;background:var(--color-accent)"></span>
             <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ trackTitle }}</span>
           </button>
         </sc-if>
 
-        <div style="position:absolute;right:12px;top:12px;width:min(20%,190px);aspect-ratio:64/54;border:2px solid var(--color-text);background-color:#5a6070;background-image:{{ mapImg }};background-size:100% 100%;z-index:3">
+        <div style="position:absolute;right:12px;top:12px;width:min(20%,190px);aspect-ratio:64/54;border:2px solid var(--color-text);background-color:var(--fg-mini,#5a6070);background-image:{{ miniImg }};background-size:100% 100%;z-index:3">
           <div style="position:absolute;left:{{ mmVL }};top:{{ mmVT }};width:{{ mmVW }};height:{{ mmVH }};border:2px solid #fbfaf8;outline:1px solid var(--color-text);box-sizing:border-box"></div>
           <div style="position:absolute;left:{{ mmBL }};top:{{ mmBT }};width:8px;height:8px;margin:-4px 0 0 -4px;background:var(--color-text);border:1.5px solid #fbfaf8"></div>
           <sc-for list="{{ mmOthers }}" as="o" hint-placeholder-count="0">
@@ -120,7 +124,7 @@
         </div>
 
         <sc-if value="{{ hasStrip }}" hint-placeholder-val="{{ false }}">
-          <button onClick="{{ goTeam }}" aria-label="Team" style="position:absolute;left:12px;bottom:12px;z-index:4;display:flex;gap:6px;padding:6px;background:#fbfaf8;border:2px solid var(--color-text);cursor:pointer" style-hover="background:var(--color-accent-100)">
+          <button onClick="{{ goTeam }}" aria-label="Team" style="position:absolute;left:12px;bottom:12px;z-index:4;display:flex;gap:6px;padding:6px;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);cursor:pointer" style-hover="background:var(--color-accent-100)">
             <sc-for list="{{ sideTeam }}" as="m" hint-placeholder-count="3">
               <div style="width:44px;display:flex;flex-direction:column;gap:3px;opacity:{{ m.op }}">
                 <div style="width:44px;height:44px;box-sizing:border-box;border:2px solid var(--color-text);background-color:{{ m.bg }};background-image:{{ m.art }};background-size:contain;background-repeat:no-repeat;background-position:center bottom"></div>
@@ -132,11 +136,11 @@
         <sc-if value="{{ padOn }}" hint-placeholder-val="{{ false }}">
           <div style="position:absolute;right:12px;bottom:12px;z-index:4;display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,48px);gap:4px">
             <span></span>
-            <button class="btn btn-secondary btn-icon" onClick="{{ mvUp }}" style="width:48px;height:48px;padding:0;justify-content:center;background:#fbfaf8">↑</button>
+            <button class="btn btn-secondary btn-icon" onClick="{{ mvUp }}" style="width:48px;height:48px;padding:0;justify-content:center;background:var(--fg-paper,#fbfaf8)">↑</button>
             <span></span>
-            <button class="btn btn-secondary btn-icon" onClick="{{ mvLeft }}" style="width:48px;height:48px;padding:0;justify-content:center;background:#fbfaf8">←</button>
-            <button class="btn btn-secondary btn-icon" onClick="{{ mvDown }}" style="width:48px;height:48px;padding:0;justify-content:center;background:#fbfaf8">↓</button>
-            <button class="btn btn-secondary btn-icon" onClick="{{ mvRight }}" style="width:48px;height:48px;padding:0;justify-content:center;background:#fbfaf8">→</button>
+            <button class="btn btn-secondary btn-icon" onClick="{{ mvLeft }}" style="width:48px;height:48px;padding:0;justify-content:center;background:var(--fg-paper,#fbfaf8)">←</button>
+            <button class="btn btn-secondary btn-icon" onClick="{{ mvDown }}" style="width:48px;height:48px;padding:0;justify-content:center;background:var(--fg-paper,#fbfaf8)">↓</button>
+            <button class="btn btn-secondary btn-icon" onClick="{{ mvRight }}" style="width:48px;height:48px;padding:0;justify-content:center;background:var(--fg-paper,#fbfaf8)">→</button>
           </div>
         </sc-if>
       </div>
@@ -144,7 +148,8 @@
     </sc-if>
 
     <sc-if value="{{ showIn }}" hint-placeholder-val="{{ false }}">
-      <div ref="{{ vpRef }}" onClick="{{ mapClick }}" onPointerDown="{{ tDown }}" onPointerMove="{{ tMove }}" onPointerUp="{{ tUp }}" onPointerCancel="{{ tUp }}" style="position:absolute;inset:0;overflow:hidden;background:#2a2827;cursor:{{ mapCursor }};touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none">
+      <div ref="{{ vpRef }}" onClick="{{ mapClick }}" onPointerDown="{{ tDown }}" onPointerMove="{{ tMove }}" onPointerUp="{{ tUp }}" onPointerCancel="{{ tUp }}" style="position:absolute;inset:0;overflow:hidden;background:var(--fg-room,#2a2827);cursor:{{ mapCursor }};touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none">
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="grid" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
         <div style="position:absolute;left:{{ inL }};top:{{ inT }};width:{{ inW }};height:{{ inH }};background-image:{{ inImg }};background-size:100% 100%;box-shadow:0 24px 60px rgba(0,0,0,.45)">
           <sc-for list="{{ inArts }}" as="a" hint-placeholder-count="0">
             <div style="position:absolute;left:{{ a.l }};top:{{ a.t }};width:{{ a.w }};height:{{ a.h }};background-color:{{ a.bg }};background-image:{{ a.art }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;z-index:1"></div>
@@ -158,7 +163,7 @@
             <div style="position:absolute;left:4%;right:4%;bottom:-6%;height:26%;background:rgba(32,30,29,.25);border-radius:50%"></div>
             <div style="position:absolute;left:-12%;right:-12%;bottom:2%;height:140%;background-image:{{ ipImg }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;transform:{{ ipFlip }}"></div>
             <sc-if value="{{ hasHint }}" hint-placeholder-val="{{ false }}">
-              <div style="position:absolute;left:50%;top:{{ ihTop }};bottom:{{ ihBot }};transform:translateX(-50%);width:max-content;max-width:260px;box-sizing:border-box;background:var(--color-text);color:#fbfaf8;border-bottom:3px solid var(--color-accent);padding:6px 10px;font-size:13px;font-weight:700;line-height:1.35;pointer-events:none;z-index:3">{{ hint }}</div>
+              <div style="position:absolute;left:50%;top:{{ ihTop }};bottom:{{ ihBot }};transform:translateX(-50%);width:max-content;max-width:260px;box-sizing:border-box;background:var(--color-text);color:var(--fg-paper,#fbfaf8);border-bottom:3px solid var(--color-accent);padding:6px 10px;font-size:13px;font-weight:700;line-height:1.35;pointer-events:none;z-index:3">{{ hint }}</div>
             </sc-if>
           </div>
         </div>
@@ -167,9 +172,9 @@
 
     <sc-if value="{{ hasBanner }}" hint-placeholder-val="{{ false }}">
       <div style="position:absolute;left:0;right:0;top:{{ bnTop }};z-index:5;display:flex;justify-content:center;pointer-events:none;padding:0 12px">
-        <div ref="{{ bannerRef }}" style="max-width:min(100%,440px);background:#fbfaf8;border:2px solid var(--color-text);border-top:5px solid var(--color-accent);box-shadow:var(--shadow-md);padding:8px 18px 10px;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
+        <div ref="{{ bannerRef }}" style="max-width:min(100%,440px);background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:5px solid var(--color-accent);box-shadow:var(--shadow-md);padding:8px 18px 10px;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
           <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ bnKicker }}</span>
-          <span style="font-family:var(--font-heading);font-weight:800;font-size:24px;line-height:1.05">{{ bnTitle }}</span>
+          <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="{{ bnTitle }}" size="24" hint-size="160px,24px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:24px;line-height:1.05">{{ bnTitle }}</span></sc-if>
           <sc-if value="{{ hasBnSub }}" hint-placeholder-val="{{ false }}">
             <span style="font-size:12px;line-height:1.4;color:var(--color-neutral-800)">{{ bnSub }}</span>
           </sc-if>
@@ -178,14 +183,15 @@
     </sc-if>
 
     <sc-if value="{{ shopOn }}" hint-placeholder-val="{{ false }}">
-      <div onClick="{{ shopClose }}" style="position:absolute;inset:0;z-index:6;overflow:auto;background:rgba(32,30,29,.6);display:flex;padding:16px;box-sizing:border-box">
-        <div onClick="{{ revealStop }}" style="margin:auto;width:min(560px,100%);background:#fbfaf8;border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px">
+      <div onClick="{{ shopClose }}" style="position:absolute;inset:0;z-index:6;overflow:auto;background:var(--fg-dim,rgba(32,30,29,.6));display:flex;padding:16px;box-sizing:border-box">
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="aurora" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+        <div onClick="{{ revealStop }}" style="position:relative;margin:auto;width:min(560px,100%);background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
             <span style="font-family:var(--font-heading);font-weight:800;font-size:26px;line-height:1">Kartenladen</span>
             <button class="btn btn-ghost btn-icon" onClick="{{ shopClose }}" aria-label="Schließen" style="width:36px;height:36px;padding:0;justify-content:center;font-size:22px">×</button>
           </div>
           <div style="display:flex;align-items:baseline;gap:10px">
-            <span style="font-family:var(--font-heading);font-weight:800;font-size:56px;line-height:.9">{{ shopAvail }}</span>
+            <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="{{ shopAvail }}" size="56" hint-size="80px,46px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:56px;line-height:.9">{{ shopAvail }}</span></sc-if>
             <span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">Likes</span>
           </div>
           <div style="height:6px;background:var(--color-neutral-300)"><div style="height:100%;width:{{ shopProg }};background:var(--color-accent)"></div></div>
@@ -209,7 +215,7 @@
               <span style="font-size:12px;font-weight:600;color:var(--color-neutral-700)">{{ sellPrices }}</span>
               <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;max-height:min(42vh,320px);overflow:auto">
                 <sc-for list="{{ sellRows }}" as="c" hint-placeholder-count="6">
-                  <div style="display:flex;flex-direction:column;border:2px solid var(--color-text);min-width:0;background:#fbfaf8">
+                  <div style="display:flex;flex-direction:column;border:2px solid var(--color-text);min-width:0;background:var(--fg-paper,#fbfaf8)">
                     <div style="display:flex;justify-content:space-between;gap:4px;padding:3px 6px;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:{{ c.tierBg }};color:#201e1d;border-bottom:2px solid var(--color-text)"><span>{{ c.tier }}</span><span>{{ c.inTeam }}</span></div>
                     <div style="aspect-ratio:1;background:{{ c.bgFull }}"></div>
                     <span style="padding:4px 6px;font-size:12px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.name }}</span>
@@ -224,8 +230,9 @@
     </sc-if>
 
     <sc-if value="{{ storeOn }}" hint-placeholder-val="{{ false }}">
-      <div onClick="{{ storeClose }}" style="position:absolute;inset:0;z-index:6;overflow:auto;background:rgba(32,30,29,.6);display:flex;padding:16px;box-sizing:border-box">
-        <div onClick="{{ revealStop }}" style="margin:auto;width:min(760px,100%);background:#fbfaf8;border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px">
+      <div onClick="{{ storeClose }}" style="position:absolute;inset:0;z-index:6;overflow:auto;background:var(--fg-dim,rgba(32,30,29,.6));display:flex;padding:16px;box-sizing:border-box">
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="aurora" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+        <div onClick="{{ revealStop }}" style="position:relative;margin:auto;width:min(760px,100%);background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
             <div style="display:flex;flex-direction:column;gap:4px">
               <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ storeKicker }}</span>
@@ -236,14 +243,14 @@
           <div style="display:flex;align-items:center;gap:16px;border-top:2px solid var(--color-text);border-bottom:2px solid var(--color-text);padding:10px 0">
             <div style="flex:none;width:52px;height:68px;background:{{ storeYou }} center / contain no-repeat"></div>
             <div style="display:flex;align-items:baseline;gap:8px">
-              <span style="font-family:var(--font-heading);font-weight:800;font-size:44px;line-height:.9">{{ storeLikes }}</span>
+              <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="{{ storeLikes }}" size="44" hint-size="70px,38px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:44px;line-height:.9">{{ storeLikes }}</span></sc-if>
               <span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">Likes</span>
             </div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:10px">
             <sc-for list="{{ storeRows }}" as="r" hint-placeholder-count="10">
               <div style="display:flex;gap:12px;align-items:stretch;border:2px solid var(--color-text);padding:8px;min-width:0">
-                <div style="flex:none;width:56px;background:#efe9df;display:flex;align-items:center;justify-content:center"><div style="width:44px;height:57px;background:{{ r.img }} center / contain no-repeat"></div></div>
+                <div style="flex:none;width:56px;background:var(--fg-cream,#efe9df);display:flex;align-items:center;justify-content:center"><div style="width:44px;height:57px;background:{{ r.img }} center / contain no-repeat"></div></div>
                 <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1">
                   <span style="font-weight:800;font-size:15px;line-height:1.15">{{ r.name }}</span>
                   <span style="font-size:12.5px;line-height:1.35;color:var(--color-neutral-700)">{{ r.text }}</span>
@@ -263,8 +270,9 @@
     </sc-if>
 
     <sc-if value="{{ towerOn }}" hint-placeholder-val="{{ false }}">
-      <div onClick="{{ towerClose }}" style="position:absolute;inset:0;z-index:6;overflow:auto;background:rgba(32,30,29,.6);display:flex;padding:16px;box-sizing:border-box">
-        <div onClick="{{ revealStop }}" style="margin:auto;width:min(420px,100%);background:#fbfaf8;border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px">
+      <div onClick="{{ towerClose }}" style="position:absolute;inset:0;z-index:6;overflow:auto;background:var(--fg-dim,rgba(32,30,29,.6));display:flex;padding:16px;box-sizing:border-box">
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="topo" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+        <div onClick="{{ revealStop }}" style="position:relative;margin:auto;width:min(420px,100%);background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:6px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
             <div style="display:flex;flex-direction:column;gap:4px">
               <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ towerKicker }}</span>
@@ -274,7 +282,7 @@
           </div>
           <div style="display:flex;align-items:baseline;gap:12px;border-top:2px solid var(--color-text);border-bottom:2px solid var(--color-text);padding:10px 0">
             <span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">Etage</span>
-            <span style="font-family:var(--font-heading);font-weight:800;font-size:56px;line-height:.9">{{ towerNext }}</span>
+            <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="{{ towerNext }}" size="56" hint-size="80px,46px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:56px;line-height:.9">{{ towerNext }}</span></sc-if>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px">
             <sc-for list="{{ towerInfo }}" as="l" hint-placeholder-count="3">
@@ -309,11 +317,13 @@
     </sc-if>
 
     <sc-if value="{{ galOn }}" hint-placeholder-val="{{ false }}">
-      <div style="position:absolute;inset:0;z-index:6;overflow:auto;background:var(--color-bg)">
+      <div style="position:absolute;inset:0;z-index:6;background:var(--color-bg)">
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="grid" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+      <div style="position:absolute;inset:0;overflow:auto">
         <div style="max-width:1280px;margin:0 auto;padding:16px 20px 32px;display:flex;flex-direction:column;gap:16px">
           <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;border-bottom:2px solid var(--color-text);padding-bottom:12px">
             <div style="display:flex;align-items:baseline;gap:10px">
-              <span style="font-family:var(--font-heading);font-weight:800;font-size:32px;line-height:1">Galerie</span>
+              <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="Galerie" size="32" hint-size="120px,30px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:32px;line-height:1">Galerie</span></sc-if>
               <span style="font-size:13px;color:var(--color-neutral-700)">{{ galStatus }}</span>
             </div>
             <div style="display:flex;align-items:center;gap:6px">
@@ -367,10 +377,11 @@
           </div>
         </div>
       </div>
+      </div>
     </sc-if>
 
     <sc-if value="{{ hasDialog }}" hint-placeholder-val="{{ false }}">
-      <div onClick="{{ dialogNext }}" style="cursor:pointer;position:absolute;left:12px;right:12px;bottom:12px;z-index:5;background:#fbfaf8;border:2px solid var(--color-text);box-shadow:var(--shadow-md);padding:14px 16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px">
+      <div onClick="{{ dialogNext }}" style="cursor:pointer;position:absolute;left:12px;right:12px;bottom:12px;z-index:5;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);box-shadow:var(--shadow-md);padding:14px 16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px">
         <div style="flex:1 1 300px;display:flex;flex-direction:column;gap:4px">
           <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ dlgWho }}</span>
           <span style="font-size:18px;line-height:1.4;font-weight:600;text-wrap:pretty">{{ dlgText }}</span>
@@ -383,7 +394,8 @@
     </sc-if>
 
     <sc-if value="{{ revealOn }}" hint-placeholder-val="{{ false }}">
-      <div onClick="{{ revealClose }}" style="position:fixed;inset:0;z-index:50;background:rgba(32,30,29,.84);display:flex;padding:var(--space-6);overflow:auto">
+      <div onClick="{{ revealClose }}" style="position:fixed;inset:0;z-index:50;background:var(--fg-dim2,rgba(32,30,29,.84));display:flex;padding:var(--space-6);overflow:auto">
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="burst" level="{{ rvFxLv }}" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
         <div ref="{{ rvFxRef }}" style="position:fixed;inset:0;pointer-events:none;opacity:0"></div>
         <div onClick="{{ revealStop }}" style="position:relative;z-index:1;margin:auto;display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-4);width:min(330px, 100%, calc((100vh - 260px) * 0.6))">
           <div ref="{{ rvRaysRef }}" style="position:absolute;left:50%;top:38%;width:1000px;height:1000px;margin:-500px 0 0 -500px;pointer-events:none;opacity:0;z-index:-1;background:repeating-conic-gradient(from 0deg, rgba(255,224,150,.42) 0deg 6deg, rgba(255,224,150,0) 6deg 18deg);-webkit-mask:radial-gradient(circle, #000 0%, transparent 60%);mask:radial-gradient(circle, #000 0%, transparent 60%)"></div>
@@ -591,15 +603,16 @@
     <sc-if value="{{ showArena }}" hint-placeholder-val="{{ false }}">
       <div style="position:absolute;inset:0;display:flex;gap:16px;padding:12px 16px;box-sizing:border-box">
         <div style="flex:1;min-width:0;container-type:size;display:flex;align-items:center;justify-content:center">
-        <div ref="{{ stageRef }}" style="width:{{ stageW }};border:2px solid var(--color-text);background:#fbfaf8;box-sizing:border-box">
-          <div ref="{{ arenaRef }}" style="position:relative;aspect-ratio:16/9;overflow:hidden;background-color:#eceae2;background-image:{{ arenaBg }};background-size:cover;background-position:center">
+        <div ref="{{ stageRef }}" style="width:{{ stageW }};border:2px solid var(--color-text);background:var(--fg-paper,#fbfaf8);box-sizing:border-box">
+          <div ref="{{ arenaRef }}" style="position:relative;aspect-ratio:16/9;overflow:hidden;background-color:var(--fg-arena,#eceae2);background-image:{{ arenaBg }};background-size:cover;background-position:center">
+            <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="pixel" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div><div style="position:absolute;inset:0;pointer-events:none;background-image:{{ arenaBgM }};background-size:cover;background-position:center;filter:grayscale(1) contrast(1.08) brightness(.92)"></div></sc-if>
             <div ref="{{ foeRef }}" style="position:absolute;left:62.4%;bottom:38%;width:19%;opacity:{{ foeOp }}">
               <div style="aspect-ratio:3/4;background-image:{{ foeArt }};background-size:contain;background-repeat:no-repeat;background-position:center bottom"></div>
             </div>
             <div ref="{{ meRef }}" style="position:absolute;left:12.75%;bottom:-3%;width:27%;opacity:{{ meOp }}">
               <div style="aspect-ratio:3/4;background-image:{{ meArt }};background-size:contain;background-repeat:no-repeat;background-position:center bottom;transform:scaleX(-1)"></div>
             </div>
-            <div style="position:absolute;left:3%;top:5%;width:min(36%,300px);background:#fbfaf8;border:2px solid var(--color-text);padding:8px 10px;display:flex;flex-direction:column;gap:6px;box-sizing:border-box">
+            <div style="position:absolute;left:3%;top:5%;width:min(36%,300px);background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);padding:8px 10px;display:flex;flex-direction:column;gap:6px;box-sizing:border-box">
               <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
                 <span style="font-family:var(--font-heading);font-weight:800;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ foeName }}</span>
                 <span style="font-size:13px;font-weight:800;flex:none">{{ foeLv }}</span>
@@ -607,17 +620,17 @@
               <div style="display:flex;align-items:center;gap:8px">
                 <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--color-text);padding:1px 5px;flex:none">{{ foeTyp }}</span>
                 <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--color-text);padding:1px 5px;flex:none;background:{{ foeTierBg }}">{{ foeTier }}</span>
-                <div style="flex:1;height:10px;border:2px solid var(--color-text);background:#fff"><div style="height:100%;width:{{ foeKpPct }};background:{{ foeKpCol }};transition:width .5s ease"></div></div>
+                <div style="flex:1;height:10px;border:2px solid var(--color-text);background:var(--fg-white,#fff)"><div style="height:100%;width:{{ foeKpPct }};background:{{ foeKpCol }};transition:width .5s ease"></div></div>
               </div>
             </div>
-            <div style="position:absolute;right:3%;top:56%;width:min(38%,320px);background:#fbfaf8;border:2px solid var(--color-text);padding:8px 10px;display:flex;flex-direction:column;gap:6px;box-sizing:border-box">
+            <div style="position:absolute;right:3%;top:56%;width:min(38%,320px);background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);padding:8px 10px;display:flex;flex-direction:column;gap:6px;box-sizing:border-box">
               <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
                 <span style="font-family:var(--font-heading);font-weight:800;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ meName }}</span>
                 <span style="font-size:13px;font-weight:800;flex:none">{{ meLv }}</span>
               </div>
               <div style="display:flex;align-items:center;gap:8px">
                 <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--color-text);padding:1px 5px;flex:none">{{ meTyp }}</span>
-                <div style="flex:1;height:10px;border:2px solid var(--color-text);background:#fff"><div style="height:100%;width:{{ meKpPct }};background:{{ meKpCol }};transition:width .5s ease"></div></div>
+                <div style="flex:1;height:10px;border:2px solid var(--color-text);background:var(--fg-white,#fff)"><div style="height:100%;width:{{ meKpPct }};background:{{ meKpCol }};transition:width .5s ease"></div></div>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
                 <span style="font-size:12px;font-weight:700;white-space:nowrap">{{ meKpTxt }}</span>
@@ -628,7 +641,7 @@
               <div onPointerDown="{{ catchTap }}" style="position:absolute;inset:0;cursor:pointer;touch-action:manipulation;background:rgba(32,30,29,.22)">
                 <div ref="{{ dialRef }}" style="position:absolute;left:71.9%;top:40%;width:30%;aspect-ratio:1;margin-left:-15%;margin-top:-15%">
                   <svg viewBox="0 0 200 200" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible">
-                    <circle cx="100" cy="100" r="90" fill="none" stroke="#fbfaf8" stroke-width="16"></circle>
+                    <circle cx="100" cy="100" r="90" fill="none" stroke="var(--fg-paper,#fbfaf8)" stroke-width="16"></circle>
                     <circle cx="100" cy="100" r="99" fill="none" stroke="#201e1d" stroke-width="2.5"></circle>
                     <circle cx="100" cy="100" r="81" fill="none" stroke="#201e1d" stroke-width="2.5"></circle>
                     <path ref="{{ arcRef }}" fill="none" stroke="#ec3013" stroke-width="16"></path>
@@ -638,10 +651,10 @@
                   </svg>
                   <div ref="{{ needleRef }}" style="position:absolute;inset:0">
                     <div style="position:absolute;left:50%;top:-3%;width:4%;height:24%;margin-left:-2%;background:#201e1d"></div>
-                    <div style="position:absolute;left:50%;top:-6%;width:10%;aspect-ratio:1;margin-left:-5%;background:#fbfaf8;border:3px solid #201e1d;box-sizing:border-box;border-radius:50%"></div>
+                    <div style="position:absolute;left:50%;top:-6%;width:10%;aspect-ratio:1;margin-left:-5%;background:var(--fg-paper,#fbfaf8);border:3px solid #201e1d;box-sizing:border-box;border-radius:50%"></div>
                   </div>
                 </div>
-                <div style="position:absolute;left:3%;top:5%;width:min(36%,300px);box-sizing:border-box;background:#fbfaf8;border:2px solid var(--color-text);padding:8px 12px;display:flex;flex-direction:column;gap:8px">
+                <div style="position:absolute;left:3%;top:5%;width:min(36%,300px);box-sizing:border-box;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);padding:8px 12px;display:flex;flex-direction:column;gap:8px">
                   <div style="display:flex;align-items:baseline;gap:10px">
                     <strong style="font-family:var(--font-heading);font-size:18px">Fangen</strong>
                     <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--color-text);padding:1px 5px;background:{{ foeTierBg }}">{{ foeTier }}</span>
@@ -666,7 +679,7 @@
           </div>
 
           <sc-if value="{{ inBattle }}" hint-placeholder-val="{{ false }}">
-            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:2px solid var(--color-text);background:#fbfaf8;height:162px">
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:2px solid var(--color-text);background:var(--fg-paper,#fbfaf8);height:162px">
               <div style="padding:12px 14px;font-size:16px;line-height:1.4;font-weight:600;text-wrap:pretty;overflow:auto">{{ bMsg }}</div>
               <div style="padding:10px;display:flex;flex-direction:column;gap:6px;border-left:2px solid var(--color-text);overflow:auto">
                 <sc-if value="{{ bMenu }}" hint-placeholder-val="{{ false }}">
@@ -768,7 +781,7 @@
               </sc-if>
               <sc-for list="{{ q.rows }}" as="r" hint-placeholder-count="4">
                 <div style="display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:4px 12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--color-divider);opacity:{{ r.op }}">
-                  <div style="width:18px;height:18px;margin-top:1px;box-sizing:border-box;border:2px solid {{ r.bd }};background:{{ r.box }};color:#fbfaf8;font-size:11px;font-weight:800;line-height:14px;text-align:center">{{ r.mark }}</div>
+                  <div style="width:18px;height:18px;margin-top:1px;box-sizing:border-box;border:2px solid {{ r.bd }};background:{{ r.box }};color:var(--fg-paper,#fbfaf8);font-size:11px;font-weight:800;line-height:14px;text-align:center">{{ r.mark }}</div>
                   <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
                     <strong style="font-size:15px">{{ r.title }}</strong>
                     <span style="font-size:13px;line-height:1.45;color:var(--color-neutral-700);text-wrap:pretty">{{ r.text }}</span>
@@ -798,7 +811,7 @@
         <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px;border-bottom:2px solid var(--color-text);padding-bottom:10px">
           <div style="display:flex;flex-direction:column;gap:4px">
             <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
-              <span style="font-family:var(--font-heading);font-weight:800;font-size:28px;line-height:1">Team</span>
+              <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="Team" size="28" hint-size="80px,26px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-weight:800;font-size:28px;line-height:1">Team</span></sc-if>
               <span style="font-size:13px;color:var(--color-neutral-700)">{{ tmStatus }}</span>
             </div>
             
@@ -858,7 +871,7 @@
                   <strong>{{ t.lv }}</strong>
                   <span style="font-size:11px;font-weight:700;white-space:nowrap">{{ t.kpTxt }}</span>
                 </div>
-                <div style="height:8px;border:2px solid var(--color-text);background:#fff"><div style="height:100%;width:{{ t.kpPct }};background:{{ t.kpCol }}"></div></div>
+                <div style="height:8px;border:2px solid var(--color-text);background:var(--fg-white,#fff)"><div style="height:100%;width:{{ t.kpPct }};background:{{ t.kpCol }}"></div></div>
                 <div style="display:flex;align-items:center;gap:8px">
                   <div style="flex:1;height:4px;background:var(--color-neutral-300)"><div style="height:100%;width:{{ t.epPct }};background:var(--color-accent-700)"></div></div>
                   <span style="font-size:11px;color:var(--color-neutral-700);white-space:nowrap">{{ t.epTxt }}</span>
@@ -890,7 +903,7 @@
           <div style="padding:10px 14px;background:var(--color-accent-100);border-top:2px solid var(--color-accent);font-size:14px;font-weight:700;color:var(--color-accent-800)">{{ toast }}</div>
         </sc-if>
         <sc-if value="{{ hasPick }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;flex-direction:column;gap:10px;padding:16px;background:#fbfaf8;border:2px solid var(--color-text);border-top:4px solid var(--color-accent)">
+          <div style="display:flex;flex-direction:column;gap:10px;padding:16px;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:4px solid var(--color-accent)">
             <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px">
               <span style="font-family:var(--font-heading);font-weight:800;font-size:20px">{{ pickTitle }}</span>
               <button class="btn btn-ghost" onClick="{{ cancelPick }}" style="justify-content:flex-start;padding:4px 10px;font-size:13px">Abbrechen</button>
@@ -955,7 +968,7 @@
     <sc-if value="{{ mpNotesOn }}" hint-placeholder-val="{{ false }}">
       <div style="position:absolute;right:12px;top:{{ mpNotesTop }};z-index:8;width:min(300px,calc(100% - 24px));display:flex;flex-direction:column;gap:8px">
         <sc-for list="{{ mpNotes }}" as="n" hint-placeholder-count="0">
-          <div style="background:#fbfaf8;border:2px solid var(--color-text);border-top:4px solid {{ n.bar }};box-shadow:var(--shadow-md);padding:10px 12px;display:flex;flex-direction:column;gap:8px">
+          <div style="background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:4px solid {{ n.bar }};box-shadow:var(--shadow-md);padding:10px 12px;display:flex;flex-direction:column;gap:8px">
             <div style="display:flex;flex-direction:column;gap:2px">
               <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ n.kicker }}</span>
               <span style="font-size:14px;font-weight:600;line-height:1.35;text-wrap:pretty;overflow-wrap:anywhere">{{ n.text }}</span>
@@ -973,7 +986,7 @@
     </sc-if>
 
     <sc-if value="{{ pwOn }}" hint-placeholder-val="{{ false }}">
-      <div style="position:absolute;left:12px;bottom:12px;z-index:6;width:min(560px,calc(100% - 24px));box-sizing:border-box;background:#fbfaf8;border:2px solid var(--color-text);box-shadow:var(--shadow-md);padding:14px 16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px">
+      <div style="position:absolute;left:12px;bottom:12px;z-index:6;width:min(560px,calc(100% - 24px));box-sizing:border-box;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);box-shadow:var(--shadow-md);padding:14px 16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px">
         <div style="flex:1 1 200px;display:flex;flex-direction:column;gap:4px;min-width:0">
           <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Spieler</span>
           <span style="font-family:var(--font-heading);font-size:24px;font-weight:800;line-height:1.1;overflow-wrap:anywhere">{{ pwName }}</span>
@@ -989,7 +1002,7 @@
     </sc-if>
 
     <sc-if value="{{ chatOn }}" hint-placeholder-val="{{ false }}">
-      <div style="position:absolute;right:12px;bottom:12px;z-index:7;width:min(340px,calc(100% - 24px));height:min(400px,calc(100% - 24px));display:flex;flex-direction:column;background:#fbfaf8;border:2px solid var(--color-text);box-shadow:var(--shadow-lg)">
+      <div style="position:absolute;right:12px;bottom:12px;z-index:7;width:min(340px,calc(100% - 24px));height:min(400px,calc(100% - 24px));display:flex;flex-direction:column;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);box-shadow:var(--shadow-lg)">
         <div style="flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 8px 8px 14px;border-bottom:2px solid var(--color-text)">
           <div style="display:flex;flex-direction:column;min-width:0">
             <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Chat</span>
@@ -1013,10 +1026,10 @@
     </sc-if>
 
     <sc-if value="{{ awayOn }}" hint-placeholder-val="{{ false }}">
-      <div style="position:fixed;inset:0;z-index:66;background:rgba(32,30,29,.6);display:flex;align-items:center;justify-content:center;padding:16px">
-        <div style="width:min(440px,100%);box-sizing:border-box;background:#fbfaf8;border:2px solid var(--color-text);border-top:5px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:20px 22px;display:flex;flex-direction:column;align-items:flex-start;gap:14px">
+      <div style="position:fixed;inset:0;z-index:66;background:var(--fg-dim,rgba(32,30,29,.6));display:flex;align-items:center;justify-content:center;padding:16px">
+        <div style="width:min(440px,100%);box-sizing:border-box;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);border-top:5px solid var(--color-accent);box-shadow:var(--shadow-lg);padding:20px 22px;display:flex;flex-direction:column;align-items:flex-start;gap:14px">
           <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Offline</span>
-          <span style="font-family:var(--font-heading);font-size:28px;font-weight:800;line-height:1.1">Bist du noch da?</span>
+          <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="Bist du noch da?" size="28" hint-size="240px,28px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-size:28px;font-weight:800;line-height:1.1">Bist du noch da?</span></sc-if>
           <span style="font-size:15px;line-height:1.45;text-wrap:pretty">{{ awayTxt }}</span>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-primary" onClick="{{ mpBack }}" style="justify-content:flex-start">Wieder online</button>
@@ -1027,8 +1040,9 @@
     </sc-if>
 
     <sc-if value="{{ dgOn }}" hint-placeholder-val="{{ false }}">
-      <div style="position:fixed;inset:0;z-index:70;background:rgba(32,30,29,.88);display:flex;overflow:auto;padding:12px;box-sizing:border-box">
-        <div style="margin:auto;width:min(940px,100%);background:var(--color-bg);border:2px solid var(--color-text);box-shadow:var(--shadow-lg);display:flex;flex-direction:column">
+      <div style="position:fixed;inset:0;z-index:70;background:var(--fg-dim2,rgba(32,30,29,.88));display:flex;overflow:auto;padding:12px;box-sizing:border-box">
+        <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="threads" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+        <div style="position:relative;margin:auto;width:min(940px,100%);background:var(--color-bg);border:2px solid var(--color-text);box-shadow:var(--shadow-lg);display:flex;flex-direction:column">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:2px solid var(--color-text)">
             <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
               <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">{{ dgKicker }}</span>
@@ -1059,7 +1073,7 @@
                   </div>
                   <input type="range" min="0" max="{{ dgCap }}" step="1" value="{{ dgStake }}" onChange="{{ dgSlide }}" disabled="{{ dgNoCap }}" style="width:100%;height:28px;margin:0;accent-color:var(--color-accent);cursor:pointer">
                   <span style="font-size:13px;color:var(--color-neutral-700)">{{ dgCapTxt }}</span>
-                  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#fbfaf8;border:2px solid var(--color-text)">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text)">
                     <span style="font-size:15px;font-weight:800;overflow-wrap:anywhere">{{ dgOppTxt }}</span>
                     <span style="font-size:13px;font-weight:800;white-space:nowrap;color:{{ dgOppCol }}">{{ dgOppState }}</span>
                   </div>
@@ -1108,11 +1122,11 @@
           <sc-if value="{{ dgGame }}" hint-placeholder-val="{{ false }}">
             <div style="padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px">
               <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:2px solid var(--color-text)">
-                <div style="padding:8px 12px;display:flex;align-items:baseline;justify-content:space-between;gap:8px;background:var(--color-text);color:#fbfaf8">
+                <div style="padding:8px 12px;display:flex;align-items:baseline;justify-content:space-between;gap:8px;background:var(--color-text);color:var(--fg-paper,#fbfaf8)">
                   <span style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em">Du</span>
                   <span ref="{{ dgMyRef }}" style="font-family:var(--font-heading);font-size:34px;font-weight:800;line-height:1"></span>
                 </div>
-                <div style="padding:8px 12px;display:flex;align-items:baseline;justify-content:space-between;gap:8px;background:#fbfaf8;min-width:0">
+                <div style="padding:8px 12px;display:flex;align-items:baseline;justify-content:space-between;gap:8px;background:var(--fg-paper,#fbfaf8);min-width:0">
                   <span style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ dgOpp }}</span>
                   <span style="font-family:var(--font-heading);font-size:34px;font-weight:800;line-height:1">{{ dgOppLive }}</span>
                 </div>
@@ -1135,7 +1149,7 @@
           <sc-if value="{{ dgResult }}" hint-placeholder-val="{{ false }}">
             <div style="padding:28px 20px 20px;display:flex;flex-direction:column;gap:14px;align-items:flex-start">
               <span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Ergebnis</span>
-              <span style="font-family:var(--font-heading);font-size:clamp(48px,9vw,88px);font-weight:800;line-height:.95;color:{{ dgResCol }}">{{ dgResTitle }}</span>
+              <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="{{ dgResTitle }}" size="{{ dgResSize }}" tone="{{ dgResTone }}" hint-size="300px,70px"></x-import></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-size:clamp(48px,9vw,88px);font-weight:800;line-height:.95;color:{{ dgResCol }}">{{ dgResTitle }}</span></sc-if>
               <div style="display:flex;gap:28px;flex-wrap:wrap;align-items:flex-end">
                 <div style="display:flex;flex-direction:column;gap:4px">
                   <span style="font-size:12px;font-weight:800;color:var(--color-neutral-700)">{{ dgResWho }}</span>
@@ -1572,13 +1586,79 @@ class Component extends DCLogic {
     return this.fromSave(o || {});
   }
   state = {
-    tab: 'pfad', loading: true, note: 'Karten werden geladen …', cards: [], arts: {}, hint: '', frame: 0,
+    tab: 'pfad', mono: Component.monoGet(), loading: true, note: 'Karten werden geladen …', cards: [], arts: {}, hint: '', frame: 0,
     ...this.fromSave({}),
     dialog: null, spot: null, battle: null, pick: null, menu: false, pad: false, banner: null, panel: null, reveal: null, inside: null, gl: null, gal: null, tmSort: 'new', shopBusy: false, shopMsg: '', sellArm: null, tRank: null, galTick: 0, toast: '', pvMe: 0, askReset: false, vpW: 0, vpH: 0, mgView: null, pop: null, block: '',
     mpOn: true, mpStatus: 'off', mpAwayTxt: '', mpT: 0, mpMsgs: [], mpNotes: [], mpDuel: null, mpWin: null, mpChat: null, mpStake: 0, dgPhase: null, dgFinal: 0,
   };
 
+  static monoGet() { try { return localStorage.getItem('formgen.design') === 'mono'; } catch (e) { return false; } }
+  toggleMono = () => {
+    const on = !this.state.mono;
+    try { localStorage.setItem('formgen.design', on ? 'mono' : 'klassisch'); } catch (e) {}
+    if (on) document.documentElement.dataset.design = 'mono'; else delete document.documentElement.dataset.design;
+    this.setState({ mono: on, menu: false });
+  };
+
+  sparkInit() {
+    if (this._sparkOff) this._sparkOff();
+    const COL = ['#ffffff'], SIZE = 14, RADIUS = 30, COUNT = 8, WIDTH = 2, DUR = 500, RAND = 0.2, MAX = 32;
+    const reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const bursts = []; let raf = 0, last = { t: -1e9, x: 0, y: 0 };
+    const smooth = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+    const remove = b => { b.canvas.remove(); const i = bursts.indexOf(b); if (i >= 0) bursts.splice(i, 1); };
+    const frame = now => {
+      raf = 0;
+      for (const b of bursts.slice()) {
+        const el = now - b.start, ctx = b.ctx;
+        ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, b.canvas.width, b.canvas.height);
+        ctx.setTransform(b.ratio, 0, 0, b.ratio, -b.left * b.ratio, -b.top * b.ratio);
+        let alive = false;
+        for (const sp of b.sparks) {
+          const life = reduced ? 320 : DUR * sp.life, p = el / life;
+          if (p >= 1) continue;
+          alive = true;
+          const dist = RADIUS * sp.reach * (reduced ? 0.55 : 1 - Math.pow(1 - p, 3));
+          const len = SIZE * sp.scale * (reduced ? 0.5 : Math.pow(1 - p, 1.6)), c = Math.cos(sp.angle), s = Math.sin(sp.angle);
+          ctx.globalAlpha = reduced ? 1 - p : 1 - smooth(0.55, 1, p);
+          ctx.strokeStyle = sp.color; ctx.lineWidth = WIDTH * sp.scale; ctx.lineCap = 'round';
+          ctx.shadowColor = 'rgba(32,30,29,.55)'; ctx.shadowBlur = 3;
+          ctx.beginPath(); ctx.moveTo(b.x + c * dist, b.y + s * dist); ctx.lineTo(b.x + c * (dist + Math.max(0.01, len)), b.y + s * (dist + Math.max(0.01, len))); ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+        if (!alive) remove(b);
+      }
+      if (bursts.length) raf = requestAnimationFrame(frame);
+    };
+    const spawn = (x, y) => {
+      const reach = RADIUS * (1 + 0.35 * RAND) + SIZE * (1 + 0.4 * RAND) + WIDTH * 2 + 10;
+      const box = { l: Math.max(x - reach, 0), t: Math.max(y - reach, 0), r: Math.min(x + reach, window.innerWidth), b: Math.min(y + reach, window.innerHeight) };
+      if (box.r - box.l < 1 || box.b - box.t < 1) return;
+      const ratio = Math.min(window.devicePixelRatio || 1, 2), canvas = document.createElement('canvas');
+      canvas.width = Math.ceil((box.r - box.l) * ratio); canvas.height = Math.ceil((box.b - box.t) * ratio);
+      Object.assign(canvas.style, { position: 'fixed', left: box.l + 'px', top: box.t + 'px', width: (box.r - box.l) + 'px', height: (box.b - box.t) + 'px', pointerEvents: 'none', zIndex: '2147483000' });
+      canvas.setAttribute('aria-hidden', 'true');
+      const ctx = canvas.getContext('2d'); if (!ctx) return;
+      document.body.appendChild(canvas);
+      const off = Math.floor(Math.random() * COL.length), step = Math.PI * 2 / COUNT;
+      const sparks = Array.from({ length: COUNT }, (_, i) => ({ angle: -Math.PI / 2 + step * i + (Math.random() - 0.5) * RAND * step * 0.9, reach: 1 + (Math.random() - 0.5) * 0.7 * RAND, scale: 1 + (Math.random() - 0.5) * 0.8 * RAND, life: 1 + (Math.random() - 0.5) * 0.5 * RAND, color: COL[(i + off) % COL.length] }));
+      bursts.push({ x, y, start: performance.now(), sparks, canvas, ctx, ratio, left: box.l, top: box.t });
+      while (bursts.length > MAX) remove(bursts[0]);
+      if (!raf) raf = requestAnimationFrame(frame);
+    };
+    const down = e => { if (e.pointerType !== 'mouse' || e.button !== 0) return; last = { t: performance.now(), x: e.clientX, y: e.clientY }; spawn(e.clientX, e.clientY); };
+    const click = e => {
+      if (e.pointerType === 'mouse') return;
+      if (e.detail === 0) { const el = e.target instanceof Element ? e.target : document.body, r = el.getBoundingClientRect(); spawn(r.left + r.width / 2, r.top + r.height / 2); return; }
+      if (!(performance.now() - last.t < 700 && Math.hypot(e.clientX - last.x, e.clientY - last.y) < 12)) spawn(e.clientX, e.clientY);
+    };
+    document.addEventListener('pointerdown', down, true); document.addEventListener('click', click, true);
+    this._sparkOff = () => { cancelAnimationFrame(raf); document.removeEventListener('pointerdown', down, true); document.removeEventListener('click', click, true); for (const b of bursts.slice()) remove(b); this._sparkOff = null; };
+  }
+
   async componentDidMount() {
+    if (this.state.mono) document.documentElement.dataset.design = 'mono'; else delete document.documentElement.dataset.design;
+    this.sparkInit();
     window.addEventListener('keydown', this.onKey);
     await new Promise(r => this.setState(this.readSave(), r));
     this.manLoop();
@@ -1594,6 +1674,7 @@ class Component extends DCLogic {
         import(new URL('./linegen.js', document.baseURI).href),
         import(new URL('./wesen-defaults.js', document.baseURI).href),
       ]);
+      import(new URL('./kupfer.js', document.baseURI).href).then(k => { this.kupfer = k; }).catch(e => console.error(e));
       if (this.dead) return;
       this.D = df.DEFAULTS; this.M = df.MODELS;
       this.engine = lg.createEngine(this.canvas);
@@ -1618,6 +1699,7 @@ class Component extends DCLogic {
     this.migrateLikes();
   }
   componentWillUnmount() {
+    if (this._sparkOff) this._sparkOff();
     this.mpBye();
     this.dead = true;
     clearTimeout(this.mpTimer); clearInterval(this.mpAnimT); clearTimeout(this.mpHidT); clearTimeout(this.stakeT);
@@ -1736,19 +1818,72 @@ class Component extends DCLogic {
     if (c.t === 'floor') return { wiese: ['gr1', 'gr2', 'flower', '', '', ''][v], wald: v === 0 ? 'twig' : '', fels: v < 2 ? 'pebble' : '', kristall: v === 0 ? 'spark' : '', see: v === 0 ? 'shell' : '', arena: 'tileA', strand: v === 0 ? 'shell' : v === 1 ? 'gr2' : '', dschungel: v === 0 ? 'twig' : v === 1 ? 'gr1' : '', vulkan: v < 2 ? 'pebble' : '', tempel: 'tileA', wueste: v === 0 ? 'dune2' : v === 1 ? 'pebble' : '', pilz: v === 0 ? 'tshroom' : '', ruine: v < 2 ? 'tileB' : '', schnee: v === 0 ? 'flake' : '', mond: 'tileM' }[b] || '';
     return '';
   }
-  mapSvg(g) {
-    const C = Component, W = C.W, H = C.H, used = new Set();
-    let rects = '', uses = '';
+  static OBJ = new Set('tall tree pine fern reed rock scree cryst cryst2 shards spring chest chestOpen palm jtree deadtree vrock pillar kaktus thorn shroom shroom2 spores spine drift ruinS ruinB rubble mpillar'.split(' '));
+  static GLOW = new Set(['ember', 'spark']);
+  static INK = '#0c0c0d';
+  static hsl(hex) {
+    let h = hex.slice(1); if (h.length === 3) h = h.split('').map(c => c + c).join('');
+    const r = parseInt(h.slice(0, 2), 16) / 255, g = parseInt(h.slice(2, 4), 16) / 255, b = parseInt(h.slice(4, 6), 16) / 255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+    if (!d) return [0, 0, l];
+    const sa = d / (1 - Math.abs(2 * l - 1)), hu = mx === r ? ((g - b) / d + 6) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return [hu * 60, sa, l];
+  }
+  static hex([h, sa, l]) {
+    const c = (1 - Math.abs(2 * l - 1)) * sa, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2;
+    const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+    return '#' + [r, g, b].map(v => Math.round(Math.max(0, Math.min(1, v + m)) * 255).toString(16).padStart(2, '0')).join('');
+  }
+  static mcol(hex, kind) {
+    const C = Component, k = kind + hex; C._mc = C._mc || {}; if (C._mc[k]) return C._mc[k];
+    const [h, sa, l] = C.hsl(hex); let o;
+    if (kind === 'ground') o = [h, sa * 0.5, 0.075 + l * 0.11];
+    else if (kind === 'deco') o = [h, sa * 0.5, 0.13 + l * 0.14];
+    else if (kind === 'room') o = [h, sa * 0.4, 0.085 + l * 0.2];
+    else o = l > 0.9 && sa < 0.35 ? [h, sa * 0.3, 0.8] : [h, sa < 0.1 ? sa * 0.5 : Math.min(0.85, sa * 1.15 + 0.12), 0.3 + l * 0.36];
+    return (C._mc[k] = C.hex(o));
+  }
+  static mmap(str, kind) {
+    if (kind === 'keep') return str;
+    const C = Component, ink = c => C.hsl(c)[2] < 0.16;
+    return str.replace(/<[^>]+>/g, tag => {
+      const fm = tag.match(/fill='(#[0-9a-fA-F]{3,6})'/), f = fm ? fm[1] : null, fi = !!f && ink(f), mf = f ? (fi ? C.INK : C.mcol(f, kind)) : null;
+      let t = f ? tag.replace(fm[0], `fill='${mf}'`) : tag;
+      return t.replace(/stroke='(#[0-9a-fA-F]{3,6})'/, (m, sc) => `stroke='${ink(sc) ? (mf && !fi ? C.hex([C.hsl(mf)[0], C.hsl(mf)[1], C.hsl(mf)[2] * (kind === 'obj' ? 0.72 : 0.42)]) : kind === 'obj' ? '#2b2c30' : C.INK) : C.mcol(sc, kind)}'`);
+    });
+  }
+  static glossDef(id, u) {
+    const f = v => +(v * u).toFixed(3);
+    return `<filter id='${id}' x='-10%' y='-10%' width='120%' height='120%' color-interpolation-filters='sRGB'><feGaussianBlur in='SourceAlpha' stdDeviation='${f(0.035)}' result='b1'/><feGaussianBlur in='SourceAlpha' stdDeviation='${f(0.11)}' result='b2'/><feComposite in='b1' in2='b2' operator='arithmetic' k2='.55' k3='.45' result='h'/><feDiffuseLighting in='h' surfaceScale='9' diffuseConstant='1.2' lighting-color='#ffffff' result='d'><feDistantLight azimuth='225' elevation='48'/></feDiffuseLighting><feSpecularLighting in='h' surfaceScale='9' specularConstant='1.35' specularExponent='18' lighting-color='#ffffff' result='s'><feDistantLight azimuth='225' elevation='36'/></feSpecularLighting><feComposite in='SourceGraphic' in2='d' operator='arithmetic' k1='.72' k2='.42' result='m'/><feComposite in='s' in2='SourceAlpha' operator='in' result='s2'/><feComposite in='m' in2='s2' operator='arithmetic' k2='1' k3='.9' result='o'/><feComposite in='o' in2='SourceAlpha' operator='in'/></filter>`;
+  }
+  symUrlM(k) {
+    this._sm = this._sm || {};
+    if (!this._sm[k]) { const C = Component; this._sm[k] = `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><defs>${C.glossDef('glc', 40)}</defs><g filter='url(#glc)'>${C.mmap(C.SYM[k], 'obj')}</g></svg>`)}")`; }
+    return this._sm[k];
+  }
+  monoUrl(url, kind) {
+    this._mu = this._mu || new Map(); const key = kind + url; if (this._mu.has(key)) return this._mu.get(key);
+    const C = Component, svg = decodeURIComponent(url.slice(url.indexOf(',') + 1, url.lastIndexOf('")')));
+    const open = svg.indexOf('>') + 1, close = svg.lastIndexOf('</svg>'), vb = (svg.match(/viewBox='([^']+)'/) || [])[1], vw = vb ? +vb.trim().split(/\s+/)[2] : 60;
+    const inner = svg.slice(open, close);
+    const out = kind === 'room' ? svg.slice(0, open) + C.mmap(inner, 'room') + '</svg>'
+      : svg.slice(0, open) + `<defs>${C.glossDef('glm', vw / 3)}</defs><g filter='url(#glm)'>` + C.mmap(inner, 'obj') + '</g></svg>';
+    const res = `url("data:image/svg+xml,${encodeURIComponent(out)}")`; this._mu.set(key, res); return res;
+  }
+  mapSvg(g, mono, flat) {
+    const C = Component, W = C.W, H = C.H, used = new Set(), clear = c => mono && (c.t === 'sea' || (c.t === 'wall' && c.b === 'see'));
+    let rects = '', uses = '', deco = '';
     for (let y = 0; y < H; y++) {
       let run = null, rx = 0;
       for (let x = 0; x <= W; x++) {
-        const col = x < W ? this.tileCol(g[y * W + x]) : null;
+        const col = x < W ? (clear(g[y * W + x]) ? '' : mono ? C.mcol(this.tileCol(g[y * W + x]), 'ground') : this.tileCol(g[y * W + x])) : null;
         if (col !== run) { if (run) rects += `<rect x='${rx}' y='${y}' width='${x - rx}' height='1.04' fill='${run}'/>`; run = col; rx = x; }
       }
-      for (let x = 0; x < W; x++) { const s = this.tileSym(g[y * W + x]); if (s) { used.add(s); uses += `<use href='#${s}' x='${x}' y='${y}' width='1' height='1'/>`; } }
+      for (let x = 0; x < W; x++) { const s = clear(g[y * W + x]) ? '' : this.tileSym(g[y * W + x]); if (s) { used.add(s); const u = `<use href='#${s}' x='${x}' y='${y}' width='1' height='1'/>`; if (mono && !flat && !C.OBJ.has(s)) deco += u; else uses += u; } }
     }
-    const defs = [...used].map(k => `<symbol id='${k}' viewBox='0 0 40 40'>${C.SYM[k]}</symbol>`).join('');
-    const s = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${W} ${H}' preserveAspectRatio='none'><defs>${defs}</defs>${rects}${uses}</svg>`;
+    const defs = [...used].map(k => `<symbol id='${k}' viewBox='0 0 40 40'>${mono ? C.mmap(C.SYM[k], C.GLOW.has(k) ? 'keep' : C.OBJ.has(k) ? 'obj' : 'deco') : C.SYM[k]}</symbol>`).join('');
+    const body = mono && !flat ? `${rects}${deco}<g filter='url(#gl)'>${uses}</g>` : `${rects}${uses}`;
+    const s = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${W} ${H}' preserveAspectRatio='none'><defs>${defs}${mono && !flat ? C.glossDef('gl', 1) : ''}</defs>${body}</svg>`;
     return `url("data:image/svg+xml,${encodeURIComponent(s)}")`;
   }
   symUrl(k, bg) {
@@ -1888,7 +2023,7 @@ class Component extends DCLogic {
   full(model, params) { return { ...this.D, ...(model === 'kokon' ? { fit: false } : {}), ...(params || {}) }; }
   draw(p) {
     let svg = '';
-    try { svg = this.engine.update({ ...p, cBg: 'none' }, {}).svg; } catch (e) { console.error(e); }
+    try { const o = this.engine.update({ ...p, cBg: 'none' }, { normals: !!(p.fxSeed && this.kupfer) }); svg = o.svg; if (p.fxSeed && this.kupfer) svg = this.kupfer.applyFx(svg, p.fxSeed, o.nrm, !!p.fx2d); } catch (e) { console.error(e); }
     return svg ? `url("data:image/svg+xml,${encodeURIComponent(svg)}")` : 'none';
   }
   rng(str) {
@@ -2527,6 +2662,7 @@ class Component extends DCLogic {
       it('Quests', qd + '/' + qn, go('quest'), tab === 'quest'),
       it('Attacken', '', go('atk'), tab === 'atk'),
       it('Steuerkreuz', s.pad ? 'an' : 'aus', () => this.setState({ pad: !s.pad, menu: false }), false, '2px solid var(--color-text)'),
+      it('Design', s.mono ? 'Mono' : 'Klassisch', this.toggleMono, false),
       it('Online sichtbar', s.mpOn ? (s.mpStatus === 'broken' ? 'Server fehlt' : 'an') : 'aus', this.mpToggle, false),
       it('Spieler wechseln', '', () => { location.href = 'index.html#spieler'; }, false),
       it(s.askReset ? 'Wirklich alles neu?' : 'Abenteuer neu starten', '', () => { if (s.askReset) { this.resetAll(); this.setState({ menu: false, tab: 'pfad' }); } else this.setState({ askReset: true }); }, s.askReset),
@@ -3081,12 +3217,12 @@ class Component extends DCLogic {
       title: c.name, nr: 'Nr. ' + String(c.id || 0).padStart(3, '0'), sorte: C.TN[c.model], code: c.code, barcode: bc,
       color: gd ? '#050505' : ic ? '#f1e2bf' : c.color, art: c.art || this.state.arts[c.uid] || 'none',
       pattern: gd ? C.CARD_GOD_RAYS : ic ? C.ICON_RAYS : c.patImg, patSize: ic || gd ? '100% 100%' : c.patSize,
-      frame: t.img, panel: gd ? '#050505' : ic ? '#fffaf0' : '#fbfaf8', edge: gd ? '#fbfaf8' : ic ? '#7a5a1c' : 'var(--color-text)',
+      frame: t.img, panel: gd ? '#050505' : ic ? '#fffaf0' : '#fbfaf8', edge: gd ? '#fbfaf8' : ic ? '#7a5a1c' : '#201e1d',
       shadow: gd ? '0 0 0 2px #050505, 0 12px 28px rgba(236,48,19,.4)' : ic ? '0 10px 24px rgba(122,90,28,.32)' : t.foil ? '0 6px 14px rgba(32,30,29,.16)' : 'none',
       shine: t.shine ? C.CARD_SHINE : 'none', shineOn: t.shine ? '1' : '0',
       foil: gd ? C.CARD_GOD_FOIL : t.foil ? C.CARD_FOIL : ic ? C.ICON_PEARL : 'none', foilOp: gd ? 0.5 : t.foil ? 0.55 : ic ? 0.35 : 0,
       move: t.shine ? this.cardTilt : undefined, leave: t.shine ? this.cardUntilt : undefined, tier: c.tier, tierName: t.name, icon: ic, god: gd, artFilter: gd ? 'grayscale(1) contrast(1.35)' : 'none',
-      ink: gd ? '#fbfaf8' : ic ? '#4a3510' : 'var(--color-text)', sub: gd ? '#ec3013' : ic ? '#7a5a1c' : 'var(--color-neutral-700)',
+      ink: gd ? '#fbfaf8' : ic ? '#4a3510' : '#201e1d', sub: gd ? '#ec3013' : ic ? '#7a5a1c' : '#605d5d',
       ovr: c.st.ovr, stats: c.st.vals.map((v, k) => ({ k: C.STAT_NAMES[k][0], v })), statsLong: c.st.vals.map((v, k) => ({ name: C.STAT_NAMES[k][1], v })),
       hasOwner: false, owner: '', openOwner: null, zoom: () => this.zoomCard(c),
     };
@@ -3116,7 +3252,7 @@ class Component extends DCLogic {
         }));
       }
       Object.assign(out, {
-        showIn: true, inImg: this.roomSvg(I.kind), inW: R.w * tile + 'px', inH: R.h * tile + 'px', inL: Math.round((vw - R.w * tile) / 2) + 'px', inT: Math.round((vh - R.h * tile) / 2) + 'px',
+        showIn: true, inImg: s.mono ? this.monoUrl(this.roomSvg(I.kind), 'room') : this.roomSvg(I.kind), inW: R.w * tile + 'px', inH: R.h * tile + 'px', inL: Math.round((vw - R.w * tile) / 2) + 'px', inT: Math.round((vh - R.h * tile) / 2) + 'px',
         inTileW: pc(1, R.w), inTileH: pc(1, R.h), ipL: pc(I.pos[0], R.w), ipT: pc(I.pos[1], R.h),
         ipImg: this.human({ dir: hd, frame: s.frame, coat: '#2f5f8f', cap: '#ec3013', pack: true, fx: s.worn }), ipFlip: I.dir === 'left' ? 'scaleX(-1)' : 'none',
         ihTop: I.pos[1] <= 1 ? '125%' : 'auto', ihBot: I.pos[1] <= 1 ? 'auto' : '175%',
@@ -3170,7 +3306,7 @@ class Component extends DCLogic {
     });
     const RV = s.reveal, rc = RV ? this.cardView(RV.card) : null, inTeam = RV && s.team.includes(RV.card.uid), q = RV && RV.queue ? RV.queue.length : 0;
     Object.assign(out, {
-      revealOn: !!RV, rvFxRef: this.rvFxRef, rvRaysRef: this.rvRaysRef, rvBoxRef: this.rvBoxRef, rvFlipRef: this.rvFlipRef, rvFlashRef: this.rvFlashRef,
+      rvFxLv: rc ? (0.65 + 0.12 * Math.min(6, rc.tier || 0)).toFixed(2) : '1', revealOn: !!RV, rvFxRef: this.rvFxRef, rvRaysRef: this.rvRaysRef, rvBoxRef: this.rvBoxRef, rvFlipRef: this.rvFlipRef, rvFlashRef: this.rvFlashRef,
       rv: rc ? { ...rc, flip: RV.front ? 'rotateY(0deg)' : 'rotateY(180deg)', done: !!RV.done, isDraw: RV.mode === 'draw', isView: RV.mode === 'view',
         label: rc.god ? 'GODLIKE · gottgleich' : rc.icon ? 'Ikone · aus der Testphase' : 'Stufe: ' + rc.tierName,
         metaLong: C.TN[RV.card.model] + ' · ' + (RV.card.gal ? 'Galerie' + (RV.card.owner ? ' · von ' + RV.card.owner : '') + ' · ' + RV.card.likes + (RV.card.likes === 1 ? ' Like' : ' Likes') : inTeam ? 'jetzt in deinem Team' : 'in deiner Sammlung') } : null,
@@ -3990,11 +4126,11 @@ class Component extends DCLogic {
       if (!A.heal) await this.hit(this.foeRef.current, A.kraft >= 30);
     } finally { this.pvBusy = false; }
   };
-  arenaBg(bio, boss) {
-    const k = boss ? (bio === 'tempel' || bio === 'mond' ? bio : 'arena') : (Component.ARENA[bio] ? bio : 'wiese');
+  arenaBg(bio, boss, mono) {
+    const k0 = boss ? (bio === 'tempel' || bio === 'mond' ? bio : 'arena') : (Component.ARENA[bio] ? bio : 'wiese'), k = k0 + (mono ? '-m' : '');
     this._abg = this._abg || {};
     if (this._abg[k]) return this._abg[k];
-    const P = Component.ARENA[k], I = '#201e1d', f = v => v.toFixed(0), els = [];
+    const P = Component.ARENA[k0], I = '#201e1d', f = v => v.toFixed(0), els = [];
     for (let i = 0; i < 15; i++) {
       const t = Math.PI + (i + 0.5) / 15 * Math.PI, x = 800 + Math.cos(t) * 740, y = 440 + Math.sin(t) * 60;
       const sc = 0.7 + 0.3 * Math.abs(Math.cos(t)), w = (44 + (i * 37) % 26) * sc, h = (80 + (i * 53) % 56) * sc, ln = ((i * 29) % 11 - 5) * 1.5;
@@ -4016,7 +4152,7 @@ class Component extends DCLogic {
     const hills = P.peaks
       ? `<path d='M0 360L120 210L220 290L360 120L480 280L620 170L760 300L900 140L1040 290L1180 170L1320 300L1460 150L1600 260V900H0Z' fill='${P.hill}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/><path d='M360 120L330 165L390 160ZM900 140L870 185L935 180ZM1460 150L1430 195L1495 190Z' fill='#fbfaf8' stroke='${I}' stroke-width='3' stroke-linejoin='round'/>`
       : `<path d='M0 330L160 250L330 300L520 200L720 290L900 220L1100 300L1300 210L1480 280L1600 240V900H0Z' fill='${P.hill}' stroke='${I}' stroke-width='3' stroke-linejoin='round'/>`;
-    const sky = P.dark
+    const sky = mono ? '' : P.dark
       ? `<rect width='1600' height='900' fill='${P.sky}'/>` + [[180, 90], [520, 160], [860, 70], [1180, 150], [1450, 80]].map(([x, y]) => `<path d='M${x} ${y - 14}L${x + 6} ${y}L${x} ${y + 14}L${x - 6} ${y}Z' fill='#bfe9ff'/>`).join('')
       : `<rect width='1600' height='900' fill='${P.sky}'/><circle cx='1340' cy='130' r='56' fill='#f2e2ae' stroke='${I}' stroke-width='3'/>`;
     const water = P.water ? `<path d='M0 396Q800 356 1600 396V470H0Z' fill='#94bfdc' stroke='${I}' stroke-width='3'/><path d='M180 420q20-12 40 0t40 0M760 404q20-12 40 0t40 0M1280 420q20-12 40 0t40 0' fill='none' stroke='#e6f1f7' stroke-width='4' stroke-linecap='round'/>` : '';
@@ -4779,7 +4915,7 @@ class Component extends DCLogic {
       dgPrepStake: sk > 0 ? 'Einsatz ' + sk + ' Likes. Wer gewinnt, bekommt ' + 2 * sk + '.' : 'Ohne Einsatz, nur zum Spaß.', dgCdRef: this.dgCdRef,
       dgMyRef: this.dgMyRef, dgTimeRef: this.dgTimeRef, dgBoardRef: this.dgBoardRef, dgOppLive: d ? String(d.oppLive) : '0', dgHoles: this.holeRefs.map((ref, i) => ({ ref, down: this.holeDowns[i] })),
       dgFinalTxt: s.dgFinal + (Math.abs(s.dgFinal) === 1 ? ' Punkt' : ' Punkte'), dgWaitTxt: d ? 'Warte auf ' + d.opp.name + ' (gerade ' + d.oppLive + ') …' : '',
-      dgResTitle: draw ? 'Unentschieden' : won ? 'Gewonnen!' : 'Verloren', dgResCol: won ? 'var(--color-accent)' : 'var(--color-text)',
+      dgResTitle: draw ? 'Unentschieden' : won ? 'Gewonnen!' : 'Verloren', dgResCol: won ? 'var(--color-accent)' : 'var(--color-text)', dgResTone: won ? 'red' : 'steel', dgResSize: Math.round(Math.max(48, Math.min(88, (window.innerWidth || 1000) * 0.09))),
       dgResWho: d ? 'Du : ' + d.opp.name : '', dgResScore: d ? (d.myScore == null ? '–' : d.myScore) + ' : ' + (d.oppScore == null ? '–' : d.oppScore) : '',
       dgResLikes: !sk ? 'Ohne Einsatz gespielt.' : draw ? 'Jeder bekommt seinen Einsatz zurück.' : won ? '+' + sk + ' Likes' : '−' + sk + ' Likes',
       dgResNote: d ? d.note : '', dgHasResNote: !!(d && d.note), dgRevOff: !d || !R[d.opp.id],
@@ -4810,11 +4946,11 @@ class Component extends DCLogic {
     else if (tab === 'atk' && ready) { me = this.meStats(s.team[s.pvMe] || s.team[0]); foe = this.pvFoe || null; }
     const showArena = !!(me && foe && (b || tab === 'atk'));
     const ar = showArena ? {
-      arenaBg: this.arenaBg(b ? b.bio : curBio, b && b.kind === 'boss'),
+      arenaBg: s.mono ? 'none' : this.arenaBg(b ? b.bio : curBio, b && b.kind === 'boss'), arenaBgM: s.mono ? this.arenaBg(b ? b.bio : curBio, b && b.kind === 'boss', true) : 'none',
       meName: me.name, meLv: 'St. ' + me.lv, meTyp: C.TN[me.typ], meKpPct: pct(me.kp, me.maxKp), meKpCol: kpCol(me.kp, me.maxKp), meKpTxt: `${me.kp} / ${me.maxKp} KP`, meEpPct: pct(me.ep, this.need(me.lv)), meArt: me.art, meOp: b ? (b.meIn ? 1 : 0) : 1,
       foeTier: C.TIERS[foe.tier || 0][0], foeTierBg: C.TIERS[foe.tier || 0][1],
       foeName: foe.name, foeLv: 'St. ' + foe.lv, foeTyp: C.TN[foe.typ], foeKpPct: pct(foe.kp, foe.maxKp), foeKpCol: kpCol(foe.kp, foe.maxKp), foeArt: foe.art, foeOp: b ? (b.foeIn ? 1 : 0) : 1,
-    } : { arenaBg: 'none', meName: '', meLv: '', meTyp: '', meKpPct: '0%', meKpCol: 'transparent', meKpTxt: '', meEpPct: '0%', meArt: 'none', meOp: 0, foeTier: '', foeTierBg: 'transparent', foeName: '', foeLv: '', foeTyp: '', foeKpPct: '0%', foeKpCol: 'transparent', foeArt: 'none', foeOp: 0 };
+    } : { arenaBg: 'none', arenaBgM: 'none', meName: '', meLv: '', meTyp: '', meKpPct: '0%', meKpCol: 'transparent', meKpTxt: '', meEpPct: '0%', meArt: 'none', meOp: 0, foeTier: '', foeTierBg: 'transparent', foeName: '', foeLv: '', foeTyp: '', foeKpPct: '0%', foeKpCol: 'transparent', foeArt: 'none', foeOp: 0 };
 
     const ph = b ? b.phase : '';
     const atkBtns = b && me && foe ? me.attacks.map(id => { const e = this.eff(A[id].typ, foe.typ); return { name: A[id].name, sub: atkSub(id) + (A[id].heal ? '' : e > 1 ? ' · sehr effektiv' : e < 1 ? ' · schwach' : ''), go: () => this.act({ type: 'attack', id }) }; }) : [];
@@ -4894,9 +5030,10 @@ class Component extends DCLogic {
       isPfad: tab === 'pfad', isAtk: tab === 'atk', isTeam: tab === 'team' && ready, isBag: tab === 'bag' && ready,
       showMap: ready && tab === 'pfad' && !b && !s.inside, showArena, inBattle: !!b, arenaMax: b ? 'calc((100vh - 230px) * 16 / 9)' : 'none',
       vpRef: this.vpRef, stageRef: this.stageRef, arenaRef: this.arenaRef, meRef: this.meRef, foeRef: this.foeRef, fxRef: this.fxRef, playerRef: this.playerRef, bioRef: this.bioRef,
-      mapImg: Wd.mapImg, layerW: C.W * tile + 'px', layerH: C.H * tile + 'px', layerT: `translate(${(-cx * tile).toFixed(1)}px, ${(-cy * tile).toFixed(1)}px)`,
-      chests: Wd.chestList.map(c => ({ l: px(c.x), t: py(c.y), img: this.symUrl(s.chests.includes(c.key) ? 'chestOpen' : 'chest', '') })),
-      mapProps: [...(D.hut ? [{ l: px(D.hut.x), t: py(D.hut.y), w: (300 / C.W) + '%', h: (400 / C.H) + '%', img: this.hutImg() }] : []), ...Wd.houses.map(h => ({ l: px(h.x), t: py(h.y), w: (300 / C.W) + '%', h: (400 / C.H) + '%', img: this.houseImg(h.kind) }))],
+      mapImg: s.mono ? (Wd.mapImgM || (Wd.mapImgM = this.mapSvg(Wd.g, true))) : Wd.mapImg, miniImg: s.mono ? (Wd.mapImgF || (Wd.mapImgF = this.mapSvg(Wd.g, true, true))) : Wd.mapImg, fxOx: (cx * tile).toFixed(1), fxOy: (cy * tile).toFixed(1), mono: !!s.mono, classic: !s.mono,
+      fxPage: !!s.mono && (!ready || ((tab === 'team' || tab === 'bag' || tab === 'quest') && !b)), fxPageKind: !ready ? 'orb' : tab === 'quest' ? 'topo' : 'grid', layerW: C.W * tile + 'px', layerH: C.H * tile + 'px', layerT: `translate(${(-cx * tile).toFixed(1)}px, ${(-cy * tile).toFixed(1)}px)`,
+      chests: Wd.chestList.map(c => ({ l: px(c.x), t: py(c.y), img: s.mono ? this.symUrlM(s.chests.includes(c.key) ? 'chestOpen' : 'chest') : this.symUrl(s.chests.includes(c.key) ? 'chestOpen' : 'chest', '') })),
+      mapProps: [...(D.hut ? [{ l: px(D.hut.x), t: py(D.hut.y), w: (300 / C.W) + '%', h: (400 / C.H) + '%', img: s.mono ? this.monoUrl(this.hutImg(), 'obj') : this.hutImg() }] : []), ...Wd.houses.map(h => ({ l: px(h.x), t: py(h.y), w: (300 / C.W) + '%', h: (400 / C.H) + '%', img: (s.mono ? this.monoUrl(this.houseImg(h.kind), 'obj') : this.houseImg(h.kind)) }))],
       mapNpcs: D.hut ? [{ l: px(D.hut.man[0]), t: py(D.hut.man[1]), sprite: this.oldMan(s.manIn ? 'empty' : 'sit') }] : [],
       ...this.wheelVals(),
       mapTrainers: Wd.trainers.map(t => ({ l: px(t.x), t: py(t.y), sprite: this.trainerSprite(t), flip: t.dir[0] < 0 ? 'scaleX(-1)' : 'none', bubble: s.spot === t.id, op: s.beaten.includes(t.id) ? 0.55 : 1 })),

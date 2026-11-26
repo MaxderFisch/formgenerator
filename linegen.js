@@ -289,6 +289,29 @@ export function createEngine(canvas) {
   });
   const maskScene = new THREE.Scene();
   const maskMesh = new THREE.Mesh(mesh.geometry, depthMat); maskScene.add(maskMesh);
+  // Normalen-Bild (Ansichtsraum) für den Kupferstich-Effekt (kupfer.js), nur auf Wunsch (opt.normals)
+  const NW = 150, NH = 200;
+  const nrmMat = new THREE.ShaderMaterial({
+    vertexShader: 'varying vec3 vN; void main(){ vN = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+    fragmentShader: 'varying vec3 vN; void main(){ vec3 n = normalize(vN); if (!gl_FrontFacing) n = -n; gl_FragColor = vec4(n*0.5+0.5, 1.0); }',
+    side: THREE.DoubleSide,
+  });
+  const nrmScene = new THREE.Scene(), nrmMesh = new THREE.Mesh(mesh.geometry, nrmMat); nrmScene.add(nrmMesh);
+  const nrt = new THREE.WebGLRenderTarget(NW, NH), nbuf = new Uint8Array(NW * NH * 4);
+  let ncv = null;
+  const normalsUrl = () => {
+    const oc = renderer.getClearColor(new THREE.Color()), oa = renderer.getClearAlpha();
+    renderer.setClearColor(0x000000, 0);
+    renderer.setRenderTarget(nrt); renderer.clear(true, true, true);
+    renderer.render(nrmScene, camera);
+    renderer.readRenderTargetPixels(nrt, 0, 0, NW, NH, nbuf);
+    renderer.setRenderTarget(null); renderer.setClearColor(oc, oa);
+    if (!ncv) { ncv = document.createElement('canvas'); ncv.width = NW; ncv.height = NH; }
+    const cx = ncv.getContext('2d'), img = cx.createImageData(NW, NH);
+    for (let y = 0; y < NH; y++) img.data.set(nbuf.subarray((NH - 1 - y) * NW * 4, (NH - y) * NW * 4), y * NW * 4);
+    cx.putImageData(img, 0, 0);
+    return ncv.toDataURL('image/png');
+  };
   const maskCam = new THREE.PerspectiveCamera();
   const RW = MW * SS, RH = MH * SS;
   const rt = new THREE.WebGLRenderTarget(RW, RH);
@@ -317,7 +340,7 @@ export function createEngine(canvas) {
   function update(p, opt = {}) {
     const shape = makeShape(p);
     const grid = buildGrid(p, shape);
-    mesh.geometry.dispose(); mesh.geometry = grid.geom; maskMesh.geometry = grid.geom;
+    mesh.geometry.dispose(); mesh.geometry = grid.geom; maskMesh.geometry = grid.geom; nrmMesh.geometry = grid.geom;
     if (mat.flatShading !== !!p.flat) { mat.flatShading = !!p.flat; mat.needsUpdate = true; }
     wire.geometry.dispose();
     wire.geometry = opt.wire ? new THREE.WireframeGeometry(grid.geom) : new THREE.BufferGeometry();
@@ -738,7 +761,7 @@ export function createEngine(canvas) {
     if (eyeSvg && p.eyeClip) eyeSvg = `<g clip-path="url(#fgBody)">${eyeSvg}</g>`;
 
     // mouth svg
-    let mouthSvg = '';
+    let mouthSvg = '', mouthHalo = '';
     if (mouth) {
       const { o, ex, ey } = mouth, c = clamp(p.mouthCurve ?? 0.5, -1, 1), t = clamp(Math.round(p.mouthType ?? 0), 0, 4), cc = clamp(c, 0.1, 1);
       const VE = 'vector-effect="non-scaling-stroke"', mw = f1(p.eyeLineW);
@@ -755,7 +778,9 @@ export function createEngine(canvas) {
           `<path d="${open}" fill="none" stroke="${p.cLine}" stroke-width="${mw}" stroke-linejoin="round" ${VE}/>`;
       }
       const halo = t === 0 || t === 4 ? `<ellipse cx="0" cy="0.1" rx="1.25" ry="0.8" fill="${p.cBody}"/>` : '';
-      mouthSvg = `<g clip-path="url(#fgBody)"><g transform="matrix(${f1(ex[0])} ${f1(ex[1])} ${f1(ey[0])} ${f1(ey[1])} ${f1(o[0])} ${f1(o[1])})">${halo}${inner}</g></g>`;
+      const mt = `<g clip-path="url(#fgBody)"><g transform="matrix(${f1(ex[0])} ${f1(ex[1])} ${f1(ey[0])} ${f1(ey[1])} ${f1(o[0])} ${f1(o[1])})">`;
+      if (halo) mouthHalo = mt + halo + '</g></g>';
+      mouthSvg = mt + inner + '</g></g>';
     }
 
     // hat: rests where the head is as wide as the hat's opening
@@ -887,12 +912,14 @@ export function createEngine(canvas) {
       `<rect width="${FW}" height="${FH}" fill="${p.cBg}"/>` + armBack +
       (outlineD ? `<path d="${outlineD}" fill="${p.cBody}" fill-rule="evenodd"/>` : '') +
       grp(patDs, p.patW) + grp(innerDs.concat(contourDs), p.innerW) +
-      mouthSvg + eyeSvg +
+      mouthHalo + '<!--face-->' + mouthSvg + eyeSvg + '<!--/face-->' +
       (outlineD && p.lineW > 0 ? `<path d="${outlineD}" fill="none" stroke="${p.cLine}" stroke-width="${p.lineW}" stroke-linejoin="${join}" stroke-miterlimit="4"/>` : '') +
       armFront + hatSvg +
       `</svg>`;
     const uid = 'u' + (++uidN);
-    return { svg: svg.replace(/fg(Body|Eye\d+|Mouth|Hat)\b/g, m => m + uid), dbg };
+    let nrm = null;
+    if (opt.normals) { try { nrm = normalsUrl(); } catch (e) { console.error(e); } }
+    return { svg: svg.replace(/fg(Body|Eye\d+|Mouth|Hat)\b/g, m => m + uid), dbg, nrm };
   }
 
   function resize(w, h) { renderer.setSize(Math.max(1, Math.round(w)), Math.max(1, Math.round(h)), false); }

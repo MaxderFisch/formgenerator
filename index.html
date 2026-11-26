@@ -16,15 +16,19 @@
     body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); }
     a { color: var(--color-accent-700); }
     a:hover { color: var(--color-accent); }
+    html[data-design="mono"] { color-scheme: dark; --color-bg: #0b0b0b; --color-surface: #161616; --color-text: #f2f0ee; --color-divider: color-mix(in srgb, #f2f0ee 34%, transparent); --color-neutral-100: #161515; --color-neutral-200: #1f1e1e; --color-neutral-300: #2e2c2c; --color-neutral-400: #454242; --color-neutral-500: #646060; --color-neutral-600: #858181; --color-neutral-700: #a6a2a1; --color-neutral-800: #c7c3c2; --color-neutral-900: #e4e1e0; --color-accent-100: #2a100b; --color-accent-200: #3e150d; --color-accent-300: #5e1b0f; --color-accent-400: #ff563c; --color-accent-500: #ff6a52; --color-accent-600: #ff563c; --color-accent-700: #ff8a75; --color-accent-800: #ffb4a6; --color-accent-900: #ffd9d1; --shadow-sm: 0 0 0 1px rgba(255,255,255,.06); --shadow-md: 0 0 0 1px rgba(255,255,255,.08), 0 8px 24px rgba(0,0,0,.5); --shadow-lg: 0 0 0 1px rgba(255,255,255,.1), 0 18px 48px rgba(0,0,0,.65); --fg-paper: #121212; --fg-stage: #ecebe9; --fg-frame-pad: 22px; }
   </style>
+  <script>try { if (localStorage.getItem('formgen.design') === 'mono') document.documentElement.dataset.design = 'mono'; } catch (e) {}</script>
 </helmet>
 <div style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)">
+  <sc-if value="{{ fxCreate }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;inset:0;pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="vwaves" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
   <sc-if value="{{ needLogin }}" hint-placeholder-val="{{ false }}">
     <div style="position:fixed;inset:0;z-index:100;background:var(--color-bg);overflow:auto">
-      <div style="max-width:560px;margin:0 auto;padding:12vh var(--space-6) var(--space-8);display:flex;flex-direction:column;gap:var(--space-6)">
+      <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;top:0;bottom:0;right:0;left:max(0px, calc(50% - 60px));pointer-events:none;overflow:hidden"><x-import component-from-global-scope="mono-fx" from="./fx.js" effect="orb" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+      <div style="position:relative;max-width:560px;margin:0 auto;padding:12vh var(--space-6) var(--space-8);display:flex;flex-direction:column;gap:var(--space-6)">
         <div style="display:flex;flex-direction:column;gap:var(--space-2)">
           <div style="font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--color-accent-700)">Formgenerator</div>
-          <h1 style="margin:0;font-family:var(--font-heading);font-weight:800;font-size:48px;line-height:1;letter-spacing:-0.02em">Wer spielt?</h1>
+          <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><h1 style="margin:0;line-height:0"><x-import component-from-global-scope="mono-metal" from="./fx.js" text="Wer spielt?" size="48" hint-size="280px,44px"></x-import></h1></sc-if><sc-if value="{{ classic }}" hint-placeholder-val="{{ true }}"><h1 style="margin:0;font-family:var(--font-heading);font-weight:800;font-size:48px;line-height:1;letter-spacing:-0.02em">Wer spielt?</h1></sc-if>
         </div>
         <sc-if value="{{ lgLoading }}" hint-placeholder-val="{{ false }}">
           <div style="font-size:14px;color:var(--color-neutral-700)">Spieler werden geladen …</div>
@@ -93,12 +97,13 @@
       </div>
       <sc-if value="{{ fgMenuOpen }}" hint-placeholder-val="{{ false }}">
         <div onClick="{{ fgMenuClose }}" style="position:fixed;inset:0;z-index:39"></div>
-        <div style="position:absolute;right:var(--space-6);top:calc(100% + 6px);z-index:40;width:250px;background:#fbfaf8;border:2px solid var(--color-text);box-shadow:var(--shadow-lg);display:flex;flex-direction:column">
+        <div style="position:absolute;right:var(--space-6);top:calc(100% + 6px);z-index:40;width:250px;background:var(--fg-paper,#fbfaf8);border:2px solid var(--color-text);box-shadow:var(--shadow-lg);display:flex;flex-direction:column">
           <button onClick="{{ mLogout }}" style="display:flex;padding:11px 14px;border:none;background:transparent;font:inherit;font-size:15px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-accent-100)">Spieler wechseln</button>
           <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
             <button onClick="{{ mAdmin }}" style="display:flex;padding:11px 14px;border:none;border-top:1px solid var(--color-divider);background:transparent;font:inherit;font-size:15px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-accent-100)">Admin</button>
           </sc-if>
           <button onClick="{{ mDev }}" style="display:flex;padding:11px 14px;border:none;border-top:1px solid var(--color-divider);background:transparent;font:inherit;font-size:15px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-accent-100)">Entwicklermodus</button>
+          <button onClick="{{ mDesign }}" style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 14px;border:none;border-top:1px solid var(--color-divider);background:transparent;font:inherit;font-size:15px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-accent-100)"><span>Design</span><span style="font-size:12px;color:var(--color-neutral-700)">{{ designNote }}</span></button>
           <sc-if value="{{ isTest }}" hint-placeholder-val="{{ false }}">
             <span style="padding:12px 14px 4px;border-top:2px solid var(--color-text);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Testmodus</span>
             <button onClick="{{ testSeed }}" style="display:flex;padding:9px 14px;border:none;background:transparent;font:inherit;font-size:14px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-accent-100)">Beispiel-Galerie erzeugen</button>
@@ -107,7 +112,7 @@
               <button onClick="{{ tAskReset }}" style="display:flex;padding:9px 14px;border:none;background:transparent;font:inherit;font-size:14px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-accent-100)">Test zurücksetzen</button>
             </sc-if>
             <sc-if value="{{ tConfirm }}" hint-placeholder-val="{{ false }}">
-              <button onClick="{{ testReset }}" style="display:flex;padding:9px 14px;border:none;background:var(--color-accent);font:inherit;font-size:14px;font-weight:700;text-align:left;cursor:pointer;color:#fbfaf8">Ja, alles löschen</button>
+              <button onClick="{{ testReset }}" style="display:flex;padding:9px 14px;border:none;background:var(--color-accent);font:inherit;font-size:14px;font-weight:700;text-align:left;cursor:pointer;color:var(--fg-paper,#fbfaf8)">Ja, alles löschen</button>
               <button onClick="{{ tCancel }}" style="display:flex;padding:9px 14px;border:none;background:transparent;font:inherit;font-size:14px;font-weight:700;text-align:left;cursor:pointer;color:var(--color-text)">Abbrechen</button>
             </sc-if>
             <sc-if value="{{ tMsg }}" hint-placeholder-val="{{ false }}">
@@ -119,7 +124,7 @@
     </header>
 
     <sc-if value="{{ isCreate }}" hint-placeholder-val="{{ true }}">
-      <div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:var(--space-8);padding:var(--space-6)">
+      <div style="position:relative;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:var(--space-8);padding:var(--space-6)">
         <div style="flex:0 1 260px;min-width:240px;display:flex;flex-direction:column;gap:var(--space-4)">
           <div style="display:flex;flex-direction:column;gap:var(--space-1)">
             <div style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:-4px">Eigenschaften</div>
@@ -175,11 +180,18 @@
             </div>
           </div>
         </div>
-        <div style="flex:1 1 360px;max-width:calc((100vh - 130px) * 0.75);min-width:260px;display:flex;flex-direction:column;gap:var(--space-3)">
-          <div ref="{{ svgRef2 }}" style="width:100%;aspect-ratio:3/4;background:var(--color-surface)"></div>
+        <div style="flex:1 1 360px;max-width:calc((100vh - 240px) * 0.75);min-width:200px;display:flex;flex-direction:column;gap:var(--space-3)">
+          <div style="position:relative;padding:var(--fg-frame-pad,0px)">
+            <sc-if value="{{ mono }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;pointer-events:none"><x-import component-from-global-scope="mono-frame" from="./fx.js" thick="18" style="position:absolute;inset:0" hint-size="100%,100%"></x-import></div></sc-if>
+            <div ref="{{ svgRef2 }}" style="width:100%;aspect-ratio:3/4;background:var(--fg-stage,var(--color-surface))"></div>
+          </div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3)">
-            <div style="font-family:var(--font-heading);font-weight:800;font-size:22px;line-height:1.2">{{ nameShown }}</div>
+            <div style="flex:1;min-width:0;font-family:var(--font-heading);font-weight:800;font-size:22px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{{ nameShown }}">{{ nameShown }}</div>
             <div style="font-size:13px;color:var(--color-neutral-700)">{{ modelName }}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--space-2);border-top:2px solid var(--color-divider);padding-top:var(--space-3)">
+            <button class="btn btn-secondary" onClick="{{ fxRoll }}" title="Effekt würfeln" style="flex:1;min-width:0;justify-content:flex-start;gap:8px;font-size:14px;border-color:var(--color-text);white-space:nowrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect width="18" height="18" x="3" y="3"></rect><path d="M16 8h.01"></path><path d="M8 8h.01"></path><path d="M8 16h.01"></path><path d="M16 16h.01"></path><path d="M12 12h.01"></path></svg><span style="min-width:0;overflow:hidden;text-overflow:ellipsis">{{ fxLabel }}</span></button>
+            <sc-if value="{{ fxOn }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex:none;border:1px solid var(--color-divider)" title="2D = Fläche ganz schraffiert, 3D = Schatten vom Körper"><button onClick="{{ fxSet2d }}" style="{{ fx2dStyle }}">2D</button><button onClick="{{ fxSet3d }}" style="{{ fx3dStyle }}">3D</button></div><button class="btn btn-ghost btn-icon" onClick="{{ fxOff }}" title="Effekt entfernen" style="width:32px;height:32px;justify-content:center;color:var(--color-text)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></sc-if>
           </div>
         </div>
         <div style="flex:0 1 260px;min-width:220px;display:flex;flex-direction:column;gap:var(--space-3)">
@@ -953,9 +965,10 @@ class Component extends DCLogic {
     let auth = {};
     try { auth = JSON.parse(localStorage.getItem('formgen.auth.v1') || '{}') || {}; } catch (e) {}
     const base = {
+      mono: (() => { try { return localStorage.getItem('formgen.design') === 'mono'; } catch (e) { return false; } })(),
       user: auth.user || null, token: auth.token || null, authMode: auth.mode || '', srv: 'unknown', guest: false,
       lgUsers: [], lgSel: null, lgPin: '', lgNew: false, lgName: '', lgPinNew: '', lgErr: '', lgBusy: false, lgLoading: true,
-      player: null, pData: null, pLoading: false, prevView: 'create', adm: null, amLoading: false, amMsg: '', amAmt: {}, amConfirm: null, cards: [], cPool: [], cPoolN: 0, cIconN: 0, adOpen: false, adKey: '', adCount: null, adMsg: '', adBusy: false, tConfirm: false, tMsg: '', cEarned: 0, cSpent: 0, cLoading: false, cDrawing: false, cNote: '', cDemo: false, cSort: 'new', reveal: null, cArtTick: 0, hist: Array.isArray(ui.hist) ? ui.hist.slice(-10) : [], extras: exSaved, view: ['gallery', 'cards'].includes(ui.view) ? 'create' : ui.view || 'create', name: ui.name || '', gSort: 'new', gItems: [], gLoading: false, gError: '', shareMsg: '', liked, model: 'raupe', target: 'kokon', morph: 0, params: Component.preset('raupe'), wire: false, lines3d: true, collapsed: {}, copied: false, ready: false, error: '', basicOnly: true, snaps, snapsCopied: false };
+      player: null, pData: null, pLoading: false, prevView: 'create', adm: null, amLoading: false, amMsg: '', amAmt: {}, amConfirm: null, cards: [], cPool: [], cPoolN: 0, cIconN: 0, adOpen: false, adKey: '', adCount: null, adMsg: '', adBusy: false, tConfirm: false, tMsg: '', cEarned: 0, cSpent: 0, cLoading: false, cDrawing: false, cNote: '', cDemo: false, cSort: 'new', reveal: null, cArtTick: 0, fxSeed: Number(ui.fx) || 0, fx2d: !!ui.fx2d, hist: Array.isArray(ui.hist) ? ui.hist.slice(-10) : [], extras: exSaved, view: ['gallery', 'cards'].includes(ui.view) ? 'create' : ui.view || 'create', name: ui.name || '', gSort: 'new', gItems: [], gLoading: false, gError: '', shareMsg: '', liked, model: 'raupe', target: 'kokon', morph: 0, params: Component.preset('raupe'), wire: false, lines3d: true, collapsed: {}, copied: false, ready: false, error: '', basicOnly: true, snaps, snapsCopied: false };
     try {
       const s = JSON.parse(localStorage.getItem('formgen.v1') || 'null');
       if (s && s.params) return { ...base, model: s.model || 'bohne', target: s.target || 'kokon', morph: s.morph || 0, params: { ...Component.defaults(), ...s.params }, wire: !!s.wire, lines3d: s.lines3d !== false, collapsed: s.collapsed || {}, basicOnly: s.basicOnly !== false };
@@ -966,12 +979,19 @@ class Component extends DCLogic {
   svgRef = React.createRef();
   svgRef2 = React.createRef();
   fxRef = React.createRef(); raysRef = React.createRef(); boxRef = React.createRef(); flipRef = React.createRef(); flashRef = React.createRef();
-  componentDidUpdate() {
-    for (const r of [this.svgRef2, this.svgRef]) {
-      const el = r.current;
-      if (el && this.lastSvg && el._svg !== this.lastSvg) { el.innerHTML = this.lastSvg; el._svg = this.lastSvg; }
-    }
+  componentDidUpdate() { this.showSvg(); }
+  dispSvg() {
+    const s = this.lastSvg, f = this.state.fxSeed, d2 = !!this.state.fx2d;
+    if (!s || !f || !this.kupfer) return s;
+    if (this._fxSrc !== s || this._fxSeed !== f || this._fx2d !== d2) { this._fxSrc = s; this._fxSeed = f; this._fx2d = d2; try { this._fxOut = this.kupfer.applyFx(s, f, this.lastNrm, d2); } catch (e) { console.error(e); this._fxOut = s; } }
+    return this._fxOut;
   }
+  showSvg() {
+    const svg = this.dispSvg(); if (!svg) return;
+    for (const r of [this.svgRef2, this.svgRef]) { const el = r.current; if (el && el._svg !== svg) { el.innerHTML = svg; el._svg = svg; } }
+  }
+  fxRoll = () => { if (!this.kupfer) return; this.setState(s => ({ hist: this.pushHist(s), fxSeed: this.kupfer.randomSeed(), shareMsg: '' })); };
+  fxOff = () => this.setState(s => ({ hist: this.pushHist(s), fxSeed: 0, shareMsg: '' }));
 
   static GEN_VERSION = 1;
   api() { return String(window.FORMGEN_API || '').trim().replace(/\/+$/, ''); }
@@ -988,7 +1008,7 @@ class Component extends DCLogic {
     if (!this.connected()) { this.flashShare('Nicht verbunden (config.js)'); return; }
     this.setState({ shareMsg: 'Wird geteilt …' });
     try {
-      const j = await this.apiCall('/api/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: this.state.model, name: (this.state.name || '').trim().slice(0, 40), version: Component.GEN_VERSION, params: this.state.params }) });
+      const j = await this.apiCall('/api/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: this.state.model, name: (this.state.name || '').trim().slice(0, 40), version: Component.GEN_VERSION, params: this.state.fxSeed ? { ...this.state.params, fxSeed: this.state.fxSeed, fx2d: !!this.state.fx2d } : this.state.params }) });
       this.flashShare('Geteilt als #' + j.id);
       this.loadGallery('new');
     } catch (e) { this.flashShare('Fehler: ' + e.message); }
@@ -1038,11 +1058,13 @@ class Component extends DCLogic {
 
   componentDidMount() {
     window.__formgen = this;
+    if (this.state.mono) document.documentElement.dataset.design = 'mono'; else delete document.documentElement.dataset.design;
     const hv = { '#erstellen': 'create', '#galerie': 'create', '#sammelkarten': 'create' }[location.hash];
     if (hv) this.setState({ view: hv });
     if (location.hash === '#spieler') { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} setTimeout(() => this.logout(), 0); }
     this.loadGallery('new');
     this.checkServer();
+    import(new URL('./kupfer.js', document.baseURI).href).then(k => { if (this.dead) return; this.kupfer = k; this.forceUpdate(); }).catch(e => console.error(e));
     const url = new URL('./linegen.js', document.baseURI).href;
     import(url).then(mod => {
       if (this.dead) return;
@@ -1072,7 +1094,7 @@ class Component extends DCLogic {
     if (!prev || prev[0] !== key[0] || prev[1] !== key[1] || prev[2] !== key[2]) { this.lastKey = key; this.schedule(); }
     clearTimeout(this.saveT);
     this.saveT = setTimeout(() => {
-      try { localStorage.setItem('formgen.ui.v1', JSON.stringify({ view: s.view, name: s.name, extras: s.extras, hist: s.hist || [] })); } catch (e) {}
+      try { localStorage.setItem('formgen.ui.v1', JSON.stringify({ view: s.view, name: s.name, extras: s.extras, hist: s.hist || [], fx: s.fxSeed || 0, fx2d: !!s.fx2d })); } catch (e) {}
       try { localStorage.setItem('formgen.v1', JSON.stringify({ model: s.model, target: s.target, morph: s.morph, params: s.params, wire: s.wire, lines3d: s.lines3d, collapsed: s.collapsed, basicOnly: s.basicOnly })); } catch (e) {}
     }, 300);
   }
@@ -1084,9 +1106,9 @@ class Component extends DCLogic {
       cancelAnimationFrame(this.raf); clearTimeout(this.rafT);
       this.raf = 0;
       try {
-        const out = this.engine.update(this.state.params, { wire: this.state.wire, lines3d: this.state.lines3d });
-        this.lastSvg = out.svg;
-        for (const r of [this.svgRef, this.svgRef2]) if (r.current) { r.current.innerHTML = out.svg; r.current._svg = out.svg; }
+        const out = this.engine.update(this.state.params, { wire: this.state.wire, lines3d: this.state.lines3d, normals: true });
+        this.lastSvg = out.svg; this.lastNrm = out.nrm;
+        this.showSvg();
       } catch (e) { console.error(e); }
     };
     this.raf = requestAnimationFrame(run);
@@ -1170,11 +1192,11 @@ class Component extends DCLogic {
     if (rollParts) { this.rollForm(p, ex.form || 'sorte'); for (const k of ['mouth', 'hat', 'arms']) if (ex[k]) this.rollPart(k, p); }
     return p;
   }
-  pushHist(s) { return [...(s.hist || []), { model: s.model, params: s.params, name: s.name }].slice(-10); }
+  pushHist(s) { return [...(s.hist || []), { model: s.model, params: s.params, name: s.name, fx: s.fxSeed || 0 }].slice(-10); }
   undo = () => this.setState(s => {
     const h = s.hist || []; if (!h.length) return null;
     const last = h[h.length - 1];
-    return { hist: h.slice(0, -1), model: last.model, params: last.params, name: last.name, morph: 0, shareMsg: '' };
+    return { hist: h.slice(0, -1), model: last.model, params: last.params, name: last.name, fxSeed: last.fx || 0, morph: 0, shareMsg: '' };
   });
   reroll(key) {
     if (key === 'sorte') {
@@ -1270,7 +1292,7 @@ class Component extends DCLogic {
   downloadSvg = () => {
     if (!this.lastSvg) return;
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([this.lastSvg], { type: 'image/svg+xml' }));
+    a.href = URL.createObjectURL(new Blob([this.dispSvg()], { type: 'image/svg+xml' }));
     a.download = `form-${this.state.model}.svg`; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
@@ -1619,12 +1641,19 @@ class Component extends DCLogic {
       this.setState({ srv: 'off', lgLoading: false, lgErr: e instanceof TypeError ? 'Server nicht erreichbar.' : 'Server-Fehler: ' + e.message });
     }
   };
+  toggleMono() {
+    const on = !this.state.mono;
+    try { localStorage.setItem('formgen.design', on ? 'mono' : 'klassisch'); } catch (e) {}
+    if (on) document.documentElement.dataset.design = 'mono'; else delete document.documentElement.dataset.design;
+    this.setState({ mono: on });
+  }
   fgMenuVals() {
     const s = this.state, close = fn => () => { this.setState({ fgMenu: false }); fn(); };
     return {
       fgMenuOpen: !!s.fgMenu, fgMenuToggle: () => this.setState({ fgMenu: !s.fgMenu }), fgMenuClose: () => this.setState({ fgMenu: false }),
       mLogout: close(() => this.logout()), mAdmin: close(() => { this.setState({ view: 'admin' }); setTimeout(() => this.loadAdmin(), 0); }), mDev: close(() => this.setState({ view: 'dev' })),
-      fgSegBg: s.view === 'create' ? 'var(--color-text)' : 'transparent', fgSegFg: s.view === 'create' ? '#fbfaf8' : 'var(--color-text)',
+      fgSegBg: s.view === 'create' ? 'var(--color-text)' : 'transparent', fgSegFg: s.view === 'create' ? 'var(--fg-paper,#fbfaf8)' : 'var(--color-text)',
+      mono: !!s.mono, classic: !s.mono, fxCreate: !!s.mono && s.view === 'create' && !!s.user, designNote: s.mono ? 'Mono' : 'Klassisch', mDesign: close(() => this.toggleMono()),
     };
   }
   setAuth(user, token) {
@@ -2026,12 +2055,12 @@ class Component extends DCLogic {
         title: String(c.name || '').trim() || 'Namenlos', nr: 'Nr. ' + String(c.id).padStart(3, '0'), sorte: nameOf(c.model), code: m.code, barcode: m.barcode,
         color: gd ? '#050505' : ic ? '#f1e2bf' : m.p.cBg, art: (this.cardArt && this.cardArt.get(c.uid)) || 'none',
         pattern: gd ? Component.GOD_RAYS : ic ? Component.ICON_RAYS : pt.img, patSize: ic || gd ? '100% 100%' : pt.size,
-        frame: t.img, panel: gd ? '#050505' : ic ? '#fffaf0' : '#fbfaf8', edge: gd ? '#fbfaf8' : ic ? '#7a5a1c' : 'var(--color-text)',
+        frame: t.img, panel: gd ? '#050505' : ic ? '#fffaf0' : '#fbfaf8', edge: gd ? '#fbfaf8' : ic ? '#7a5a1c' : '#201e1d',
         shadow: gd ? '0 0 0 2px #050505, 0 12px 28px rgba(236,48,19,.4)' : ic ? '0 10px 24px rgba(122,90,28,.32)' : t.foil ? '0 6px 14px rgba(32,30,29,.16)' : 'none',
         shine: t.shine ? Component.CARD_SHINE : 'none',
         foil: gd ? Component.GOD_FOIL : t.foil ? Component.CARD_FOIL : ic ? Component.ICON_PEARL : 'none', foilOp: gd ? 0.5 : t.foil ? 0.55 : ic ? 0.35 : 0,
         move: t.shine ? this.cardTilt : undefined, leave: t.shine ? this.cardUntilt : undefined, tier: m.tier, tierName: t.name, icon: ic, god: gd, artFilter: gd ? 'grayscale(1) contrast(1.35)' : 'none',
-        ink: gd ? '#fbfaf8' : ic ? '#4a3510' : 'var(--color-text)', sub: gd ? '#ec3013' : ic ? '#7a5a1c' : 'var(--color-neutral-700)',
+        ink: gd ? '#fbfaf8' : ic ? '#4a3510' : '#201e1d', sub: gd ? '#ec3013' : ic ? '#7a5a1c' : '#605d5d',
         ovr: m.st.ovr, stats: m.st.vals.map((v, k) => ({ k: Component.STAT_NAMES[k][0], v })), statsLong: m.st.vals.map((v, k) => ({ name: Component.STAT_NAMES[k][1], v })),
         hasOwner: !!c.owner, owner: c.owner || '', openOwner: () => this.openPlayer(c.ownerId, c.owner),
         metaLong: nameOf(c.model) + ' · gezogen am ' + fmtDate(c.drawn) + (c.icon || c.god ? '' : ' · ' + (c.likes || 0) + (c.likes === 1 ? ' Like' : ' Likes') + ' beim Ziehen'),
@@ -2175,6 +2204,10 @@ class Component extends DCLogic {
       goGallery: () => { this.setState({ view: 'gallery' }); this.loadGallery(); },
       goDev: () => this.setState({ view: 'dev' }),
       name: s.name, nameShown: s.name.trim() || 'Namenlos',
+      fxRoll: this.fxRoll, fxOff: this.fxOff, fxOn: !!s.fxSeed,
+      fxSet2d: () => this.setState({ fx2d: true, shareMsg: '' }), fxSet3d: () => this.setState({ fx2d: false, shareMsg: '' }),
+      fx2dStyle: segStyle(!!s.fx2d), fx3dStyle: segStyle(!s.fx2d),
+      fxLabel: s.fxSeed ? (this.kupfer ? this.kupfer.fxName(s.fxSeed) : '…') : 'Effekt würfeln',
       onName: e => this.setState({ name: e.target.value.slice(0, 40) }),
       rollName: () => this.setState({ name: this.randomName() }),
       roll: this.roll, svgRef2: this.svgRef2,
